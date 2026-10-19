@@ -11,6 +11,7 @@ import {
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
 import { PurchasesSync } from '@/components/PurchasesSync';
+import { DialogProvider } from '@/providers/DialogProvider';
 import { PreferencesProvider } from '@/providers/PreferencesProvider';
 import { SessionProvider } from '@/providers/SessionProvider';
 import { colors } from '@/theme';
@@ -38,22 +39,24 @@ export default function RootLayout(): ReactElement | null {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
-      <SessionProvider>
-        <PreferencesProvider>
-          <PurchasesSync />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.background },
-            }}
-          >
-            <Stack.Screen name="(pre-auth)" />
-            <Stack.Screen name="(app)" />
-            <Stack.Screen name="legal/terms" />
-            <Stack.Screen name="legal/privacy" />
-          </Stack>
-        </PreferencesProvider>
-      </SessionProvider>
+      <DialogProvider>
+        <SessionProvider>
+          <PreferencesProvider>
+            <PurchasesSync />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: colors.background },
+              }}
+            >
+              <Stack.Screen name="(pre-auth)" />
+              <Stack.Screen name="(app)" />
+              <Stack.Screen name="legal/terms" />
+              <Stack.Screen name="legal/privacy" />
+            </Stack>
+          </PreferencesProvider>
+        </SessionProvider>
+      </DialogProvider>
     </SafeAreaProvider>
   );
 }

@@ -55,6 +55,7 @@ discreta. `fab` **não vem do mockup** — só no botão de Atividades da tab ba
 
 - `AssetPlaceholder` ocupa o lugar de fotos/ilustrações ainda não fornecidas
   (lista no README, "Assets pendentes").
+- `Dialog` / `useDialog()`: diálogo modal no lugar de `Alert.alert` (proibido por lint). `confirm({ title, message, confirmLabel, cancelLabel, destructive, icon, tone })` retorna `Promise<boolean>`; `alert({ title, message, okLabel, tone })` retorna `Promise<void>`. `tone: 'dark'` para a tela de treino. Um por vez (fila); botão voltar do Android cancela.
 - `IconBadge`: círculo colorido atrás de ícone (cards e listas de treino).
 - `CheckCircle`: treino concluído — vazio ou verde com check.
 - `ProgressBar` e `Ring` recebem `progress` de 0 a 1.

@@ -36,6 +36,23 @@ module.exports = defineConfig([
     },
   },
   {
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        { object: 'Alert', property: 'alert', message: 'Use useDialog() instead of Alert.alert' },
+      ],
+    },
+  },
+  {
+    files: [
+      'app/(app)/workout/[[]id].tsx',
+      'app/(app)/workout/summary.tsx',
+      'components/workout/**',
+      'app/(app)/profile/account.tsx',
+    ],
+    rules: { 'no-restricted-properties': 'off' },
+  },
+  {
     files: ['supabase/functions/**/*.ts'],
     rules: { 'import/no-unresolved': 'off' },
   },
