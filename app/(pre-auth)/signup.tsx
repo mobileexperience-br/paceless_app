@@ -10,6 +10,7 @@ import {
   SocialButton,
   Text,
 } from '@/components';
+import { LegalNotice } from '@/components/LegalNotice';
 import { useSession } from '@/hooks/useSession';
 import { validateSignUp } from '@/hooks/validateAuth';
 import { colors, layout, spacing } from '@/theme';
@@ -35,6 +36,10 @@ export default function SignUpScreen(): ReactElement {
     setSubmitting(false);
     if (result.error) {
       setError(result.error);
+      return;
+    }
+    if (result.needsConfirmation) {
+      router.replace({ pathname: '/verify-email', params: { email: email.trim() } });
       return;
     }
     router.replace('/(app)');
@@ -90,6 +95,8 @@ export default function SignUpScreen(): ReactElement {
           disabled={submitting}
           onPress={() => { void submit(); }}
         />
+
+        <LegalNotice />
 
         <View style={styles.divider}>
           <View style={styles.line} />

@@ -10,6 +10,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { SessionProvider } from '@/providers/SessionProvider';
 import { colors } from '@/theme';
 
 void SplashScreen.preventAutoHideAsync();
@@ -35,15 +36,17 @@ export default function RootLayout(): ReactElement | null {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      >
-        <Stack.Screen name="(pre-auth)" />
-        <Stack.Screen name="(app)" />
-      </Stack>
+      <SessionProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: colors.background },
+          }}
+        >
+          <Stack.Screen name="(pre-auth)" />
+          <Stack.Screen name="(app)" />
+        </Stack>
+      </SessionProvider>
     </SafeAreaProvider>
   );
 }
