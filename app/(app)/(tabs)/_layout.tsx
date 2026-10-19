@@ -57,11 +57,10 @@ export default function TabsLayout(): ReactElement {
         name="index"
         options={{
           title: 'Início',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color }) => (
             <House
               size={layout.tabIconSize}
               color={color}
-              fill={focused ? color : 'none'}
               strokeWidth={sizes.iconStroke}
             />
           ),
@@ -71,11 +70,10 @@ export default function TabsLayout(): ReactElement {
         name="plan"
         options={{
           title: 'Plano',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color }) => (
             <ClipboardList
               size={layout.tabIconSize}
               color={color}
-              fill={focused ? color : 'none'}
               strokeWidth={sizes.iconStroke}
             />
           ),
@@ -92,11 +90,10 @@ export default function TabsLayout(): ReactElement {
         name="nutrition"
         options={{
           title: 'Nutrição',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color }) => (
             <Apple
               size={layout.tabIconSize}
               color={color}
-              fill={focused ? color : 'none'}
               strokeWidth={sizes.iconStroke}
             />
           ),
@@ -106,11 +103,10 @@ export default function TabsLayout(): ReactElement {
         name="profile"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color }) => (
             <User
               size={layout.tabIconSize}
               color={color}
-              fill={focused ? color : 'none'}
               strokeWidth={sizes.iconStroke}
             />
           ),
