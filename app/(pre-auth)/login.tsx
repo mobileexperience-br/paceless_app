@@ -11,6 +11,7 @@ import {
   Text,
 } from '@/components';
 import { useSession } from '@/hooks/useSession';
+import { useSocialSignIn, type SocialResult } from '@/hooks/useSocialSignIn';
 import { validateCredentials } from '@/hooks/validateAuth';
 import { colors, layout, spacing } from '@/theme';
 
@@ -21,6 +22,19 @@ export default function LoginScreen(): ReactElement {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const social = useSocialSignIn();
+
+  const handleSocial = async (action: () => Promise<SocialResult>): Promise<void> => {
+    setError(null);
+    const result = await action();
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+    if (result.signedIn) {
+      router.replace('/(app)');
+    }
+  };
 
   const submit = async (): Promise<void> => {
     const invalid = validateCredentials(email, password);
@@ -93,8 +107,18 @@ export default function LoginScreen(): ReactElement {
         </View>
 
         <View style={styles.social}>
-          <SocialButton provider="apple" />
-          <SocialButton provider="google" />
+          {social.appleSupported ? (
+            <SocialButton
+              provider="apple"
+              disabled={social.loading !== null}
+              onPress={() => { void handleSocial(social.signInWithApple); }}
+            />
+          ) : null}
+          <SocialButton
+            provider="google"
+            disabled={social.loading !== null}
+            onPress={() => { void handleSocial(social.signInWithGoogle); }}
+          />
         </View>
 
         <Pressable

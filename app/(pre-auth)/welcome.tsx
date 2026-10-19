@@ -1,15 +1,30 @@
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, SocialButton, Text } from '@/components';
+import { useSocialSignIn, type SocialResult } from '@/hooks/useSocialSignIn';
 import { colors, layout, sizes, spacing } from '@/theme';
 import heroWelcome from '@/assets/hero-welcome.jpg';
 import logoMark from '@/assets/logo-mark.png';
 
 export default function WelcomeScreen(): ReactElement {
   const router = useRouter();
+  const social = useSocialSignIn();
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSocial = async (action: () => Promise<SocialResult>): Promise<void> => {
+    setError(null);
+    const result = await action();
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+    if (result.signedIn) {
+      router.replace('/(app)');
+    }
+  };
 
   return (
     <View style={styles.root}>
@@ -32,8 +47,23 @@ export default function WelcomeScreen(): ReactElement {
 
         <View style={styles.actions}>
           <Button label="Criar conta" onPress={() => { router.push('/onboarding'); }} />
-          <SocialButton provider="apple" />
-          <SocialButton provider="google" />
+          {social.appleSupported ? (
+            <SocialButton
+              provider="apple"
+              disabled={social.loading !== null}
+              onPress={() => { void handleSocial(social.signInWithApple); }}
+            />
+          ) : null}
+          <SocialButton
+            provider="google"
+            disabled={social.loading !== null}
+            onPress={() => { void handleSocial(social.signInWithGoogle); }}
+          />
+          {error ? (
+            <Text variant="caption" center color={colors.danger}>
+              {error}
+            </Text>
+          ) : null}
 
           <Pressable
             accessibilityRole="button"

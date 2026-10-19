@@ -10,6 +10,7 @@ type SocialProvider = 'apple' | 'google';
 interface SocialButtonProps {
   provider: SocialProvider;
   onPress?: () => void;
+  disabled?: boolean;
   style?: ViewStyle;
 }
 
@@ -23,11 +24,12 @@ const logos: Record<SocialProvider, ImageSourcePropType> = {
   google: logoGoogle,
 };
 
-export function SocialButton({ provider, onPress, style }: SocialButtonProps): ReactElement {
+export function SocialButton({ provider, onPress, disabled, style }: SocialButtonProps): ReactElement {
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
+      disabled={disabled}
       style={({ pressed }) => [styles.button, pressed && styles.pressed, style]}
     >
       <Image source={logos[provider]} style={styles.logo} resizeMode="contain" />
