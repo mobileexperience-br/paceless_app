@@ -1,5 +1,6 @@
-import { useState, type ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useCallback, useMemo, useState, type ReactElement } from 'react';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { ListFilter } from 'lucide-react-native';
 import {
   Card,
@@ -10,19 +11,58 @@ import {
   Text,
   type Stat,
 } from '@/components';
-import { colors, layout, spacing } from '@/theme';
+import { ActivityRow } from '@/components/activities/ActivityRow';
+import { useActivities } from '@/hooks/useActivities';
+import type { Activity } from '@/lib/activities';
+import {
+  activityFilters,
+  filterActivities,
+  formatDuration,
+  formatWeekKm,
+  summarizeWeek,
+} from '@/lib/activityStats';
+import { colors, layout, sizes, spacing } from '@/theme';
 
-const filters = ['Todas', 'Corrida', 'Musculação'] as const;
-
-const emptyStats: Stat[] = [
-  { value: '0', label: 'Treinos' },
-  { value: '0', label: 'Km' },
-  { value: '0h', label: 'Tempo' },
-  { value: '0', label: 'Kcal' },
-];
+const EMPTY_VALUE = '—';
 
 export default function ActivitiesScreen(): ReactElement {
-  const [filter, setFilter] = useState<string>(filters[0]);
+  const [filter, setFilter] = useState<string>(activityFilters[0]);
+  const { activities, loading, refreshing, error, load, refresh } = useActivities();
+
+  useFocusEffect(
+    useCallback((): void => {
+      void load();
+    }, [load]),
+  );
+
+  const now = new Date();
+  const visible = useMemo<Activity[]>(
+    () => filterActivities(activities, filter),
+    [activities, filter],
+  );
+  const stats = useMemo<Stat[]>(() => {
+    const week = summarizeWeek(activities, new Date());
+    return [
+      { value: String(week.workouts), label: 'Treinos' },
+      { value: formatWeekKm(week.distanceMeters), label: 'Km' },
+      { value: formatDuration(week.durationSeconds), label: 'Tempo' },
+      { value: EMPTY_VALUE, label: 'Kcal' },
+    ];
+  }, [activities]);
+
+  const header = (
+    <View style={styles.listHeader}>
+      <Text variant="captionStrong">Esta semana</Text>
+      <Card>
+        <StatRow stats={stats} />
+      </Card>
+      {error ? (
+        <Text variant="caption" color={colors.danger}>
+          {error}
+        </Text>
+      ) : null}
+    </View>
+  );
 
   return (
     <Screen flush>
@@ -30,27 +70,46 @@ export default function ActivitiesScreen(): ReactElement {
         <Text variant="title2" style={styles.grow}>
           Atividades
         </Text>
-        <Pressable accessibilityRole="button" accessibilityLabel="Filtrar" hitSlop={12}>
-          <ListFilter size={22} color={colors.ink} strokeWidth={1.75} />
+        <Pressable accessibilityRole="button" accessibilityLabel="Filtrar" hitSlop={sizes.hitSlop}>
+          <ListFilter size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />
         </Pressable>
       </View>
 
-      <SegmentedTabs items={filters} value={filter} onChange={setFilter} />
+      <SegmentedTabs items={activityFilters} value={filter} onChange={setFilter} />
 
-      <View style={styles.body}>
-        <Text variant="captionStrong">Esta semana</Text>
-
-        <Card>
-          <StatRow stats={emptyStats} />
-        </Card>
-
-        <EmptyState
-          title="Nenhuma atividade ainda"
-          description="Seus treinos concluídos aparecem aqui."
-        />
-      </View>
+      <FlatList
+        data={visible}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <ActivityRow activity={item} now={now} />}
+        ListHeaderComponent={header}
+        ListEmptyComponent={
+          loading ? (
+            <ActivityIndicator color={colors.primary} style={styles.loader} />
+          ) : (
+            <EmptyState
+              title="Nenhuma atividade ainda"
+              description="Seus treinos concluídos aparecem aqui."
+            />
+          )
+        }
+        ItemSeparatorComponent={Separator}
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => { void refresh(); }}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+      />
     </Screen>
   );
+}
+
+function Separator(): ReactElement {
+  return <View style={styles.separator} />;
 }
 
 const styles = StyleSheet.create({
@@ -66,6 +125,16 @@ const styles = StyleSheet.create({
   body: {
     paddingHorizontal: layout.screenPadding,
     paddingTop: spacing.lg,
+    paddingBottom: spacing.xxxl,
+  },
+  listHeader: {
     gap: layout.cardGap,
+    marginBottom: layout.cardGap,
+  },
+  separator: {
+    height: layout.cardGap,
+  },
+  loader: {
+    paddingVertical: spacing.huge,
   },
 });
