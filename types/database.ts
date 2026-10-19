@@ -4,6 +4,7 @@ import type { DistanceUnit, ThemePreference } from '@/types/preferences';
 export interface ProfileRow {
   id: string;
   name: string | null;
+  avatar_path: string | null;
   goal: OnboardingAnswers['goal'] | null;
   level: OnboardingAnswers['level'] | null;
   days_per_week: OnboardingAnswers['daysPerWeek'] | null;

@@ -24,6 +24,7 @@ export function parseProfileRow(raw: unknown): ProfileRow | null {
   return {
     id,
     name: textOrNull(raw['name']),
+    avatar_path: textOrNull(raw['avatar_path']),
     goal: optionOrNull(onboardingOptions.goal, raw['goal']),
     level: optionOrNull(onboardingOptions.level, raw['level']),
     days_per_week: optionOrNull(onboardingOptions.daysPerWeek, raw['days_per_week']),

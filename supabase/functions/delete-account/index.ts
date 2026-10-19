@@ -50,6 +50,22 @@ async function handle(request: Request): Promise<Response> {
   const adminClient = createClient(url, serviceRoleKey, {
     auth: { persistSession: false },
   });
+  const folder = data.user.id;
+  const { data: files, error: listError } = await adminClient.storage
+    .from('avatars')
+    .list(folder, { limit: 1000 });
+  if (listError) {
+    return respond(500, { error: 'Could not delete account' });
+  }
+  if (files.length > 0) {
+    const { error: removeError } = await adminClient.storage
+      .from('avatars')
+      .remove(files.map((file) => `${folder}/${file.name}`));
+    if (removeError) {
+      return respond(500, { error: 'Could not delete account' });
+    }
+  }
+
   const { error: deleteError } = await adminClient.auth.admin.deleteUser(data.user.id);
   if (deleteError) {
     return respond(500, { error: 'Could not delete account' });

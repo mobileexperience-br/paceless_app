@@ -81,6 +81,17 @@ passam por Edge Function. Isso continua valendo quando essas features chegarem
 **Por quê:** com duas pessoas no projeto, o plano precisa morar no repo e ser
 revisado em PR como o código.
 
+## 2026-10-19 — Foto de perfil no Supabase Storage (bucket público)
+**Decisão:** fotos ficam no bucket `avatars`, público para leitura, em
+`<user_id>/<timestamp>.jpg` (JPEG 512px, máx. 2 MB). Só o dono lista, insere,
+atualiza e apaga na própria pasta (policies em `storage.objects`). O caminho
+fica em `profiles.avatar_path` e a URL pública é montada no client.
+**Por quê:** avatar não é dado sensível; URL pública dispensa signed URLs
+(expiram e exigem uma chamada por imagem) e o timestamp no nome troca a URL a
+cada foto nova, evitando cache velho.
+**Exclusão:** a Edge Function `delete-account` apaga a pasta do usuário antes
+de remover a conta.
+
 ## 2026-10-19 — Preferências do usuário no perfil, com cache local
 **Decisão:** unidade de distância (`km`/`mi`) e tema (`system`/`light`/`dark`) ficam
 em colunas de `profiles` e são espelhadas no AsyncStorage (`paceless:preferences`).

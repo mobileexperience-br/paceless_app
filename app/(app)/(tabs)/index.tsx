@@ -13,6 +13,7 @@ import {
 import {
   Button,
   Card,
+  Avatar,
   IconBadge,
   ProgressBar,
   Screen,
@@ -29,16 +30,22 @@ const quickAccess = [
 
 export default function HomeScreen(): ReactElement {
   const router = useRouter();
-  const { name } = useProfile();
+  const { name, avatarUrl } = useProfile();
   const firstName = name?.split(/\s+/)[0];
 
   return (
     <Screen scroll flush>
       <View style={styles.body}>
         <View style={styles.topBar}>
-          <IconBadge tone="primary" size={sizes.badgeSm}>
-            <User size={sizes.iconMd} color={colors.ink} strokeWidth={sizes.iconStroke} />
-          </IconBadge>
+          <Avatar
+            uri={avatarUrl}
+            size={sizes.badgeSm}
+            fallback={
+              <IconBadge tone="primary" size={sizes.badgeSm}>
+                <User size={sizes.iconMd} color={colors.ink} strokeWidth={sizes.iconStroke} />
+              </IconBadge>
+            }
+          />
           <View style={styles.spacer} />
           <Pressable accessibilityRole="button" accessibilityLabel="Notificações" hitSlop={sizes.hitSlop}>
             <Bell size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />

@@ -3,6 +3,8 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Trash2, UserRound } from 'lucide-react-native';
 import { Button, Card, EmptyState, ListRow, Screen, ScreenHeader, Text } from '@/components';
+import { AvatarEditor } from '@/components/profile/AvatarEditor';
+import { NameField } from '@/components/profile/NameField';
 import { useDeleteAccount } from '@/hooks/useDeleteAccount';
 import { useProfile } from '@/hooks/useProfile';
 import { colors, layout, sizes } from '@/theme';
@@ -47,10 +49,13 @@ export default function AccountScreen(): ReactElement {
             description="Não encontramos informações da sua conta."
           />
         ) : (
+          <>
+          <AvatarEditor />
           <Card flush>
-            <ListRow title="Nome" subtitle={name ?? 'Não informado'} divider />
+            <NameField name={name} />
             <ListRow title="E-mail" subtitle={email ?? 'Não informado'} />
           </Card>
+          </>
         )}
         {errorMessage ? (
           <Text variant="caption" color={colors.danger} center>

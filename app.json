@@ -130,6 +130,14 @@
       ],
       "expo-apple-authentication",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "O Paceless acessa suas fotos para você escolher a foto do seu perfil.",
+          "cameraPermission": "O Paceless usa a câmera para você tirar a foto do seu perfil.",
+          "microphonePermission": false
+        }
+      ],
+      [
         "expo-location",
         {
           "locationWhenInUsePermission": "O Paceless usa sua localização durante o treino para medir distância e ritmo.",
