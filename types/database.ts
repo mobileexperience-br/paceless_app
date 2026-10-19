@@ -15,3 +15,6 @@ export interface ProfileRow {
   created_at: string;
   updated_at: string;
 }
+
+export * from '@/types/training';
+export * from '@/types/wellbeing';
