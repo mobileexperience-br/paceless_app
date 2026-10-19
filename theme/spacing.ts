@@ -1,4 +1,3 @@
-/** Escala de 4pt. */
 export const spacing = {
   xs: 4,
   sm: 8,
@@ -11,15 +10,10 @@ export const spacing = {
 } as const;
 
 export const layout = {
-  /** Margem lateral das telas, medida no mockup. */
   screenPadding: 20,
-  /** Espaço vertical entre cards empilhados. */
   cardGap: 12,
-  /** Padding interno padrão de um card. */
   cardPadding: 16,
-  /** Altura de botões e inputs. */
   controlHeight: 52,
-  /** Altura da barra de progresso. */
   progressHeight: 8,
   tabBarHeight: 60,
   tabIconSize: 22,

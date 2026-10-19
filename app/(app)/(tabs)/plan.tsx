@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CalendarCheck, CalendarDays, Settings } from 'lucide-react-native';
@@ -11,7 +12,7 @@ import {
 } from '@/components';
 import { colors, layout, radius, spacing } from '@/theme';
 
-export default function PlanScreen() {
+export default function PlanScreen(): ReactElement {
   const router = useRouter();
 
   return (
@@ -27,7 +28,6 @@ export default function PlanScreen() {
               <Text variant="title3">New To Running Plan</Text>
               <Text variant="caption">8 semanas • 3–4 treinos/semana</Text>
             </View>
-            {/* Aguardando assets/plan-illustration.png. */}
             <AssetPlaceholder
               label="ilustração do plano"
               rounded="sm"
@@ -54,7 +54,7 @@ export default function PlanScreen() {
             }
             showChevron
             divider
-            onPress={() => router.push('/week/1')}
+            onPress={() => { router.push('/week/1'); }}
           />
           <ListRow
             title="Calendário de treinos"
@@ -63,7 +63,7 @@ export default function PlanScreen() {
             }
             showChevron
             divider
-            onPress={() => router.push('/week/1')}
+            onPress={() => { router.push('/week/1'); }}
           />
           <ListRow
             title="Configurações do plano"

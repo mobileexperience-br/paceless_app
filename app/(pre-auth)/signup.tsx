@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -10,7 +11,7 @@ import {
 } from '@/components';
 import { colors, layout, spacing } from '@/theme';
 
-export default function SignUpScreen() {
+export default function SignUpScreen(): ReactElement {
   const router = useRouter();
 
   return (
@@ -36,7 +37,7 @@ export default function SignUpScreen() {
           <Input placeholder="Senha" autoComplete="new-password" secure />
         </View>
 
-        <Button label="Criar conta" onPress={() => router.replace('/(app)')} />
+        <Button label="Criar conta" onPress={() => { router.replace('/(app)'); }} />
 
         <View style={styles.divider}>
           <View style={styles.line} />
@@ -53,7 +54,7 @@ export default function SignUpScreen() {
 
         <Pressable
           accessibilityRole="button"
-          onPress={() => router.push('/login')}
+          onPress={() => { router.push('/login'); }}
           style={styles.footer}
         >
           <Text variant="caption" color={colors.textSecondary}>

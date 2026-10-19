@@ -1,26 +1,23 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, type ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { colors } from '@/theme';
 
-type RingProps = {
-  /** 0 a 1. */
+interface RingProps {
   progress: number;
   size?: number;
   thickness?: number;
-  /** Conteúdo centralizado dentro do anel. */
   children?: ReactNode;
   style?: ViewStyle;
-};
+}
 
-/** Anel de progresso do resumo de calorias. */
 export function Ring({
   progress,
   size = 128,
   thickness = 12,
   children,
   style,
-}: RingProps) {
+}: RingProps): ReactElement {
   const clamped = Math.min(1, Math.max(0, progress));
   const r = (size - thickness) / 2;
   const circumference = 2 * Math.PI * r;
@@ -56,7 +53,7 @@ export function Ring({
 
 const styles = StyleSheet.create({
   center: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
   },

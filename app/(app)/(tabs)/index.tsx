@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -24,14 +25,13 @@ const quickAccess = [
   { label: 'Plano', href: '/plan', Icon: ClipboardList },
 ] as const;
 
-export default function HomeScreen() {
+export default function HomeScreen(): ReactElement {
   const router = useRouter();
 
   return (
     <Screen scroll flush>
       <View style={styles.body}>
         <View style={styles.topBar}>
-          {/* Aguardando assets/avatar.jpg. */}
           <IconBadge tone="primary" size={36}>
             <Text variant="captionStrong">A</Text>
           </IconBadge>
@@ -48,7 +48,7 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        <Pressable accessibilityRole="button" onPress={() => router.push('/plan')}>
+        <Pressable accessibilityRole="button" onPress={() => { router.push('/plan'); }}>
           <Card>
             <View style={styles.rowBetween}>
               <View style={styles.grow}>
@@ -92,7 +92,7 @@ export default function HomeScreen() {
           </View>
         </Card>
 
-        <Button label="Iniciar treino" onPress={() => router.push('/workout/atual')} />
+        <Button label="Iniciar treino" onPress={() => { router.push('/workout/atual'); }} />
 
         <View style={styles.quickAccess}>
           <Text variant="captionStrong">Acesso rápido</Text>
@@ -101,7 +101,7 @@ export default function HomeScreen() {
               <Pressable
                 key={label}
                 accessibilityRole="button"
-                onPress={() => router.push(href)}
+                onPress={() => { router.push(href); }}
                 style={styles.tile}
               >
                 <Icon size={24} color={colors.ink} strokeWidth={1.75} />

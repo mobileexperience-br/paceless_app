@@ -1,15 +1,15 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, type ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { colors, radius } from '@/theme';
 
 type IconBadgeTone = 'primary' | 'soft' | 'neutral';
 
-type IconBadgeProps = {
+interface IconBadgeProps {
   children: ReactNode;
   tone?: IconBadgeTone;
   size?: number;
   style?: ViewStyle;
-};
+}
 
 const backgrounds: Record<IconBadgeTone, string> = {
   primary: colors.primary,
@@ -17,13 +17,12 @@ const backgrounds: Record<IconBadgeTone, string> = {
   neutral: colors.track,
 };
 
-/** Círculo colorido atrás de um ícone — usado nos cards e listas de treino. */
 export function IconBadge({
   children,
   tone = 'soft',
   size = 44,
   style,
-}: IconBadgeProps) {
+}: IconBadgeProps): ReactElement {
   return (
     <View
       style={[

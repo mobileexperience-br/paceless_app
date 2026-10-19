@@ -1,10 +1,5 @@
 import type { TextStyle } from 'react-native';
 
-/**
- * O mockup especifica SF Pro. Inter é a fonte do Google Fonts mais próxima.
- * Os cinco primeiros estilos vêm do painel DESIGN SYSTEM; os demais foram
- * medidos nas telas.
- */
 export const fonts = {
   regular: 'Inter_400Regular',
   medium: 'Inter_500Medium',

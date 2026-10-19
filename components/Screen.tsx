@@ -1,19 +1,16 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, type ReactElement } from 'react';
 import { ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, layout, spacing } from '@/theme';
 
-type ScreenProps = {
+interface ScreenProps {
   children: ReactNode;
-  /** Envolve o conteúdo num ScrollView com o padding lateral padrão. */
   scroll?: boolean;
-  /** Remove o padding lateral — para conteúdo full-bleed. */
   flush?: boolean;
   dark?: boolean;
-  /** Bordas seguras aplicadas. Telas com tab bar não precisam da de baixo. */
   edges?: ('top' | 'bottom')[];
   style?: ViewStyle;
-};
+}
 
 export function Screen({
   children,
@@ -22,7 +19,7 @@ export function Screen({
   dark = false,
   edges = ['top'],
   style,
-}: ScreenProps) {
+}: ScreenProps): ReactElement {
   const background = dark ? colors.dark.background : colors.background;
   const padding = flush ? undefined : layout.screenPadding;
 

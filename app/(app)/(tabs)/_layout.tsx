@@ -1,6 +1,7 @@
+import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Tabs } from 'expo-router';
-import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
+import type { BottomTabBarButtonProps } from 'expo-router/tabs';
 import {
   Apple,
   ClipboardList,
@@ -10,16 +11,12 @@ import {
 } from 'lucide-react-native';
 import { colors, fonts, layout, radius, shadows } from '@/theme';
 
-/**
- * Não está no mockup: destaque pedido à parte para o acesso a Atividades,
- * como um FAB elevado sobre a tab bar em vez de um item igual aos demais.
- */
 function ActivitiesTabButton({
   onPress,
   onLongPress,
   accessibilityState,
   style,
-}: BottomTabBarButtonProps) {
+}: BottomTabBarButtonProps): ReactElement {
   return (
     <View style={[style, styles.fabSlot]}>
       <Pressable
@@ -35,7 +32,7 @@ function ActivitiesTabButton({
   );
 }
 
-export default function TabsLayout() {
+export default function TabsLayout(): ReactElement {
   return (
     <Tabs
       screenOptions={{
@@ -120,7 +117,6 @@ export default function TabsLayout() {
         }}
       />
 
-      {/* Empurrada a partir do acesso rápido: mantém a tab bar, sem virar aba. */}
       <Tabs.Screen name="strength" options={{ href: null }} />
     </Tabs>
   );

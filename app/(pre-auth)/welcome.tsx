@@ -1,28 +1,27 @@
-import { Image, ImageBackground, Pressable, StyleSheet, View } from 'react-native';
+import type { ReactElement } from 'react';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, SocialButton, Text } from '@/components';
 import { colors, layout, spacing } from '@/theme';
+import heroWelcome from '@/assets/hero-welcome.jpg';
+import logoMark from '@/assets/logo-mark.png';
 
-export default function WelcomeScreen() {
+export default function WelcomeScreen(): ReactElement {
   const router = useRouter();
 
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
 
-      <ImageBackground
-        source={require('@/assets/hero-welcome.jpg')}
-        style={styles.hero}
-      >
-        <View style={styles.scrim} />
-      </ImageBackground>
+      <Image source={heroWelcome} style={styles.hero} resizeMode="cover" />
+      <View style={styles.scrim} />
 
       <SafeAreaView edges={['top', 'bottom']} style={styles.safe}>
         <View style={styles.brand}>
           <Image
-            source={require('@/assets/logo-mark.png')}
+            source={logoMark}
             style={styles.logoMark}
             resizeMode="contain"
           />
@@ -32,13 +31,13 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.actions}>
-          <Button label="Criar conta" onPress={() => router.push('/onboarding')} />
+          <Button label="Criar conta" onPress={() => { router.push('/onboarding'); }} />
           <SocialButton provider="apple" />
           <SocialButton provider="google" />
 
           <Pressable
             accessibilityRole="button"
-            onPress={() => router.push('/login')}
+            onPress={() => { router.push('/login'); }}
             style={styles.footer}
           >
             <Text variant="caption" color={colors.white}>
@@ -60,11 +59,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.ink,
   },
   hero: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: colors.textSecondary,
   },
   scrim: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: colors.scrim,
   },
   safe: {

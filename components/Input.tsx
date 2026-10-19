@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -11,12 +11,11 @@ import { Eye, EyeOff } from 'lucide-react-native';
 import { colors, layout, radius, typography } from '@/theme';
 
 type InputProps = Omit<TextInputProps, 'style'> & {
-  /** Mostra o botão de olho e mascara o texto. */
   secure?: boolean;
   style?: ViewStyle;
 };
 
-export function Input({ secure, style, ...rest }: InputProps) {
+export function Input({ secure, style, ...rest }: InputProps): ReactElement {
   const [hidden, setHidden] = useState(true);
 
   return (
@@ -32,7 +31,7 @@ export function Input({ secure, style, ...rest }: InputProps) {
           accessibilityRole="button"
           accessibilityLabel={hidden ? 'Mostrar senha' : 'Ocultar senha'}
           hitSlop={12}
-          onPress={() => setHidden((value) => !value)}
+          onPress={() => { setHidden((value) => !value); }}
         >
           {hidden ? (
             <EyeOff size={20} color={colors.textSecondary} strokeWidth={1.75} />

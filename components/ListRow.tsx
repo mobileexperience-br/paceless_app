@@ -1,25 +1,21 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { Text } from './Text';
 import { colors, layout, spacing } from '@/theme';
 
-type ListRowProps = {
+interface ListRowProps {
   title: string;
   subtitle?: string;
-  /** Terceira linha, como a duração nos treinos de musculação. */
   meta?: string;
-  /** Elemento à esquerda: IconBadge, thumbnail ou ícone solto. */
   leading?: ReactNode;
-  /** Elemento à direita, no lugar do chevron. */
   trailing?: ReactNode;
-  /** Texto curto à direita, como "350 kcal" ou "Adicionar". */
   value?: string;
   showChevron?: boolean;
   divider?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
-};
+}
 
 export function ListRow({
   title,
@@ -32,7 +28,7 @@ export function ListRow({
   divider = false,
   onPress,
   style,
-}: ListRowProps) {
+}: ListRowProps): ReactElement {
   return (
     <Pressable
       accessibilityRole={onPress ? 'button' : undefined}

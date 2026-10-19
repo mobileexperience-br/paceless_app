@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Text as RNText, StyleSheet, type TextProps as RNTextProps } from 'react-native';
 import { colors, typography, type TypographyVariant } from '@/theme';
 
@@ -13,7 +14,7 @@ export function Text({
   center,
   style,
   ...rest
-}: TextProps) {
+}: TextProps): ReactElement {
   return (
     <RNText
       style={[typography[variant], { color }, center && styles.center, style]}

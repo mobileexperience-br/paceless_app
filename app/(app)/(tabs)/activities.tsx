@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { ListFilter } from 'lucide-react-native';
 import {
@@ -21,7 +21,7 @@ const emptyStats: Stat[] = [
   { value: '0', label: 'Kcal' },
 ];
 
-export default function ActivitiesScreen() {
+export default function ActivitiesScreen(): ReactElement {
   const [filter, setFilter] = useState<string>(filters[0]);
 
   return (

@@ -1,21 +1,21 @@
+import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors, spacing } from '@/theme';
 
-type SegmentedTabsProps = {
+interface SegmentedTabsProps {
   items: readonly string[];
   value: string;
   onChange: (value: string) => void;
   style?: ViewStyle;
-};
+}
 
-/** Abas com sublinhado verde no item ativo (Todas / Corrida / Musculação). */
 export function SegmentedTabs({
   items,
   value,
   onChange,
   style,
-}: SegmentedTabsProps) {
+}: SegmentedTabsProps): ReactElement {
   return (
     <View style={[styles.container, style]}>
       {items.map((item) => {
@@ -25,7 +25,7 @@ export function SegmentedTabs({
             key={item}
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
-            onPress={() => onChange(item)}
+            onPress={() => { onChange(item); }}
             style={[styles.tab, active && styles.tabActive]}
           >
             <Text

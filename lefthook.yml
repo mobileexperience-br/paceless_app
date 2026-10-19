@@ -1,0 +1,17 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,jsx,ts,tsx}"
+      run: npx eslint --max-warnings 0 {staged_files}
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: npx tsc --noEmit
+
+pre-push:
+  parallel: true
+  commands:
+    lint:
+      run: npx eslint . --max-warnings 0
+    typecheck:
+      run: npx tsc --noEmit

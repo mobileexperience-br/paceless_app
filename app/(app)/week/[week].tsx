@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import {
@@ -20,7 +21,7 @@ const weekdays = [
   'Domingo',
 ];
 
-export default function WeekScreen() {
+export default function WeekScreen(): ReactElement {
   const { week } = useLocalSearchParams<{ week: string }>();
 
   return (

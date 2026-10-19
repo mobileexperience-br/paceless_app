@@ -1,15 +1,15 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, type ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors, spacing } from '@/theme';
 
-type EmptyStateProps = {
+interface EmptyStateProps {
   title: string;
   description?: string;
   icon?: ReactNode;
   action?: ReactNode;
   style?: ViewStyle;
-};
+}
 
 export function EmptyState({
   title,
@@ -17,7 +17,7 @@ export function EmptyState({
   icon,
   action,
   style,
-}: EmptyStateProps) {
+}: EmptyStateProps): ReactElement {
   return (
     <View style={[styles.container, style]}>
       {icon}

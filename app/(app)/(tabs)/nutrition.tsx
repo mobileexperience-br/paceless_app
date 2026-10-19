@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import {
@@ -21,7 +21,7 @@ const legend = [
 
 const meals = ['Café da manhã', 'Almoço', 'Jantar', 'Lanches'];
 
-export default function NutritionScreen() {
+export default function NutritionScreen(): ReactElement {
   const [tab, setTab] = useState<string>(tabs[0]);
 
   return (
@@ -80,7 +80,6 @@ export default function NutritionScreen() {
               leading={<Plus size={20} color={colors.ink} strokeWidth={1.75} />}
               value="Adicionar"
               divider={index < meals.length - 1}
-              onPress={() => {}}
             />
           ))}
         </Card>

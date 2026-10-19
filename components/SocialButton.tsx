@@ -1,26 +1,29 @@
-import { Image, Pressable, StyleSheet, type ViewStyle } from 'react-native';
+import type { ReactElement } from 'react';
+import { Image, Pressable, StyleSheet, type ImageSourcePropType, type ViewStyle } from 'react-native';
+import logoApple from '@/assets/logo-apple.png';
+import logoGoogle from '@/assets/logo-google.png';
 import { Text } from './Text';
 import { colors, layout, radius, spacing } from '@/theme';
 
 type SocialProvider = 'apple' | 'google';
 
-type SocialButtonProps = {
+interface SocialButtonProps {
   provider: SocialProvider;
   onPress?: () => void;
   style?: ViewStyle;
-};
+}
 
 const labels: Record<SocialProvider, string> = {
   apple: 'Continuar com Apple',
   google: 'Continuar com Google',
 };
 
-const logos: Record<SocialProvider, number> = {
-  apple: require('@/assets/logo-apple.png'),
-  google: require('@/assets/logo-google.png'),
+const logos: Record<SocialProvider, ImageSourcePropType> = {
+  apple: logoApple,
+  google: logoGoogle,
 };
 
-export function SocialButton({ provider, onPress, style }: SocialButtonProps) {
+export function SocialButton({ provider, onPress, style }: SocialButtonProps): ReactElement {
   return (
     <Pressable
       accessibilityRole="button"

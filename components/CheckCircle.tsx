@@ -1,14 +1,14 @@
+import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { colors, radius } from '@/theme';
 
-type CheckCircleProps = {
+interface CheckCircleProps {
   checked?: boolean;
   size?: number;
-};
+}
 
-/** Indicador de treino concluído: círculo vazio ou verde com check branco. */
-export function CheckCircle({ checked = false, size = 24 }: CheckCircleProps) {
+export function CheckCircle({ checked = false, size = 24 }: CheckCircleProps): ReactElement {
   return (
     <View
       accessibilityRole="checkbox"

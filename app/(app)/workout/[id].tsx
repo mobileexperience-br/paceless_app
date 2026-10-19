@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -19,7 +20,7 @@ const stats: Stat[] = [
   { value: '—', label: 'FC média (bpm)' },
 ];
 
-export default function WorkoutScreen() {
+export default function WorkoutScreen(): ReactElement {
   const router = useRouter();
 
   return (
@@ -31,7 +32,7 @@ export default function WorkoutScreen() {
             accessibilityRole="button"
             accessibilityLabel="Voltar"
             hitSlop={12}
-            onPress={() => router.back()}
+            onPress={() => { router.back(); }}
           >
             <ArrowLeft size={24} color={colors.dark.text} strokeWidth={2} />
           </Pressable>

@@ -1,15 +1,14 @@
-import { type ReactNode } from 'react';
-import { StyleSheet, View, type ViewStyle } from 'react-native';
+import { type ReactNode, type ReactElement } from 'react';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { colors, layout, radius, shadows } from '@/theme';
 
-type CardProps = {
+interface CardProps {
   children: ReactNode;
-  /** Remove o padding interno — para cards que contêm listas coladas na borda. */
   flush?: boolean;
-  style?: ViewStyle;
-};
+  style?: StyleProp<ViewStyle>;
+}
 
-export function Card({ children, flush, style }: CardProps) {
+export function Card({ children, flush, style }: CardProps): ReactElement {
   return (
     <View style={[styles.card, !flush && styles.padded, style]}>{children}</View>
   );

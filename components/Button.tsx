@@ -1,18 +1,18 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors, layout, radius, spacing } from '@/theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'text';
 
-type ButtonProps = {
+interface ButtonProps {
   label: string;
   variant?: ButtonVariant;
   icon?: ReactNode;
   disabled?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
-};
+}
 
 export function Button({
   label,
@@ -21,7 +21,7 @@ export function Button({
   disabled,
   onPress,
   style,
-}: ButtonProps) {
+}: ButtonProps): ReactElement {
   const isText = variant === 'text';
 
   return (

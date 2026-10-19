@@ -1,13 +1,9 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, Card, Screen, ScreenHeader, Text } from '@/components';
 import { colors, layout, radius, spacing } from '@/theme';
 
-/**
- * Sem referência visual no mockup — layout construído a partir dos tokens do
- * design system, conforme combinado. Cada passo é uma pergunta com opções.
- */
 const steps = [
   {
     title: 'Qual é o seu objetivo?',
@@ -31,15 +27,15 @@ const steps = [
   },
 ] as const;
 
-export default function OnboardingScreen() {
+export default function OnboardingScreen(): ReactElement {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
-  const current = steps[step];
+  const current = steps[step] ?? steps[0];
   const selected = answers[step];
 
-  const goNext = () => {
+  const goNext = (): void => {
     if (step < steps.length - 1) {
       setStep(step + 1);
     } else {
@@ -67,7 +63,7 @@ export default function OnboardingScreen() {
                 key={option}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: active }}
-                onPress={() => setAnswers({ ...answers, [step]: option })}
+                onPress={() => { setAnswers({ ...answers, [step]: option }); }}
               >
                 <Card style={active ? styles.optionActive : undefined}>
                   <Text variant="bodyStrong">{option}</Text>

@@ -1,13 +1,13 @@
+import type { ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { colors, layout, radius } from '@/theme';
 
-type ProgressBarProps = {
-  /** 0 a 1. */
+interface ProgressBarProps {
   progress: number;
   style?: ViewStyle;
-};
+}
 
-export function ProgressBar({ progress, style }: ProgressBarProps) {
+export function ProgressBar({ progress, style }: ProgressBarProps): ReactElement {
   const clamped = Math.min(1, Math.max(0, progress));
 
   return (

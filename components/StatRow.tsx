@@ -1,21 +1,20 @@
+import type { ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors, spacing } from '@/theme';
 
-export type Stat = {
+export interface Stat {
   value: string;
   label: string;
-};
+}
 
-type StatRowProps = {
+interface StatRowProps {
   stats: readonly Stat[];
-  /** Variante da tela de treino, sobre fundo escuro. */
   dark?: boolean;
   style?: ViewStyle;
-};
+}
 
-/** Linha de métricas: valor em destaque com o label abaixo. */
-export function StatRow({ stats, dark, style }: StatRowProps) {
+export function StatRow({ stats, dark, style }: StatRowProps): ReactElement {
   return (
     <View style={[styles.row, style]}>
       {stats.map((stat) => (

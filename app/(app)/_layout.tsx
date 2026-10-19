@@ -1,7 +1,8 @@
+import type { ReactElement } from 'react';
 import { Stack } from 'expo-router';
 import { colors } from '@/theme';
 
-export default function AppLayout() {
+export default function AppLayout(): ReactElement {
   return (
     <Stack
       screenOptions={{

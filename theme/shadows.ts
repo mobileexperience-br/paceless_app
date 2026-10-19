@@ -1,9 +1,5 @@
 import type { ViewStyle } from 'react-native';
 
-/**
- * No mockup os cards são praticamente flat: a separação vem da hairline
- * #E5E7EB, com uma sombra muito discreta por baixo.
- */
 export const shadows = {
   card: {
     shadowColor: '#111111',
@@ -12,7 +8,6 @@ export const shadows = {
     shadowRadius: 8,
     elevation: 1,
   } satisfies ViewStyle,
-  /** Não vem do mockup: usada só no FAB de Atividades na tab bar. */
   fab: {
     shadowColor: '#111111',
     shadowOffset: { width: 0, height: 4 },

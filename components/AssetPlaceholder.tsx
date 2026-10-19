@@ -1,26 +1,22 @@
+import type { ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { Image as ImageIcon } from 'lucide-react-native';
 import { Text } from './Text';
 import { colors, radius, spacing } from '@/theme';
 
-type AssetPlaceholderProps = {
-  /** Nome do arquivo que ainda falta, mostrado dentro do bloco. */
+interface AssetPlaceholderProps {
   label?: string;
   iconSize?: number;
   rounded?: keyof typeof radius;
   style?: ViewStyle;
-};
+}
 
-/**
- * Ocupa o lugar de fotos e ilustrações que ainda não foram fornecidas.
- * Todas as ocorrências estão listadas no README, em "Assets pendentes".
- */
 export function AssetPlaceholder({
   label,
   iconSize = 24,
   rounded = 'md',
   style,
-}: AssetPlaceholderProps) {
+}: AssetPlaceholderProps): ReactElement {
   return (
     <View style={[styles.box, { borderRadius: radius[rounded] }, style]}>
       <ImageIcon size={iconSize} color={colors.textSecondary} strokeWidth={1.5} />

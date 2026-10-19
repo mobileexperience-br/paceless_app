@@ -1,14 +1,10 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Check } from 'lucide-react-native';
 import { Button, Card, IconBadge, Screen, ScreenHeader, Text } from '@/components';
 import { colors, layout, radius, spacing } from '@/theme';
 
-/**
- * Sem referência visual no mockup — layout construído a partir dos tokens do
- * design system, conforme combinado. Os planos virão do RevenueCat.
- */
 const benefits = [
   'Plano de corrida personalizado',
   'Treinos de força e mobilidade',
@@ -21,7 +17,7 @@ const plans = [
   { id: 'monthly', title: 'Mensal', price: '—', note: '' },
 ] as const;
 
-export default function PaywallScreen() {
+export default function PaywallScreen(): ReactElement {
   const router = useRouter();
   const [selected, setSelected] = useState<string>(plans[0].id);
 
@@ -58,7 +54,7 @@ export default function PaywallScreen() {
                 key={plan.id}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: active }}
-                onPress={() => setSelected(plan.id)}
+                onPress={() => { setSelected(plan.id); }}
                 style={styles.planPressable}
               >
                 <Card style={active ? styles.planActive : undefined}>
@@ -77,11 +73,11 @@ export default function PaywallScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Button label="Assinar" onPress={() => router.push('/signup')} />
+        <Button label="Assinar" onPress={() => { router.push('/signup'); }} />
         <Button
           label="Continuar sem assinar"
           variant="text"
-          onPress={() => router.push('/signup')}
+          onPress={() => { router.push('/signup'); }}
         />
       </View>
     </Screen>

@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -10,11 +11,7 @@ import {
 } from '@/components';
 import { colors, layout, spacing } from '@/theme';
 
-/**
- * Mesma anatomia da tela de cadastro do mockup, sem o campo de nome e sem o
- * indicador de passo.
- */
-export default function LoginScreen() {
+export default function LoginScreen(): ReactElement {
   const router = useRouter();
 
   return (
@@ -39,7 +36,7 @@ export default function LoginScreen() {
           <Input placeholder="Senha" autoComplete="current-password" secure />
         </View>
 
-        <Button label="Entrar" onPress={() => router.replace('/(app)')} />
+        <Button label="Entrar" onPress={() => { router.replace('/(app)'); }} />
 
         <View style={styles.divider}>
           <View style={styles.line} />
@@ -56,7 +53,7 @@ export default function LoginScreen() {
 
         <Pressable
           accessibilityRole="button"
-          onPress={() => router.push('/signup')}
+          onPress={() => { router.push('/signup'); }}
           style={styles.footer}
         >
           <Text variant="caption" color={colors.textSecondary}>

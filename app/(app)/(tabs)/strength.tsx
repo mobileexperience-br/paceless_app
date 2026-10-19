@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   Button,
@@ -11,7 +11,7 @@ import { layout, spacing } from '@/theme';
 
 const tabs = ['Treinos', 'Exercícios'] as const;
 
-export default function StrengthScreen() {
+export default function StrengthScreen(): ReactElement {
   const [tab, setTab] = useState<string>(tabs[0]);
 
   return (
@@ -34,7 +34,7 @@ export default function StrengthScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Button label="Novo treino" onPress={() => {}} />
+        <Button label="Novo treino" />
       </View>
     </Screen>
   );

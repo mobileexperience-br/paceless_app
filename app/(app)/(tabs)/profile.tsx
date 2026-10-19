@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
@@ -13,7 +14,7 @@ const menu = [
   'Sair',
 ];
 
-export default function ProfileScreen() {
+export default function ProfileScreen(): ReactElement {
   const router = useRouter();
 
   return (
@@ -33,11 +34,9 @@ export default function ProfileScreen() {
             title="Alex"
             subtitle="Ver perfil"
             leading={
-              /* Aguardando assets/avatar.jpg. */
               <AssetPlaceholder iconSize={20} style={styles.avatar} />
             }
             showChevron
-            onPress={() => {}}
           />
         </Card>
 
@@ -48,9 +47,11 @@ export default function ProfileScreen() {
               title={item}
               showChevron
               divider={index < menu.length - 1}
-              onPress={
-                item === 'Sair' ? () => router.replace('/(pre-auth)/welcome') : () => {}
-              }
+              {...(item === 'Sair' && {
+                onPress: (): void => {
+                  router.replace('/(pre-auth)/welcome');
+                },
+              })}
             />
           ))}
         </Card>
