@@ -33,6 +33,17 @@
           "backgroundColor": "#111111"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "9b885942-bd42-4200-83c7-fb0de88f927e"
+      }
+    },
+    "owner": "jhonatasfender"
   }
 }
