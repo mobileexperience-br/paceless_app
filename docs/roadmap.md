@@ -79,11 +79,26 @@ client) confirma.
 - Distância e ritmo (GPS — biblioteca a aprovar)
 - Salvar atividade; tela Atividades com histórico e filtros
 
+## Publicação nas lojas `[ ]` (paralela, começar cedo)
+
+Corre em paralelo às fases de feature; teste fechado e revisão têm prazo
+próprio. Checklist em [publicacao-lojas.md](./publicacao-lojas.md).
+
+- Contas Google Play e Apple; teste fechado (12 testers)
+- Exclusão de conta no app (trilha H); termos, privacidade e suporte (trilha I)
+- Sign in with Apple se houver login Google
+- Build e envio via EAS
+
 ## Depois (sem ordem ainda)
 
 - Musculação (treinos e exercícios)
-- Nutrição (meta, refeições, receitas)
 - Notificações
 - Dispositivos conectados (FC média)
 - Assets reais
 - Testes
+
+## Por último — Nutrição
+
+IA a partir de anamnese (diabetes, intolerância à lactose etc.), com dieta
+voltada à corrida (meta, refeições, receitas). Decidido na reunião de
+19/10/2026: só depois de todo o resto. Ver [produto.md](./produto.md).
