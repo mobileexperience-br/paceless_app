@@ -9,7 +9,7 @@ import {
   Play,
   User,
 } from 'lucide-react-native';
-import { colors, fonts, layout, radius, shadows } from '@/theme';
+import { colors, fonts, layout, radius, shadows, sizes } from '@/theme';
 
 function ActivitiesTabButton({
   onPress,
@@ -26,7 +26,7 @@ function ActivitiesTabButton({
         onLongPress={onLongPress}
         style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
       >
-        <Play size={28} color={colors.ink} fill={colors.ink} strokeWidth={0} />
+        <Play size={sizes.iconXl} color={colors.ink} fill={colors.ink} strokeWidth={0} />
       </Pressable>
     </View>
   );
@@ -46,10 +46,10 @@ export default function TabsLayout(): ReactElement {
         },
         tabBarLabelStyle: {
           fontFamily: fonts.medium,
-          fontSize: 11,
+          fontSize: sizes.tabLabel,
         },
         tabBarIconStyle: {
-          marginTop: 2,
+          marginTop: sizes.micro,
         },
       }}
     >
@@ -62,7 +62,7 @@ export default function TabsLayout(): ReactElement {
               size={layout.tabIconSize}
               color={color}
               fill={focused ? color : 'none'}
-              strokeWidth={1.75}
+              strokeWidth={sizes.iconStroke}
             />
           ),
         }}
@@ -76,7 +76,7 @@ export default function TabsLayout(): ReactElement {
               size={layout.tabIconSize}
               color={color}
               fill={focused ? color : 'none'}
-              strokeWidth={1.75}
+              strokeWidth={sizes.iconStroke}
             />
           ),
         }}
@@ -97,7 +97,7 @@ export default function TabsLayout(): ReactElement {
               size={layout.tabIconSize}
               color={color}
               fill={focused ? color : 'none'}
-              strokeWidth={1.75}
+              strokeWidth={sizes.iconStroke}
             />
           ),
         }}
@@ -111,7 +111,7 @@ export default function TabsLayout(): ReactElement {
               size={layout.tabIconSize}
               color={color}
               fill={focused ? color : 'none'}
-              strokeWidth={1.75}
+              strokeWidth={sizes.iconStroke}
             />
           ),
         }}
@@ -124,13 +124,13 @@ export default function TabsLayout(): ReactElement {
 
 const styles = StyleSheet.create({
   fabSlot: {
-    top: -8,
+    top: -sizes.fabLift,
     alignItems: 'center',
     justifyContent: 'center',
   },
   fab: {
-    width: 64,
-    height: 64,
+    width: sizes.fab,
+    height: sizes.fab,
     borderRadius: radius.full,
     backgroundColor: colors.primary,
     alignItems: 'center',

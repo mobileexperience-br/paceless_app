@@ -9,7 +9,7 @@ import {
   SegmentedTabs,
   Text,
 } from '@/components';
-import { colors, layout, spacing } from '@/theme';
+import { colors, layout, radius, sizes, spacing } from '@/theme';
 
 const tabs = ['Hoje', 'Plano', 'Receitas'] as const;
 
@@ -77,7 +77,7 @@ export default function NutritionScreen(): ReactElement {
             <ListRow
               key={meal}
               title={meal}
-              leading={<Plus size={20} color={colors.ink} strokeWidth={1.75} />}
+              leading={<Plus size={sizes.iconMd} color={colors.ink} strokeWidth={sizes.iconStroke} />}
               value="Adicionar"
               divider={index < meals.length - 1}
             />
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   legendItem: {
-    gap: 2,
+    gap: sizes.micro,
   },
   legendRow: {
     flexDirection: 'row',
@@ -124,9 +124,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: sizes.dot,
+    height: sizes.dot,
+    borderRadius: radius.full,
     backgroundColor: colors.primary,
   },
   mealsTitle: {

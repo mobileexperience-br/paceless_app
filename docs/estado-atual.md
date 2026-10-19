@@ -51,15 +51,15 @@ direto para o app.
 Coisas que quebram as próprias regras do `CLAUDE.md` — vale resolver antes
 de empilhar feature em cima.
 
-1. **Mock data em tela** (regra "sem mock data"): Início, Plano e Treino têm
-   texto de exemplo fixo. Devem virar dado real ou estado vazio.
-2. **Tamanhos hardcoded** (regra "estilo sempre pelos tokens"): `workout/[id]`
-   (56, 96, 64, 48, 44), `profile` (56), `(tabs)/_layout` (64), `welcome`
-   (220×139), `nutrition` (6). Ou viram token, ou documentamos por que são
-   exceção.
-3. **`AGENTS.md` duplica o `CLAUDE.md`** e já divergiu (última linha da seção
-   Comportamento). Duas fontes da verdade vão se separar com o tempo —
-   decidir uma (ex.: `AGENTS.md` só aponta pro `CLAUDE.md`).
+1. **Mock data em tela** (regra "sem mock data"): ~~Início e Plano~~
+   **Resolvido** — agora mostram estado vazio ("Nenhum plano ativo").
+   **Pendente:** Treino (`workout/[id]`), que fica para a trilha D.
+2. **Tamanhos hardcoded** (regra "estilo sempre pelos tokens"): ~~`(tabs)/_layout`
+   (64), `welcome` (220×139), `nutrition` (6), Início e Plano~~ **Resolvido** —
+   tokens em `theme/sizes.ts`. **Pendente:** `workout/[id]` (56, 96, 64, 48, 44)
+   e `profile` (56).
+3. ~~**`AGENTS.md` duplica o `CLAUDE.md`**~~ **Resolvido** — `AGENTS.md` agora
+   só aponta para o `CLAUDE.md`, que é a fonte da verdade.
 4. **Estrutura documentada que não existe**: `hooks/` e `lib/` estão no
    `CLAUDE.md` mas não no repo. Normal nessa fase, só registrando.
 5. **`public/GG Simulator.html`**: moldura de simulador iOS em HTML. Não está

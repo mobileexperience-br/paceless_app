@@ -8,6 +8,7 @@ import {
   ClipboardList,
   Dumbbell,
   Footprints,
+  User,
 } from 'lucide-react-native';
 import {
   Button,
@@ -17,7 +18,7 @@ import {
   Screen,
   Text,
 } from '@/components';
-import { colors, layout, radius, spacing } from '@/theme';
+import { colors, layout, radius, sizes, spacing } from '@/theme';
 
 const quickAccess = [
   { label: 'Musculação', href: '/strength', Icon: Dumbbell },
@@ -32,17 +33,17 @@ export default function HomeScreen(): ReactElement {
     <Screen scroll flush>
       <View style={styles.body}>
         <View style={styles.topBar}>
-          <IconBadge tone="primary" size={36}>
-            <Text variant="captionStrong">A</Text>
+          <IconBadge tone="primary" size={sizes.badgeSm}>
+            <User size={sizes.iconMd} color={colors.ink} strokeWidth={sizes.iconStroke} />
           </IconBadge>
           <View style={styles.spacer} />
-          <Pressable accessibilityRole="button" accessibilityLabel="Notificações" hitSlop={12}>
-            <Bell size={24} color={colors.ink} strokeWidth={1.75} />
+          <Pressable accessibilityRole="button" accessibilityLabel="Notificações" hitSlop={sizes.hitSlop}>
+            <Bell size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />
           </Pressable>
         </View>
 
         <View style={styles.greeting}>
-          <Text variant="title2">Olá, Alex!</Text>
+          <Text variant="title2">Olá!</Text>
           <Text variant="body" color={colors.textSecondary}>
             Pronto para o seu treino de hoje?
           </Text>
@@ -54,16 +55,16 @@ export default function HomeScreen(): ReactElement {
               <View style={styles.grow}>
                 <Text variant="captionStrong">Plano atual</Text>
                 <Text variant="title3" style={styles.planTitle}>
-                  New To Running Plan
+                  Nenhum plano ativo
                 </Text>
                 <View style={styles.planMeta}>
-                  <ClipboardList size={16} color={colors.primaryDeep} strokeWidth={1.75} />
+                  <ClipboardList size={sizes.iconSm} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />
                   <Text variant="caption" color={colors.textSecondary}>
-                    Semana 1 de 8
+                    Nenhuma semana em andamento
                   </Text>
                 </View>
               </View>
-              <ChevronRight size={20} color={colors.textSecondary} strokeWidth={1.75} />
+              <ChevronRight size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
             </View>
           </Card>
         </Pressable>
@@ -79,8 +80,8 @@ export default function HomeScreen(): ReactElement {
         <Card>
           <Text variant="captionStrong">Próximo treino</Text>
           <View style={[styles.rowBetween, styles.nextWorkout]}>
-            <IconBadge tone="primary" size={48}>
-              <Footprints size={24} color={colors.ink} strokeWidth={1.75} />
+            <IconBadge tone="primary" size={sizes.badgeLg}>
+              <Footprints size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />
             </IconBadge>
             <View style={styles.grow}>
               <Text variant="bodyStrong">Nenhum treino agendado</Text>
@@ -88,7 +89,7 @@ export default function HomeScreen(): ReactElement {
                 Escolha um plano para começar
               </Text>
             </View>
-            <ChevronRight size={20} color={colors.textSecondary} strokeWidth={1.75} />
+            <ChevronRight size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
           </View>
         </Card>
 
@@ -104,7 +105,7 @@ export default function HomeScreen(): ReactElement {
                 onPress={() => { router.push(href); }}
                 style={styles.tile}
               >
-                <Icon size={24} color={colors.ink} strokeWidth={1.75} />
+                <Icon size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />
                 <Text variant="caption">{label}</Text>
               </Pressable>
             ))}
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
     flex: 1,
     aspectRatio: 1,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth: sizes.hairline,
     borderColor: colors.border,
     backgroundColor: colors.surface,
     alignItems: 'center',

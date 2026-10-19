@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, SocialButton, Text } from '@/components';
-import { colors, layout, spacing } from '@/theme';
+import { colors, layout, sizes, spacing } from '@/theme';
 import heroWelcome from '@/assets/hero-welcome.jpg';
 import logoMark from '@/assets/logo-mark.png';
 
@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.huge,
   },
   logoMark: {
-    width: 220,
-    height: 139,
+    width: sizes.logoMarkWidth,
+    height: sizes.logoMarkHeight,
   },
   actions: {
     gap: spacing.md,

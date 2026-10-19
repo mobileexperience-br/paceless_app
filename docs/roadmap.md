@@ -15,9 +15,9 @@ Status: `[ ]` não começou · `[~]` em andamento · `[x]` pronta
 
 Resolver as dívidas do [estado-atual.md](./estado-atual.md) antes de construir.
 
-- Tirar mock data das telas (Início, Plano, Treino) → estado vazio
-- Tamanhos hardcoded → tokens (ou exceção documentada)
-- Unificar `AGENTS.md` / `CLAUDE.md`
+- [~] Tirar mock data das telas → estado vazio (Início e Plano feitos; falta Treino)
+- [~] Tamanhos hardcoded → tokens (feito, exceto `workout/[id]` e `profile`)
+- [x] Unificar `AGENTS.md` / `CLAUDE.md`
 - Decidir destino do `public/GG Simulator.html`
 - Criar `.env.example`
 - [x] Remover todos os comentários de JS/TS (contexto em `docs/design-system.md`)

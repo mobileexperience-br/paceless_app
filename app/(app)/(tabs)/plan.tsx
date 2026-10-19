@@ -10,7 +10,7 @@ import {
   Screen,
   Text,
 } from '@/components';
-import { colors, layout, radius, spacing } from '@/theme';
+import { colors, layout, radius, sizes, spacing } from '@/theme';
 
 export default function PlanScreen(): ReactElement {
   const router = useRouter();
@@ -25,8 +25,8 @@ export default function PlanScreen(): ReactElement {
         <Card flush>
           <View style={styles.hero}>
             <View style={styles.heroText}>
-              <Text variant="title3">New To Running Plan</Text>
-              <Text variant="caption">8 semanas • 3–4 treinos/semana</Text>
+              <Text variant="title3">Nenhum plano ativo</Text>
+              <Text variant="caption">Escolha um plano para começar</Text>
             </View>
             <AssetPlaceholder
               label="ilustração do plano"
@@ -36,11 +36,11 @@ export default function PlanScreen(): ReactElement {
           </View>
 
           <View style={styles.heroFooter}>
-            <Text variant="bodyStrong">Semana 1 de 8</Text>
+            <Text variant="bodyStrong">Nenhuma semana em andamento</Text>
             <View style={styles.heroProgress}>
               <ProgressBar progress={0} style={styles.grow} />
               <Text variant="caption" color={colors.textSecondary}>
-                0%
+                —
               </Text>
             </View>
           </View>
@@ -50,7 +50,7 @@ export default function PlanScreen(): ReactElement {
           <ListRow
             title="Visão geral do plano"
             leading={
-              <CalendarCheck size={22} color={colors.ink} strokeWidth={1.75} />
+              <CalendarCheck size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />
             }
             showChevron
             divider
@@ -59,7 +59,7 @@ export default function PlanScreen(): ReactElement {
           <ListRow
             title="Calendário de treinos"
             leading={
-              <CalendarDays size={22} color={colors.ink} strokeWidth={1.75} />
+              <CalendarDays size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />
             }
             showChevron
             divider
@@ -67,7 +67,7 @@ export default function PlanScreen(): ReactElement {
           />
           <ListRow
             title="Configurações do plano"
-            leading={<Settings size={22} color={colors.ink} strokeWidth={1.75} />}
+            leading={<Settings size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />}
             showChevron
           />
         </Card>
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   heroArt: {
-    height: 132,
+    height: sizes.planArtHeight,
     borderRadius: radius.sm,
     backgroundColor: colors.primarySoft,
   },
