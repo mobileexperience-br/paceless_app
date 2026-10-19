@@ -20,7 +20,7 @@
 
 ## Stack
 
-- React Native + Expo (expo-router), SDK 54, TypeScript
+- React Native + Expo (expo-router), SDK 58, TypeScript
 - Supabase (banco, auth, edge functions)
 - RevenueCat (assinaturas)
 - AsyncStorage (persistência local)
@@ -61,6 +61,10 @@
 - Estilo SEMPRE pelos tokens do design system. Não hardcode cor/tamanho na tela.
 - Ícones com lucide-react-native. NUNCA emojis na UI.
 - Sem `any`. Tipos simples e legíveis.
+- Código em inglês: nomes, commits, tabelas e colunas do banco.
+- NUNCA comentários em arquivos JS/TS (.js, .jsx, .ts, .tsx): nem `//`, nem `/* */`,
+  nem JSDoc. O código se explica pelos nomes. Contexto e decisões vão em `docs/`.
+- Markdown (`docs/`, README) em português. Texto da UI segue o idioma do app (PT-BR).
 
 ## Regras do projeto (IMPORTANTE)
 

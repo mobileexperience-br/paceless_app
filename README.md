@@ -1,6 +1,6 @@
 # Paceless
 
-App de treino de corrida. React Native + Expo (expo-router), SDK 54, TypeScript.
+App de treino de corrida. React Native + Expo (expo-router), SDK 58, TypeScript.
 
 Regras, decisões de arquitetura e convenções estão no [CLAUDE.md](./CLAUDE.md).
 
