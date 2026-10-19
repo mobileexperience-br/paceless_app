@@ -5,6 +5,13 @@ revisão) não dependem do código. Fase no [roadmap.md](./roadmap.md).
 
 Status: `[ ]` não começou · `[~]` em andamento · `[x]` pronto
 
+Detalhamento dos requisitos (pesquisa S1, 19/10/2026):
+
+- [lojas/google-play.md](./lojas/google-play.md): conta, teste fechado, API alvo, Data safety, exclusão de conta, permissões, assinaturas, ficha.
+- [lojas/app-store.md](./lojas/app-store.md): assinaturas 3.1, Sign in with Apple, exclusão 5.1.1(v), App Privacy, privacy manifest, classificação, criptografia.
+- [lojas/checklist.md](./lojas/checklist.md): checklist único com o que já está feito e o que falta.
+- Rascunhos legais (revisar com advogado): [política de privacidade](./legal/politica-de-privacidade.md) e [termos de uso](./legal/termos-de-uso.md).
+
 ## Google Play
 
 | Item | Status | Observação |
