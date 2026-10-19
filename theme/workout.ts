@@ -12,4 +12,9 @@ export const workout = {
   thumbIconSize: 20,
   finishThreshold: 0.85,
   disabledOpacity: 0.4,
+  menuRowHeight: 56,
+  menuIconSize: 22,
+  splitRowHeight: 44,
+  sliderBottomGap: 16,
+  statusIconSize: 18,
 } as const;

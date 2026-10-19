@@ -63,7 +63,7 @@ Identificadores já no `app.json`: `com.paceless.app` (Android e iOS). Versionam
 - Paywall: bloco de divulgação da assinatura (título, preço da loja, período, renovação automática, cobrança na conta Apple/Google, 24h para cancelar, onde cancelar) com links de Termos e Privacidade. Só aparece com os planos carregados.
 - Perfil: linha "Gerenciar assinatura" (só para premium), abre a `managementURL` do RevenueCat, com fallback para a página de assinaturas da loja.
 - Ajuda e suporte: "Excluir conta pela web" aparece quando `EXPO_PUBLIC_ACCOUNT_DELETION_URL` (https) está definida. A página em si ainda precisa ser publicada.
-- `app.json`: `ITSAppUsesNonExemptEncryption: false`, privacy manifest do iOS (APIs de motivo obrigatório e dados coletados, sem rastreamento) e `android.blockedPermissions` (localização em segundo plano, serviço em primeiro plano, armazenamento externo, sobreposição de tela, vibração).
+- `app.json`: `ITSAppUsesNonExemptEncryption: false`, privacy manifest do iOS (APIs de motivo obrigatório e dados coletados, sem rastreamento) e `android.blockedPermissions` (localização em segundo plano, armazenamento externo, sobreposição de tela, vibração).
 - Versionamento: `eas.json` usa `appVersionSource: remote` com `autoIncrement` em produção; `buildNumber` e `versionCode` não ficam no `app.json`. Só `version` é editada à mão.
 - `eas.json`: `submit.production` com Android na trilha `internal` (rascunho) e iOS vazio. A service account do Play e as credenciais Apple ficam no EAS, nunca no repositório.
 - Perfil `preview`: precisa das mesmas variáveis `EXPO_PUBLIC_*` cadastradas no EAS para o ambiente de preview.

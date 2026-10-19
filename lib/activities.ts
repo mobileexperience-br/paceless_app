@@ -1,6 +1,17 @@
 import type { RoutePoint } from '@/lib/geo';
+import type { Split } from '@/lib/splits';
 
-export type ActivityType = 'run' | 'strength';
+export type ActivityType = 'run' | 'walk' | 'strength';
+
+export type WorkoutType = 'run' | 'walk';
+
+export const workoutTypes: readonly WorkoutType[] = ['run', 'walk'];
+
+export const activityLabels: Record<ActivityType, string> = {
+  run: 'Corrida',
+  walk: 'Caminhada',
+  strength: 'Musculação',
+};
 
 export interface ActivityDraft {
   id: string;
@@ -12,6 +23,7 @@ export interface ActivityDraft {
   distance_meters: number;
   avg_pace_seconds_per_km: number | null;
   route: RoutePoint[] | null;
+  splits: Split[] | null;
 }
 
 export interface Activity {
@@ -28,8 +40,8 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isActivityType(value: unknown): value is ActivityType {
-  return value === 'run' || value === 'strength';
+export function isActivityType(value: unknown): value is ActivityType {
+  return value === 'run' || value === 'walk' || value === 'strength';
 }
 
 function toNumber(value: unknown): number | null {

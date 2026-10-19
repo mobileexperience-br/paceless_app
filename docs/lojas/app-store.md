@@ -109,6 +109,7 @@ Fontes: [Privacy manifest files](https://developer.apple.com/documentation/bundl
 
 ## 6. Textos de permissão (purpose strings)
 
+- Modo de segundo plano `location` (`UIBackgroundModes`): o treino continua com a tela bloqueada somente enquanto o usuário mantém um treino ativo; o indicador de localização do sistema fica visível (`showsBackgroundLocationIndicator`) e o rastreio para ao finalizar ou descartar. Justificar isso nas notas do revisor.
 - Localização: `NSLocationWhenInUseUsageDescription` já configurada via plugin
   `expo-location`: "O Paceless usa sua localização durante o treino para medir
   distância e ritmo." Em PT-BR, clara e específica (guideline 5.1.1(ii)).

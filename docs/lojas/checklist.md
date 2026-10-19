@@ -16,7 +16,7 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 | Sign in with Apple (código, `usesAppleSignIn`) | Apple 4.8 | código | `[x]` |
 | Links de Termos/Privacidade via env (`EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_PRIVACY_URL`), no cadastro e em Ajuda | Ambas | código | `[x]` |
 | Termos, Privacidade e Perguntas frequentes dentro do app (telas internas; usadas quando a URL da env não está definida) | Ambas | código | `[x]` |
-| Localização só em primeiro plano, sem background nem foreground service | Ambas | código | `[x]` |
+| Localização "durante o uso" com serviço em primeiro plano (tipo `location`) e modo `location` no iOS; sem `ACCESS_BACKGROUND_LOCATION` | Ambas | código | `[x]` |
 | Texto de permissão de localização em PT-BR | Apple / Play | código | `[x]` |
 | Dados protegidos por RLS; tabelas em cascata na exclusão | Ambas | código | `[x]` |
 | `bundleIdentifier` / `package` = `com.paceless.app` | Ambas | código | `[x]` |
@@ -31,7 +31,7 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 | `ios.privacyManifests` (required reason APIs de RN/AsyncStorage/RevenueCat etc.) | Apple | código | `[ ]` |
 | Tela de exclusão: avisar que a assinatura da loja não é cancelada junto | Apple / Play | código | `[?]` |
 | Revogar token Sign in with Apple na exclusão | Apple | código | `[?]` |
-| Conferir manifesto Android: sem `ACCESS_BACKGROUND_LOCATION`, sem `FOREGROUND_SERVICE`, sem `AD_ID` indevido; `targetSdk` >= 36 | Play | código | `[?]` |
+| Conferir manifesto Android: sem `ACCESS_BACKGROUND_LOCATION`, com `FOREGROUND_SERVICE_LOCATION` e `POST_NOTIFICATIONS` apenas, sem `AD_ID` indevido; `targetSdk` >= 36 | Play | código | `[?]` |
 | Decidir `supportsTablet` (hoje `true` exige capturas e UI de iPad) | Apple | código / Pedro | `[ ]` |
 | Aviso "não substitui orientação médica" no app | Ambas | código + documento | `[ ]` |
 | Perfis `production` do EAS com as variáveis (`EXPO_PUBLIC_*`) cadastradas | Ambas | painel (EAS) | `[ ]` |
@@ -61,6 +61,9 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 | Capability Sign in with Apple no App ID; provider Apple/Google no Supabase | Apple / ambas | painel | `[ ]` |
 | Data safety: preencher conforme [seção 3](./google-play.md#3-formulário-data-safety-segurança-dos-dados) | Play | painel | `[ ]` |
 | URL de exclusão de dados no Play Console | Play | painel | `[ ]` |
+| Declaração de serviço em primeiro plano (tipo Localização) com vídeo do treino com tela bloqueada | Play | painel + Pedro | `[ ]` |
+| Justificar `UIBackgroundModes: location` nas notas do revisor (treino iniciado pelo usuário, indicador de localização visível, para ao finalizar) | Apple | painel | `[ ]` |
+| Teste em aparelho: corrida com tela bloqueada, notificação e consumo de bateria | Ambas | Pedro | `[ ]` |
 | Declaração de apps de saúde, anúncios, público-alvo, classificação | Play | painel | `[ ]` |
 | App Privacy (rótulos) conforme [seção 4](./app-store.md#4-app-privacy-rótulos-de-nutrição) | Apple | painel | `[ ]` |
 | Questionário de classificação etária (incluindo as novas perguntas) | Apple | painel | `[ ]` |

@@ -1,33 +1,51 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatRow, Text, type Stat } from '@/components';
 import { GpsNotice } from '@/components/workout/GpsNotice';
 import { SlideToFinish } from '@/components/workout/SlideToFinish';
 import { WorkoutControls } from '@/components/workout/WorkoutControls';
+import { WorkoutMenu } from '@/components/workout/WorkoutMenu';
 import { WorkoutTopBar } from '@/components/workout/WorkoutTopBar';
+import { confirmDiscard, confirmStop, showGpsHelp } from '@/components/workout/workoutDialogs';
 import { useRunTracker } from '@/hooks/useRunTracker';
-import { useSaveActivity, type NewActivity } from '@/hooks/useSaveActivity';
+import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { useStopwatch } from '@/hooks/useStopwatch';
 import { usePreferences } from '@/hooks/usePreferences';
+import { activityLabels, type WorkoutType } from '@/lib/activities';
+import { splitMetersFor } from '@/lib/splits';
 import { distanceLabel, formatDistanceStat, formatPaceForUnit, paceLabel } from '@/lib/units';
-import { colors, layout, spacing } from '@/theme';
+import { colors, layout, spacing, workout } from '@/theme';
 
 const MS_PER_SECOND = 1000;
-const MIN_SAVE_SECONDS = 10;
 
 export default function WorkoutScreen(): ReactElement {
+  useKeepAwake();
   const router = useRouter();
   const { distanceUnit } = usePreferences();
+  const insets = useSafeAreaInsets();
   const { elapsedMs, formatted, running, start, pause, resume } = useStopwatch();
   const [locked, setLocked] = useState<boolean>(false);
-  const [finishing, setFinishing] = useState<boolean>(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [type, setType] = useState<WorkoutType>('run');
   const startedAtRef = useRef<Date>(new Date());
-  const { save } = useSaveActivity();
   const elapsedSeconds = Math.floor(elapsedMs / MS_PER_SECOND);
-  const tracker = useRunTracker({ active: running, elapsedSeconds });
+  const tracker = useRunTracker({
+    active: running,
+    elapsedSeconds,
+    splitMeters: splitMetersFor(distanceUnit),
+  });
+  const { finishing, finish } = useFinishWorkout({
+    type,
+    startedAtRef,
+    elapsedSeconds,
+    tracker,
+    distanceUnit,
+    pause,
+  });
   const tracking = tracker.permission === 'granted';
 
   useEffect(() => {
@@ -48,6 +66,7 @@ export default function WorkoutScreen(): ReactElement {
   ];
 
   const leave = (): void => {
+    void tracker.stop();
     router.back();
   };
 
@@ -56,57 +75,24 @@ export default function WorkoutScreen(): ReactElement {
     else resume();
   };
 
-  const finish = async (): Promise<void> => {
-    if (finishing) return;
-    setFinishing(true);
-    pause();
-    if (elapsedSeconds < MIN_SAVE_SECONDS) {
-      leave();
-      return;
-    }
-    const draft: NewActivity = {
-      type: 'run',
-      started_at: startedAtRef.current.toISOString(),
-      ended_at: new Date().toISOString(),
-      duration_seconds: elapsedSeconds,
-      distance_meters: Math.round(tracker.distanceMeters),
-      avg_pace_seconds_per_km: tracker.averagePaceSecondsPerKm,
-      route: tracker.route.length > 0 ? tracker.route : null,
-    };
-    const result = await save(draft);
-    if (result === 'queued') {
-      Alert.alert(
-        'Treino guardado',
-        'Não foi possível enviar agora. Ele será enviado quando houver conexão.',
-        [{ text: 'OK', onPress: leave }],
-      );
-      return;
-    }
-    leave();
-  };
-
-  const confirmDiscard = (): void => {
-    Alert.alert('Sair do treino?', 'O treino em andamento será descartado.', [
-      { text: 'Continuar', style: 'cancel' },
-      { text: 'Descartar', style: 'destructive', onPress: leave },
-    ]);
-  };
-
-  const confirmStop = (): void => {
-    Alert.alert('Parar treino?', 'O treino será encerrado e salvo.', [
-      { text: 'Continuar', style: 'cancel' },
-      { text: 'Parar', style: 'destructive', onPress: (): void => { void finish(); } },
-    ]);
-  };
-
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
-      <SafeAreaView edges={['top', 'bottom']} style={styles.safe}>
-        <WorkoutTopBar onBack={confirmDiscard} />
+      <SafeAreaView edges={['top']} style={styles.safe}>
+        <WorkoutTopBar
+          onBack={() => {
+            confirmDiscard(leave);
+          }}
+          onMore={() => {
+            setMenuOpen(true);
+          }}
+        />
 
         <View style={styles.heading}>
           <Text variant="title1" color={colors.dark.text}>
+            {activityLabels[type]}
+          </Text>
+          <Text variant="caption" color={colors.dark.textSecondary}>
             Treino livre
           </Text>
         </View>
@@ -130,13 +116,39 @@ export default function WorkoutScreen(): ReactElement {
             paused={!running}
             locked={locked}
             onTogglePause={togglePause}
-            onStop={confirmStop}
-            onToggleLock={() => { setLocked((prev) => !prev); }}
+            onStop={() => {
+              confirmStop(() => {
+                void finish();
+              });
+            }}
+            onToggleLock={() => {
+              setLocked((prev) => !prev);
+            }}
           />
         </View>
 
-        <SlideToFinish disabled={locked || finishing} onFinish={() => { void finish(); }} />
+        <View style={{ paddingBottom: insets.bottom + workout.sliderBottomGap }}>
+          <SlideToFinish
+            disabled={locked || finishing}
+            onFinish={() => {
+              void finish();
+            }}
+          />
+        </View>
       </SafeAreaView>
+
+      <WorkoutMenu
+        visible={menuOpen}
+        type={type}
+        onClose={() => {
+          setMenuOpen(false);
+        }}
+        onSelectType={setType}
+        onDiscard={() => {
+          confirmDiscard(leave);
+        }}
+        onHelp={showGpsHelp}
+      />
     </View>
   );
 }

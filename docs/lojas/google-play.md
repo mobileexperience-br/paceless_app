@@ -50,7 +50,7 @@ conta como "compartilhar"** (conferir o texto atual da ajuda, a verificar).
 | Endereço de e-mail | Sim | Não | Não (conta) | Gerenciamento de conta; funcionalidade | Supabase Auth |
 | Nome | Sim | Não | Sim | Funcionalidade; personalização | `profiles.name` |
 | IDs de usuário | Sim | Não (RevenueCat como prestador) | Não | Gerenciamento de conta; assinatura | Supabase, RevenueCat |
-| Localização precisa (e aproximada) | Sim, só em primeiro plano durante o treino | Não | Sim (sem permissão não grava corrida) | Funcionalidade do app | `activities.route` |
+| Localização precisa (e aproximada) | Sim, durante o treino ativo (inclusive com a tela bloqueada, via serviço em primeiro plano) | Não | Sim (sem permissão não grava corrida) | Funcionalidade do app | `activities.route` |
 | Informações de fitness | Sim: distância, duração, ritmo, rota, tipo | Não | Sim | Funcionalidade; personalização | `activities` |
 | Informações de saúde | Não são dados médicos. Objetivo, nível e dias por semana do onboarding ficam em `profiles`; declarar como fitness/personalização | Não | Sim | Personalização | `profiles` |
 | Histórico de compras | Sim (status e validade da assinatura) | Não (RevenueCat como prestador) | Só quem assina | Funcionalidade; gerenciamento de conta | `subscriptions`, RevenueCat |
@@ -82,13 +82,24 @@ Fonte: [Exclusão de conta no Play](https://support.google.com/googleplay/androi
 
 | Permissão | Uso | Declaração |
 |---|---|---|
-| `ACCESS_FINE_LOCATION` / `ACCESS_COARSE_LOCATION` | Distância/ritmo/rota durante o treino com o app aberto | Só primeiro plano; sem formulário de localização em segundo plano |
-| `ACCESS_BACKGROUND_LOCATION` | **Não usada** (`isAndroidBackgroundLocationEnabled: false`) | Conferir no manifesto final que não aparece |
-| `FOREGROUND_SERVICE*` | Não usadas (`isAndroidForegroundServiceEnabled: false`) | Idem |
+| `ACCESS_FINE_LOCATION` / `ACCESS_COARSE_LOCATION` | Distância/ritmo/rota durante o treino iniciado pelo usuário, inclusive com a tela bloqueada | Somente "durante o uso"; sem formulário de localização em segundo plano |
+| `ACCESS_BACKGROUND_LOCATION` | **Não usada** (`isAndroidBackgroundLocationEnabled: false`, mantida em `blockedPermissions`) | Conferir no manifesto final que não aparece |
+| `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_LOCATION` | Serviço em primeiro plano do tipo `location` com notificação persistente "Paceless — treino em andamento" (`isAndroidForegroundServiceEnabled: true`) | Declaração de serviço em primeiro plano no Play Console (tipo Localização) com vídeo |
+| `POST_NOTIFICATIONS` | Exibir a notificação do serviço em primeiro plano (Android 13+) | Permissão em tempo de execução pedida ao iniciar o treino |
 
 Política: [Permissões de localização](https://support.google.com/googleplay/android-developer/answer/9799150).
-Se um dia o treino precisar continuar com tela bloqueada, será preciso serviço
-em primeiro plano do tipo `location` e declaração com vídeo. Fora de escopo hoje.
+Decisão: o rastreio com tela bloqueada usa serviço em primeiro plano iniciado
+com o app visível e a permissão "durante o uso". Isso dispensa
+`ACCESS_BACKGROUND_LOCATION` e o formulário de localização em segundo plano. O
+`expo-location` documenta que `startLocationUpdatesAsync` com `foregroundService`
+não exige a permissão de segundo plano.
+
+Declaração de serviço em primeiro plano (Play Console > Conteúdo do app):
+- Tipo: Localização. Descrição: o usuário inicia um treino e o app registra
+  distância, ritmo e rota até ele finalizar; o serviço para ao finalizar,
+  descartar ou fechar o treino.
+- Vídeo (obrigatório): mostrar iniciar o treino, a notificação persistente
+  aparecendo, o bloqueio da tela, o treino continuando e a finalização.
 
 ## 6. Política de assinaturas e pagamentos
 

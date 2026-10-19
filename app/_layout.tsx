@@ -12,6 +12,7 @@ import {
 } from '@expo-google-fonts/inter';
 import { PurchasesSync } from '@/components/PurchasesSync';
 import { DialogProvider } from '@/providers/DialogProvider';
+import '@/lib/trackingTask';
 import { PreferencesProvider } from '@/providers/PreferencesProvider';
 import { SessionProvider } from '@/providers/SessionProvider';
 import { colors } from '@/theme';

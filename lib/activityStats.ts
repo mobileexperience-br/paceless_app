@@ -2,7 +2,7 @@ import type { Activity, ActivityType } from '@/lib/activities';
 import { formatDistance } from '@/lib/units';
 import type { DistanceUnit } from '@/types/preferences';
 
-export const activityFilters = ['Todas', 'Corrida', 'Musculação'] as const;
+export const activityFilters = ['Todas', 'Corrida', 'Caminhada', 'Musculação'] as const;
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'] as const;
 const SECONDS_PER_MINUTE = 60;
@@ -14,6 +14,7 @@ const MS_PER_DAY = 86400000;
 const filterTypes: Record<string, ActivityType | null> = {
   Todas: null,
   Corrida: 'run',
+  Caminhada: 'walk',
   Musculação: 'strength',
 };
 

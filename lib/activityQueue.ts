@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { isRecord, type ActivityDraft } from '@/lib/activities';
+import { isActivityType, isRecord, type ActivityDraft } from '@/lib/activities';
 import { supabase } from '@/lib/supabase';
 
 export const PENDING_ACTIVITIES_KEY = 'paceless:pending-activities';
@@ -11,7 +11,7 @@ function isDraft(value: unknown): value is ActivityDraft {
   return (
     typeof value['id'] === 'string' &&
     typeof value['user_id'] === 'string' &&
-    (value['type'] === 'run' || value['type'] === 'strength') &&
+    isActivityType(value['type']) &&
     typeof value['started_at'] === 'string' &&
     typeof value['ended_at'] === 'string' &&
     typeof value['duration_seconds'] === 'number' &&
