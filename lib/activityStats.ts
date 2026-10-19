@@ -1,5 +1,6 @@
 import type { Activity, ActivityType } from '@/lib/activities';
-import { formatKm } from '@/lib/geo';
+import { formatDistance } from '@/lib/units';
+import type { DistanceUnit } from '@/types/preferences';
 
 export const activityFilters = ['Todas', 'Corrida', 'Musculação'] as const;
 
@@ -62,8 +63,8 @@ export function formatDuration(totalSeconds: number): string {
   return hours > 0 ? `${String(hours)}h ${String(minutes)}m` : `${String(minutes)} min`;
 }
 
-export function formatWeekKm(distanceMeters: number): string {
-  return formatKm(distanceMeters, 1);
+export function formatWeekDistance(distanceMeters: number, unit: DistanceUnit): string {
+  return formatDistance(distanceMeters, unit, 1);
 }
 
 export function dayLabel(date: Date, now: Date): string {

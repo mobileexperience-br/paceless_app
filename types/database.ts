@@ -1,4 +1,5 @@
 import type { OnboardingAnswers } from '@/types/onboarding';
+import type { DistanceUnit, ThemePreference } from '@/types/preferences';
 
 export interface ProfileRow {
   id: string;
@@ -8,6 +9,8 @@ export interface ProfileRow {
   days_per_week: OnboardingAnswers['daysPerWeek'] | null;
   strength: OnboardingAnswers['strength'] | null;
   onboarding_completed_at: string | null;
+  distance_unit: DistanceUnit;
+  theme: ThemePreference;
   created_at: string;
   updated_at: string;
 }

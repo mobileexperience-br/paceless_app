@@ -80,3 +80,13 @@ passam por Edge Function. Isso continua valendo quando essas features chegarem
 `docs/`. Regras de código continuam só no `CLAUDE.md`.
 **Por quê:** com duas pessoas no projeto, o plano precisa morar no repo e ser
 revisado em PR como o código.
+
+## 2026-10-19 — Preferências do usuário no perfil, com cache local
+**Decisão:** unidade de distância (`km`/`mi`) e tema (`system`/`light`/`dark`) ficam
+em colunas de `profiles` e são espelhadas no AsyncStorage (`paceless:preferences`).
+O `PreferencesProvider` carrega o cache na abertura, sincroniza com o perfil ao logar
+e salva com atualização otimista (reverte e avisa em PT-BR se o upsert falhar).
+**Por quê:** a preferência acompanha a conta entre aparelhos, e o cache dá início
+instantâneo e uso sem login. Distâncias continuam gravadas em metros/segundos por km;
+a conversão acontece só na exibição (`lib/units.ts`, 1 mi = 1,609344 km).
+**Pendente:** o tema é salvo, mas só o claro é renderizado; o modo escuro é uma etapa à parte.

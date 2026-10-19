@@ -41,11 +41,3 @@ export function formatPace(secondsPerKm: number | null): string {
   const seconds = total % SECONDS_PER_MINUTE;
   return `${String(minutes)}:${String(seconds).padStart(2, '0')}`;
 }
-
-export function formatKm(distanceMeters: number, decimals: number): string {
-  return (distanceMeters / METERS_PER_KM).toFixed(decimals).replace('.', ',');
-}
-
-export function formatDistanceStat(distanceMeters: number | null): string {
-  return distanceMeters === null ? EMPTY_VALUE : formatKm(distanceMeters, 2);
-}

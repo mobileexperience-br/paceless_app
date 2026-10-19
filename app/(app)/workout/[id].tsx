@@ -11,7 +11,8 @@ import { WorkoutTopBar } from '@/components/workout/WorkoutTopBar';
 import { useRunTracker } from '@/hooks/useRunTracker';
 import { useSaveActivity, type NewActivity } from '@/hooks/useSaveActivity';
 import { useStopwatch } from '@/hooks/useStopwatch';
-import { formatDistanceStat, formatPace } from '@/lib/geo';
+import { usePreferences } from '@/hooks/usePreferences';
+import { distanceLabel, formatDistanceStat, formatPaceForUnit, paceLabel } from '@/lib/units';
 import { colors, layout, spacing } from '@/theme';
 
 const MS_PER_SECOND = 1000;
@@ -19,6 +20,7 @@ const MIN_SAVE_SECONDS = 10;
 
 export default function WorkoutScreen(): ReactElement {
   const router = useRouter();
+  const { distanceUnit } = usePreferences();
   const { elapsedMs, formatted, running, start, pause, resume } = useStopwatch();
   const [locked, setLocked] = useState<boolean>(false);
   const [finishing, setFinishing] = useState<boolean>(false);
@@ -34,8 +36,14 @@ export default function WorkoutScreen(): ReactElement {
   }, [start]);
 
   const stats: Stat[] = [
-    { value: formatDistanceStat(tracking ? tracker.distanceMeters : null), label: 'Distância (km)' },
-    { value: formatPace(tracker.currentPaceSecondsPerKm), label: 'Ritmo (min/km)' },
+    {
+      value: formatDistanceStat(tracking ? tracker.distanceMeters : null, distanceUnit),
+      label: `Distância (${distanceLabel(distanceUnit)})`,
+    },
+    {
+      value: formatPaceForUnit(tracker.currentPaceSecondsPerKm, distanceUnit),
+      label: `Ritmo (${paceLabel(distanceUnit)})`,
+    },
     { value: '—', label: 'FC média (bpm)' },
   ];
 

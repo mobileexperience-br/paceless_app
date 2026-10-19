@@ -1,5 +1,6 @@
 import { onboardingOptions } from '@/types/onboarding';
 import type { ProfileRow } from '@/types/database';
+import { defaultPreferences, distanceUnits, themePreferences } from '@/types/preferences';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -28,6 +29,9 @@ export function parseProfileRow(raw: unknown): ProfileRow | null {
     days_per_week: optionOrNull(onboardingOptions.daysPerWeek, raw['days_per_week']),
     strength: optionOrNull(onboardingOptions.strength, raw['strength']),
     onboarding_completed_at: textOrNull(raw['onboarding_completed_at']),
+    distance_unit:
+      optionOrNull(distanceUnits, raw['distance_unit']) ?? defaultPreferences.distanceUnit,
+    theme: optionOrNull(themePreferences, raw['theme']) ?? defaultPreferences.theme,
     created_at: createdAt,
     updated_at: updatedAt,
   };

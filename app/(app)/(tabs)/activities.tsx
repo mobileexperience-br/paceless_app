@@ -14,19 +14,22 @@ import {
 } from '@/components';
 import { ActivityRow } from '@/components/activities/ActivityRow';
 import { useActivities } from '@/hooks/useActivities';
+import { usePreferences } from '@/hooks/usePreferences';
 import type { Activity } from '@/lib/activities';
 import {
   activityFilters,
   filterActivities,
   formatDuration,
-  formatWeekKm,
+  formatWeekDistance,
   summarizeWeek,
 } from '@/lib/activityStats';
+import { distanceLabel } from '@/lib/units';
 import { colors, layout, sizes, spacing } from '@/theme';
 
 const EMPTY_VALUE = '—';
 
 export default function ActivitiesScreen(): ReactElement {
+  const { distanceUnit } = usePreferences();
   const [filter, setFilter] = useState<string>(activityFilters[0]);
   const { activities, loading, refreshing, error, load, refresh } = useActivities();
 
@@ -45,11 +48,14 @@ export default function ActivitiesScreen(): ReactElement {
     const week = summarizeWeek(activities, new Date());
     return [
       { value: String(week.workouts), label: 'Treinos' },
-      { value: formatWeekKm(week.distanceMeters), label: 'Km' },
+      {
+        value: formatWeekDistance(week.distanceMeters, distanceUnit),
+        label: distanceLabel(distanceUnit),
+      },
       { value: formatDuration(week.durationSeconds), label: 'Tempo' },
       { value: EMPTY_VALUE, label: 'Kcal' },
     ];
-  }, [activities]);
+  }, [activities, distanceUnit]);
 
   const header = (
     <View style={styles.listHeader}>
