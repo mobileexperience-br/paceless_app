@@ -1,8 +1,10 @@
 import { useState, type ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Check } from 'lucide-react-native';
 import { Button, Card, IconBadge, Screen, ScreenHeader, Text } from '@/components';
+import { useOfferings, type PlanId } from '@/hooks/useOfferings';
+import { usePremium, type PurchaseResult } from '@/hooks/usePremium';
 import { colors, layout, radius, spacing } from '@/theme';
 
 const benefits = [
@@ -12,14 +14,31 @@ const benefits = [
   'Histórico e métricas completas',
 ];
 
-const plans = [
-  { id: 'annual', title: 'Anual', price: '—', note: 'Melhor valor' },
-  { id: 'monthly', title: 'Mensal', price: '—', note: '' },
-] as const;
-
 export default function PaywallScreen(): ReactElement {
   const router = useRouter();
-  const [selected, setSelected] = useState<string>(plans[0].id);
+  const { status, plans, reload } = useOfferings();
+  const { busy, purchase, restore } = usePremium();
+  const [selectedId, setSelectedId] = useState<PlanId>('annual');
+  const [message, setMessage] = useState<string | null>(null);
+  const selected = plans.find((plan) => plan.id === selectedId) ?? plans[0];
+  const ready = status === 'ready' && selected !== undefined;
+
+  const finish = (result: PurchaseResult): void => {
+    setMessage(result.error);
+    if (result.success) {
+      router.push('/signup');
+    }
+  };
+
+  const handlePurchase = (): void => {
+    if (selected) {
+      void purchase(selected.purchasePackage).then(finish);
+    }
+  };
+
+  const handleRestore = (): void => {
+    void restore().then(finish);
+  };
 
   return (
     <Screen flush>
@@ -46,34 +65,73 @@ export default function PaywallScreen(): ReactElement {
           ))}
         </View>
 
-        <View style={styles.plans}>
-          {plans.map((plan) => {
-            const active = plan.id === selected;
-            return (
-              <Pressable
-                key={plan.id}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: active }}
-                onPress={() => { setSelected(plan.id); }}
-                style={styles.planPressable}
-              >
-                <Card style={[styles.plan, active && styles.planActive]}>
-                  <Text variant="bodyStrong">{plan.title}</Text>
-                  <Text variant="title2">{plan.price}</Text>
-                  {plan.note ? (
-                    <Text variant="caption" color={colors.primaryDeep}>
-                      {plan.note}
-                    </Text>
-                  ) : null}
-                </Card>
-              </Pressable>
-            );
-          })}
-        </View>
+        {status === 'loading' ? (
+          <View style={styles.status}>
+            <ActivityIndicator color={colors.primaryDeep} />
+          </View>
+        ) : null}
+
+        {status === 'unavailable' ? (
+          <Text variant="body" color={colors.textSecondary}>
+            Assinaturas indisponíveis no momento.
+          </Text>
+        ) : null}
+
+        {status === 'error' ? (
+          <View style={styles.status}>
+            <Text variant="body" color={colors.danger}>
+              Não foi possível carregar os planos.
+            </Text>
+            <Button label="Tentar novamente" variant="text" onPress={reload} />
+          </View>
+        ) : null}
+
+        {status === 'ready' ? (
+          <View style={styles.plans}>
+            {plans.map((plan) => {
+              const active = plan.id === selected?.id;
+              return (
+                <Pressable
+                  key={plan.id}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: active }}
+                  onPress={() => { setSelectedId(plan.id); }}
+                  style={styles.planPressable}
+                >
+                  <Card style={[styles.plan, active && styles.planActive]}>
+                    <Text variant="bodyStrong">{plan.title}</Text>
+                    <Text variant="title2">{plan.price}</Text>
+                    {plan.note ? (
+                      <Text variant="caption" color={colors.primaryDeep}>
+                        {plan.note}
+                      </Text>
+                    ) : null}
+                  </Card>
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
+
+        {message ? (
+          <Text variant="caption" color={colors.danger}>
+            {message}
+          </Text>
+        ) : null}
       </View>
 
       <View style={styles.footer}>
-        <Button label="Assinar" onPress={() => { router.push('/signup'); }} />
+        {ready ? (
+          <>
+            <Button label="Assinar" disabled={busy} onPress={handlePurchase} />
+            <Button
+              label="Restaurar compras"
+              variant="text"
+              disabled={busy}
+              onPress={handleRestore}
+            />
+          </>
+        ) : null}
         <Button
           label="Continuar sem assinar"
           variant="text"
@@ -108,6 +166,10 @@ const styles = StyleSheet.create({
   plans: {
     flexDirection: 'row',
     gap: layout.cardGap,
+  },
+  status: {
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   planPressable: {
     flex: 1,

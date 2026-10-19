@@ -10,6 +10,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { PurchasesSync } from '@/components/PurchasesSync';
 import { SessionProvider } from '@/providers/SessionProvider';
 import { colors } from '@/theme';
 
@@ -37,6 +38,7 @@ export default function RootLayout(): ReactElement | null {
     <SafeAreaProvider>
       <StatusBar style="dark" />
       <SessionProvider>
+        <PurchasesSync />
         <Stack
           screenOptions={{
             headerShown: false,
