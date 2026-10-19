@@ -7,6 +7,7 @@ export const sizes = {
   iconStroke: 1.75,
   badgeSm: 36,
   badgeLg: 48,
+  avatar: 56,
   fab: 64,
   fabLift: 8,
   hitSlop: 12,

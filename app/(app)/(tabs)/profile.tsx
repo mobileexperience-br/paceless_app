@@ -1,23 +1,29 @@
 import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, type Href } from 'expo-router';
 import { Settings } from 'lucide-react-native';
+import { useProfile } from '@/hooks/useProfile';
 import { useSession } from '@/hooks/useSession';
 import { AssetPlaceholder, Card, ListRow, Screen, Text } from '@/components';
-import { colors, layout, radius, spacing } from '@/theme';
+import { colors, layout, radius, sizes, spacing } from '@/theme';
 
-const menu = [
-  'Minha conta',
-  'Preferências',
-  'Dispositivos conectados',
-  'Notificações',
-  'Ajuda e suporte',
-  'Sair',
+interface MenuItem {
+  label: string;
+  href: Href;
+}
+
+const menu: MenuItem[] = [
+  { label: 'Minha conta', href: '/profile/account' },
+  { label: 'Preferências', href: '/profile/preferences' },
+  { label: 'Dispositivos conectados', href: '/profile/devices' },
+  { label: 'Notificações', href: '/profile/notifications' },
+  { label: 'Ajuda e suporte', href: '/profile/help' },
 ];
 
 export default function ProfileScreen(): ReactElement {
   const router = useRouter();
   const { signOut } = useSession();
+  const { name } = useProfile();
 
   return (
     <Screen scroll flush>
@@ -33,31 +39,39 @@ export default function ProfileScreen(): ReactElement {
 
         <Card flush>
           <ListRow
-            title="Alex"
+            title={name ?? 'Sua conta'}
             subtitle="Ver perfil"
             leading={
               <AssetPlaceholder iconSize={20} style={styles.avatar} />
             }
             showChevron
+            onPress={(): void => {
+              router.push('/profile/account');
+            }}
           />
         </Card>
 
         <Card flush>
-          {menu.map((item, index) => (
+          {menu.map((item) => (
             <ListRow
-              key={item}
-              title={item}
+              key={item.label}
+              title={item.label}
               showChevron
-              divider={index < menu.length - 1}
-              {...(item === 'Sair' && {
-                onPress: (): void => {
-                  void signOut().then(() => {
-                    router.replace('/(pre-auth)/welcome');
-                  });
-                },
-              })}
+              divider
+              onPress={(): void => {
+                router.push(item.href);
+              }}
             />
           ))}
+          <ListRow
+            title="Sair"
+            showChevron
+            onPress={(): void => {
+              void signOut().then(() => {
+                router.replace('/(pre-auth)/welcome');
+              });
+            }}
+          />
         </Card>
       </View>
     </Screen>
@@ -79,8 +93,8 @@ const styles = StyleSheet.create({
   },
   avatar: {
     flex: 0,
-    width: 56,
-    height: 56,
+    width: sizes.avatar,
+    height: sizes.avatar,
     borderRadius: radius.full,
   },
 });
