@@ -1,72 +1,55 @@
-import { useState, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, Card, Screen, ScreenHeader, Text } from '@/components';
+import { useOnboarding } from '@/hooks/useOnboarding';
+import { onboardingSteps } from '@/lib/onboardingSteps';
 import { colors, layout, radius, spacing } from '@/theme';
-
-const steps = [
-  {
-    title: 'Qual é o seu objetivo?',
-    subtitle: 'Isso define o plano que vamos montar.',
-    options: ['Começar a correr', 'Correr 5 km', 'Correr 10 km', 'Ganhar condicionamento'],
-  },
-  {
-    title: 'Como está seu preparo hoje?',
-    subtitle: 'Seja honesto — dá para evoluir de qualquer ponto.',
-    options: ['Nunca corri', 'Corro de vez em quando', 'Corro toda semana'],
-  },
-  {
-    title: 'Quantos dias por semana?',
-    subtitle: 'Você pode ajustar isso depois.',
-    options: ['2 dias', '3 dias', '4 dias', '5 dias ou mais'],
-  },
-  {
-    title: 'Quer incluir musculação?',
-    subtitle: 'Treino de força reduz lesão e melhora o ritmo.',
-    options: ['Sim, quero', 'Talvez depois', 'Não, só corrida'],
-  },
-] as const;
 
 export default function OnboardingScreen(): ReactElement {
   const router = useRouter();
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const { loading, step, stepCount, stepKey, answers, isFirst, isLast, answer, next, back } =
+    useOnboarding();
 
-  const current = steps[step] ?? steps[0];
-  const selected = answers[step];
+  if (loading) return <Screen flush>{null}</Screen>;
+
+  const current = onboardingSteps[step] ?? onboardingSteps[0];
+  const selected = answers[stepKey];
 
   const goNext = (): void => {
-    if (step < steps.length - 1) {
-      setStep(step + 1);
-    } else {
-      router.push('/paywall');
-    }
+    next();
+    if (isLast) router.push('/paywall');
+  };
+
+  const goBack = (): void => {
+    if (isFirst) router.back();
+    else back();
   };
 
   return (
     <Screen flush>
-      <ScreenHeader showBack centerLabel={`${step + 1} / ${steps.length}`} />
+      <ScreenHeader showBack onBack={goBack} centerLabel={`${step + 1} / ${stepCount}`} />
 
       <View style={styles.body}>
         <View style={styles.intro}>
-          <Text variant="title1">{current.title}</Text>
+          <Text variant="title1">{current?.title}</Text>
           <Text variant="body" color={colors.textSecondary}>
-            {current.subtitle}
+            {current?.subtitle}
           </Text>
         </View>
 
         <View style={styles.options}>
-          {current.options.map((option) => {
-            const active = selected === option;
+          {current?.options.map((option) => {
+            const active = selected === option.id;
             return (
               <Pressable
-                key={option}
+                key={option.id}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: active }}
-                onPress={() => { setAnswers({ ...answers, [step]: option }); }}
+                onPress={() => { answer(option.id); }}
               >
                 <Card style={active ? styles.optionActive : undefined}>
-                  <Text variant="bodyStrong">{option}</Text>
+                  <Text variant="bodyStrong">{option.label}</Text>
                 </Card>
               </Pressable>
             );
@@ -76,7 +59,7 @@ export default function OnboardingScreen(): ReactElement {
 
       <View style={styles.footer}>
         <Button
-          label={step < steps.length - 1 ? 'Continuar' : 'Ver meu plano'}
+          label={isLast ? 'Ver meu plano' : 'Continuar'}
           disabled={!selected}
           onPress={goNext}
         />

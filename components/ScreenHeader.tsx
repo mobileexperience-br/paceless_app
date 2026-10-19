@@ -9,6 +9,7 @@ interface ScreenHeaderProps {
   title?: string;
   centerLabel?: string;
   showBack?: boolean;
+  onBack?: () => void;
   trailing?: ReactNode;
   dark?: boolean;
   style?: ViewStyle;
@@ -18,6 +19,7 @@ export function ScreenHeader({
   title,
   centerLabel,
   showBack,
+  onBack,
   trailing,
   dark,
   style,
@@ -33,7 +35,7 @@ export function ScreenHeader({
             accessibilityRole="button"
             accessibilityLabel="Voltar"
             hitSlop={12}
-            onPress={() => { router.back(); }}
+            onPress={onBack ?? ((): void => { router.back(); })}
           >
             <ArrowLeft size={24} color={tint} strokeWidth={2} />
           </Pressable>
