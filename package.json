@@ -8,7 +8,10 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "update:preview": "eas update --channel preview",
+    "update:production": "eas update --channel production",
+    "update:development": "eas update --channel development"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
@@ -27,6 +30,7 @@
     "expo-router": "~58.0.24",
     "expo-splash-screen": "~58.0.10",
     "expo-status-bar": "~58.0.3",
+    "expo-updates": "~58.0.17",
     "lucide-react-native": "^1.59.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",

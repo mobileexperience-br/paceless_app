@@ -150,6 +150,12 @@
         "projectId": "53f8e5bf-146d-436e-9b5a-9d968328e06a"
       }
     },
-    "owner": "paceless"
+    "owner": "paceless",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/53f8e5bf-146d-436e-9b5a-9d968328e06a"
+    }
   }
 }
