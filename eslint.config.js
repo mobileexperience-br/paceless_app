@@ -36,7 +36,12 @@ module.exports = defineConfig([
     },
   },
   {
+    files: ['supabase/functions/**/*.ts'],
+    rules: { 'import/no-unresolved': 'off' },
+  },
+  {
     files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['supabase/functions/**'],
     extends: [tseslint.configs.strictTypeChecked, tseslint.configs.stylisticTypeChecked],
     languageOptions: {
       parserOptions: {

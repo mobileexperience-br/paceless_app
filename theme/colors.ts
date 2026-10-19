@@ -15,6 +15,8 @@ export const colors = {
 
   white: '#FFFFFF',
 
+  danger: '#D92D20',
+
   dark: {
     background: '#111111',
     surface: 'rgba(255, 255, 255, 0.06)',

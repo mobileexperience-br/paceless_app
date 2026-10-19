@@ -14,6 +14,21 @@ Formato:
 
 ---
 
+## 2026-10-19 — Primeira Edge Function: exclusão de conta
+**Decisão:** `supabase/functions/delete-account` valida o JWT do usuário e
+apaga a conta com `auth.admin.deleteUser`. O app chama via
+`supabase.functions.invoke('delete-account')` e faz logout local em seguida.
+**Por quê:** App Store e Play exigem excluir a conta dentro do app. Apagar um
+usuário do Auth exige a service role key, que nunca pode ir para o client.
+É a exceção à decisão "sem Edge Functions por ora".
+**Como funciona:** o `ON DELETE CASCADE` das tabelas ligadas a `auth.users`
+remove os dados do usuário; tabelas futuras devem seguir essa regra.
+**Alternativas descartadas:** RPC `SECURITY DEFINER` apagando de `auth.users`
+(mexe no schema interno do Supabase); desativar a conta em vez de apagar
+(não atende a exigência das lojas).
+**Arquivos Deno:** `supabase/functions/**` fica fora do `tsconfig` e do ESLint
+type-aware; as regras de zero comentário e 200 linhas continuam valendo.
+
 ## 2026-10-19 — Dependências sempre na última versão compatível
 **Decisão:** projeto sobe para o Expo SDK 58 (RN 0.88, React 19.3, TS 6) e
 mantém tudo na versão mais recente **que o SDK/ecossistema suporta**.

@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors, layout, radius, spacing } from '@/theme';
 
-type ButtonVariant = 'primary' | 'secondary' | 'text';
+type ButtonVariant = 'primary' | 'secondary' | 'text' | 'danger';
 
 interface ButtonProps {
   label: string;
@@ -12,6 +12,13 @@ interface ButtonProps {
   disabled?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
+}
+
+function labelColor(variant: ButtonVariant): string {
+  if (variant === 'text') {
+    return colors.primaryDeep;
+  }
+  return variant === 'danger' ? colors.danger : colors.ink;
 }
 
 export function Button({
@@ -34,8 +41,9 @@ export function Button({
         isText && styles.textBase,
         variant === 'primary' && styles.primary,
         variant === 'secondary' && styles.secondary,
+        variant === 'danger' && styles.danger,
         variant === 'primary' && pressed && styles.primaryPressed,
-        variant === 'secondary' && pressed && styles.secondaryPressed,
+        (variant === 'secondary' || variant === 'danger') && pressed && styles.secondaryPressed,
         disabled && styles.disabled,
         style,
       ]}
@@ -43,7 +51,7 @@ export function Button({
       {icon ? <View style={styles.icon}>{icon}</View> : null}
       <Text
         variant={isText ? 'body' : 'bodyStrong'}
-        color={variant === 'text' ? colors.primaryDeep : colors.ink}
+        color={labelColor(variant)}
       >
         {label}
       </Text>
@@ -73,6 +81,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  danger: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.danger,
   },
   secondaryPressed: {
     backgroundColor: colors.track,
