@@ -49,4 +49,4 @@ Publicação via EAS. Passos em alto nível:
    são guardadas no EAS, nunca no repositório.
 
 Já definido no `app.json`: `ios.bundleIdentifier = com.paceless.app`.
-Identificador Android e versionamento: a confirmar.
+Identificadores já no `app.json`: `com.paceless.app` (Android e iOS). Versionamento: a confirmar.

@@ -44,7 +44,7 @@ export default function HelpScreen(): ReactElement {
           ))}
         </Card>
         {error ? (
-          <Text variant="caption" color={colors.ink}>
+          <Text variant="caption" color={colors.danger}>
             {error}
           </Text>
         ) : null}

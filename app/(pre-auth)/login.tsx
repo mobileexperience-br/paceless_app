@@ -71,8 +71,8 @@ export default function LoginScreen(): ReactElement {
 
         {error ? (
           <View style={styles.error}>
-            <CircleAlert size={16} color={colors.ink} strokeWidth={1.75} />
-            <Text variant="caption" style={styles.errorText}>
+            <CircleAlert size={16} color={colors.danger} strokeWidth={1.75} />
+            <Text variant="caption" color={colors.danger} style={styles.errorText}>
               {error}
             </Text>
           </View>
