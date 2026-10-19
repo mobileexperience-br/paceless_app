@@ -1,0 +1,36 @@
+name: Production release (manual)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build_android:
+    name: Android production build
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: iOS production build
+    type: build
+    params:
+      platform: ios
+      profile: production
+  approve:
+    name: Approve submission
+    needs: [build_android, build_ios]
+    type: require-approval
+  submit_android:
+    name: Android submit
+    needs: [approve]
+    type: submit
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+      profile: production
+  submit_ios:
+    name: iOS submit
+    needs: [approve]
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production

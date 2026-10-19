@@ -1,0 +1,33 @@
+name: iOS build and submit (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        type: choice
+        description: iOS build profile
+        options:
+          - preview
+          - development
+          - production
+        default: preview
+      submit:
+        type: boolean
+        description: Submit to App Store Connect (production profile only)
+        default: false
+
+jobs:
+  build_ios:
+    name: iOS build
+    type: build
+    params:
+      platform: ios
+      profile: ${{ inputs.profile }}
+  submit_ios:
+    name: iOS submit
+    needs: [build_ios]
+    if: ${{ inputs.submit && inputs.profile == 'production' }}
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production

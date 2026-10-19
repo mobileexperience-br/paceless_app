@@ -11,6 +11,7 @@ Planejamento e acordos do projeto. O código diz *como* está; esta pasta diz
 | [sprint-01.md](./sprint-01.md) | Trilhas paralelas da sprint 01 |
 | [sprint-02.md](./sprint-02.md) | Trilhas paralelas da sprint 02 |
 | [ota.md](./ota.md) | Atualização OTA com EAS Update: canais e como publicar |
+| [pipeline.md](./pipeline.md) | Build e CI/CD com EAS Workflows: fluxos, o que depende da conta Apple e passo a passo do iOS |
 | [publicacao-lojas.md](./publicacao-lojas.md) | Checklist de Google Play e App Store, e passos de EAS |
 | [lojas/](./lojas/checklist.md) | Requisitos de publicação: [Google Play](./lojas/google-play.md), [App Store](./lojas/app-store.md) e [checklist consolidado](./lojas/checklist.md) |
 | [legal/](./legal/politica-de-privacidade.md) | Rascunhos (revisar com advogado): [política de privacidade](./legal/politica-de-privacidade.md) e [termos de uso](./legal/termos-de-uso.md) |

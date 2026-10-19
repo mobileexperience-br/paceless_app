@@ -11,7 +11,11 @@
     "lint": "eslint . --max-warnings 0",
     "update:preview": "eas update --channel preview",
     "update:production": "eas update --channel production",
-    "update:development": "eas update --channel development"
+    "update:development": "eas update --channel development",
+    "build:ios:sim": "eas build --platform ios --profile development-simulator",
+    "build:ios:dev": "eas build --platform ios --profile development",
+    "build:ios:preview": "eas build --platform ios --profile preview",
+    "build:android:preview": "eas build --platform android --profile preview"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
