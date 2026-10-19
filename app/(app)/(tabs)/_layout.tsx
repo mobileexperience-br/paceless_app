@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Tabs } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarButtonProps } from 'expo-router/tabs';
 import {
   Apple,
@@ -9,7 +10,7 @@ import {
   Play,
   User,
 } from 'lucide-react-native';
-import { colors, fonts, layout, radius, shadows, sizes } from '@/theme';
+import { colors, fonts, layout, radius, shadows, sizes, spacing } from '@/theme';
 
 function ActivitiesTabButton({
   onPress,
@@ -33,6 +34,9 @@ function ActivitiesTabButton({
 }
 
 export default function TabsLayout(): ReactElement {
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, spacing.sm);
+
   return (
     <Tabs
       screenOptions={{
@@ -42,7 +46,8 @@ export default function TabsLayout(): ReactElement {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          height: layout.tabBarHeight,
+          height: layout.tabBarHeight + bottomInset,
+          paddingBottom: bottomInset,
         },
         tabBarLabelStyle: {
           fontFamily: fonts.medium,
