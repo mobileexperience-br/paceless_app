@@ -1,10 +1,12 @@
 import type { ReactElement } from 'react';
 import { Redirect, Stack } from 'expo-router';
+import { useOnboardingSync } from '@/hooks/useOnboardingSync';
 import { useSession } from '@/hooks/useSession';
 import { colors } from '@/theme';
 
 export default function AppLayout(): ReactElement | null {
   const { session, loading } = useSession();
+  useOnboardingSync();
 
   if (loading) {
     return null;

@@ -18,6 +18,7 @@ import {
   Screen,
   Text,
 } from '@/components';
+import { useProfile } from '@/hooks/useProfile';
 import { colors, layout, radius, sizes, spacing } from '@/theme';
 
 const quickAccess = [
@@ -28,6 +29,8 @@ const quickAccess = [
 
 export default function HomeScreen(): ReactElement {
   const router = useRouter();
+  const { name } = useProfile();
+  const firstName = name?.split(/\s+/)[0];
 
   return (
     <Screen scroll flush>
@@ -43,7 +46,7 @@ export default function HomeScreen(): ReactElement {
         </View>
 
         <View style={styles.greeting}>
-          <Text variant="title2">Olá!</Text>
+          <Text variant="title2">{firstName ? `Olá, ${firstName}!` : 'Olá!'}</Text>
           <Text variant="body" color={colors.textSecondary}>
             Pronto para o seu treino de hoje?
           </Text>

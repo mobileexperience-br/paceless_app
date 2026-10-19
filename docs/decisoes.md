@@ -14,6 +14,14 @@ Formato:
 
 ---
 
+## 2026-10-19 — Tabelas de usuário: FK em auth.users e RLS
+**Decisão:** toda tabela de dados do usuário referencia `auth.users(id)` com
+`on delete cascade` e tem RLS ativa com políticas por `(select auth.uid())`.
+**Por quê:** o client fala direto com o banco, então a RLS é a única barreira;
+o cascade faz a exclusão de conta apagar todos os dados.
+**Primeira aplicação:** `public.profiles` (nome + respostas do onboarding),
+criada por trigger no signup; sem política de delete.
+
 ## 2026-10-19 — Primeira Edge Function: exclusão de conta
 **Decisão:** `supabase/functions/delete-account` valida o JWT do usuário e
 apaga a conta com `auth.admin.deleteUser`. O app chama via
