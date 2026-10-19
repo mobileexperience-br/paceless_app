@@ -57,7 +57,7 @@ export default function PaywallScreen(): ReactElement {
                 onPress={() => { setSelected(plan.id); }}
                 style={styles.planPressable}
               >
-                <Card style={active ? styles.planActive : undefined}>
+                <Card style={[styles.plan, active && styles.planActive]}>
                   <Text variant="bodyStrong">{plan.title}</Text>
                   <Text variant="title2">{plan.price}</Text>
                   {plan.note ? (
@@ -112,10 +112,13 @@ const styles = StyleSheet.create({
   planPressable: {
     flex: 1,
   },
-  planActive: {
-    borderColor: colors.primary,
+  plan: {
+    flex: 1,
     borderWidth: 2,
     borderRadius: radius.lg,
+  },
+  planActive: {
+    borderColor: colors.primary,
   },
   footer: {
     paddingHorizontal: layout.screenPadding,
