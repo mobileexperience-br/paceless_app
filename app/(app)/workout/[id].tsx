@@ -1,18 +1,14 @@
-import type { ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useEffect, useState, type ReactElement } from 'react';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Ellipsis,
-  Lock,
-  Pause,
-  Square,
-} from 'lucide-react-native';
+import { ArrowLeft, Ellipsis } from 'lucide-react-native';
 import { StatRow, Text, type Stat } from '@/components';
-import { colors, layout, radius, spacing } from '@/theme';
+import { SlideToFinish } from '@/components/workout/SlideToFinish';
+import { WorkoutControls } from '@/components/workout/WorkoutControls';
+import { useStopwatch } from '@/hooks/useStopwatch';
+import { colors, layout, spacing, workout } from '@/theme';
 
 const stats: Stat[] = [
   { value: '—', label: 'Distância (km)' },
@@ -22,6 +18,28 @@ const stats: Stat[] = [
 
 export default function WorkoutScreen(): ReactElement {
   const router = useRouter();
+  const { formatted, running, start, pause, resume } = useStopwatch();
+  const [locked, setLocked] = useState<boolean>(false);
+
+  useEffect(() => {
+    start();
+  }, [start]);
+
+  const leave = (): void => {
+    router.back();
+  };
+
+  const togglePause = (): void => {
+    if (running) pause();
+    else resume();
+  };
+
+  const confirmStop = (): void => {
+    Alert.alert('Parar treino?', 'O treino em andamento será encerrado.', [
+      { text: 'Continuar', style: 'cancel' },
+      { text: 'Parar', style: 'destructive', onPress: leave },
+    ]);
+  };
 
   return (
     <View style={styles.root}>
@@ -32,28 +50,25 @@ export default function WorkoutScreen(): ReactElement {
             accessibilityRole="button"
             accessibilityLabel="Voltar"
             hitSlop={12}
-            onPress={() => { router.back(); }}
+            onPress={leave}
           >
-            <ArrowLeft size={24} color={colors.dark.text} strokeWidth={2} />
+            <ArrowLeft size={workout.topBarIconSize} color={colors.dark.text} strokeWidth={2} />
           </Pressable>
           <View style={styles.grow} />
           <Pressable accessibilityRole="button" accessibilityLabel="Mais opções" hitSlop={12}>
-            <Ellipsis size={24} color={colors.dark.text} strokeWidth={2} />
+            <Ellipsis size={workout.topBarIconSize} color={colors.dark.text} strokeWidth={2} />
           </Pressable>
         </View>
 
         <View style={styles.heading}>
           <Text variant="title1" color={colors.dark.text}>
-            Corrida leve
-          </Text>
-          <Text variant="caption" color={colors.dark.textSecondary}>
-            Zona 2 • Base aeróbica
+            Treino livre
           </Text>
         </View>
 
         <View style={styles.timer}>
           <Text variant="timer" center color={colors.primary}>
-            00:00:00
+            {formatted}
           </Text>
           <Text variant="caption" center color={colors.dark.textSecondary}>
             Duração
@@ -63,44 +78,16 @@ export default function WorkoutScreen(): ReactElement {
         <StatRow stats={stats} dark style={styles.stats} />
 
         <View style={styles.controls}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Bloquear tela"
-            style={styles.secondaryControl}
-          >
-            <Lock size={24} color={colors.dark.text} strokeWidth={1.75} />
-          </Pressable>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Pausar treino"
-            style={styles.primaryControl}
-          >
-            <Pause size={36} color={colors.ink} fill={colors.ink} strokeWidth={0} />
-          </Pressable>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Parar treino"
-            style={styles.secondaryControl}
-          >
-            <Square
-              size={20}
-              color={colors.dark.text}
-              fill={colors.dark.text}
-              strokeWidth={0}
-            />
-          </Pressable>
+          <WorkoutControls
+            paused={!running}
+            locked={locked}
+            onTogglePause={togglePause}
+            onStop={confirmStop}
+            onToggleLock={() => { setLocked((prev) => !prev); }}
+          />
         </View>
 
-        <View style={styles.slider}>
-          <View style={styles.sliderThumb}>
-            <ArrowRight size={20} color={colors.ink} strokeWidth={2.5} />
-          </View>
-          <Text variant="caption" center color={colors.dark.textSecondary} style={styles.grow}>
-            Deslize para finalizar
-          </Text>
-        </View>
+        <SlideToFinish disabled={locked} onFinish={leave} />
       </SafeAreaView>
     </View>
   );
@@ -118,7 +105,7 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 44,
+    minHeight: workout.topBarHeight,
   },
   grow: {
     flex: 1,
@@ -136,42 +123,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.huge,
   },
   controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     marginBottom: spacing.huge,
-  },
-  secondaryControl: {
-    width: 56,
-    height: 56,
-    borderRadius: radius.full,
-    borderWidth: 1,
-    borderColor: colors.dark.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryControl: {
-    width: 96,
-    height: 96,
-    borderRadius: radius.full,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  slider: {
-    height: 56,
-    borderRadius: radius.md,
-    backgroundColor: colors.dark.surface,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.xs,
-  },
-  sliderThumb: {
-    width: 64,
-    height: 48,
-    borderRadius: radius.sm,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

@@ -1,0 +1,15 @@
+export const workout = {
+  topBarHeight: 44,
+  topBarIconSize: 24,
+  secondaryControlSize: 56,
+  primaryControlSize: 96,
+  secondaryIconSize: 24,
+  primaryIconSize: 36,
+  stopIconSize: 20,
+  sliderHeight: 56,
+  thumbWidth: 64,
+  thumbHeight: 48,
+  thumbIconSize: 20,
+  finishThreshold: 0.85,
+  disabledOpacity: 0.4,
+} as const;
