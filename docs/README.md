@@ -11,6 +11,7 @@ Planejamento e acordos do projeto. O código diz *como* está; esta pasta diz
 | [sprint-01.md](./sprint-01.md) | Trilhas paralelas da sprint 01 |
 | [sprint-02.md](./sprint-02.md) | Trilhas paralelas da sprint 02 |
 | [publicacao-lojas.md](./publicacao-lojas.md) | Checklist de Google Play e App Store, e passos de EAS |
+| [pesquisa/](./pesquisa/README.md) | Propostas da Trilha R: relógios e saúde, notificações, compartilhar corrida, gamificação e musculação |
 | [colaboracao.md](./colaboracao.md) | Como a gente trabalha junto: branches, PR, review, padrões de código |
 | [design-system.md](./design-system.md) | Origem e uso dos tokens, e o que foi feito fora do mockup |
 | [decisoes.md](./decisoes.md) | Registro de decisões (o que, por quê, quando) |
