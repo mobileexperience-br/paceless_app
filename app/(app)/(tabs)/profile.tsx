@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
+import { useSession } from '@/hooks/useSession';
 import { AssetPlaceholder, Card, ListRow, Screen, Text } from '@/components';
 import { colors, layout, radius, spacing } from '@/theme';
 
@@ -16,6 +17,7 @@ const menu = [
 
 export default function ProfileScreen(): ReactElement {
   const router = useRouter();
+  const { signOut } = useSession();
 
   return (
     <Screen scroll flush>
@@ -49,7 +51,9 @@ export default function ProfileScreen(): ReactElement {
               divider={index < menu.length - 1}
               {...(item === 'Sair' && {
                 onPress: (): void => {
-                  router.replace('/(pre-auth)/welcome');
+                  void signOut().then(() => {
+                    router.replace('/(pre-auth)/welcome');
+                  });
                 },
               })}
             />

@@ -1,6 +1,7 @@
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { CircleAlert } from 'lucide-react-native';
 import {
   Button,
   Input,
@@ -9,10 +10,34 @@ import {
   SocialButton,
   Text,
 } from '@/components';
+import { useSession } from '@/hooks/useSession';
+import { validateCredentials } from '@/hooks/validateAuth';
 import { colors, layout, spacing } from '@/theme';
 
 export default function LoginScreen(): ReactElement {
   const router = useRouter();
+  const { signIn } = useSession();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = async (): Promise<void> => {
+    const invalid = validateCredentials(email, password);
+    if (invalid) {
+      setError(invalid);
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+    const result = await signIn(email.trim(), password);
+    setSubmitting(false);
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+    router.replace('/(app)');
+  };
 
   return (
     <Screen flush scroll>
@@ -32,11 +57,32 @@ export default function LoginScreen(): ReactElement {
             autoCapitalize="none"
             autoComplete="email"
             keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
           />
-          <Input placeholder="Senha" autoComplete="current-password" secure />
+          <Input
+            placeholder="Senha"
+            autoComplete="current-password"
+            secure
+            value={password}
+            onChangeText={setPassword}
+          />
         </View>
 
-        <Button label="Entrar" onPress={() => { router.replace('/(app)'); }} />
+        {error ? (
+          <View style={styles.error}>
+            <CircleAlert size={16} color={colors.ink} strokeWidth={1.75} />
+            <Text variant="caption" style={styles.errorText}>
+              {error}
+            </Text>
+          </View>
+        ) : null}
+
+        <Button
+          label={submitting ? 'Entrando...' : 'Entrar'}
+          disabled={submitting}
+          onPress={() => { void submit(); }}
+        />
 
         <View style={styles.divider}>
           <View style={styles.line} />
@@ -79,6 +125,14 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: spacing.md,
+  },
+  error: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  errorText: {
+    flex: 1,
   },
   divider: {
     flexDirection: 'row',
