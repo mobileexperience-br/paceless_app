@@ -9,6 +9,8 @@ let flushing = false;
 function isDraft(value: unknown): value is ActivityDraft {
   if (!isRecord(value)) return false;
   return (
+    typeof value['id'] === 'string' &&
+    typeof value['user_id'] === 'string' &&
     (value['type'] === 'run' || value['type'] === 'strength') &&
     typeof value['started_at'] === 'string' &&
     typeof value['ended_at'] === 'string' &&
@@ -42,7 +44,9 @@ async function writeQueue(queue: readonly ActivityDraft[]): Promise<void> {
 export async function insertActivity(draft: ActivityDraft): Promise<boolean> {
   if (!supabase) return false;
   try {
-    const { error } = await supabase.from('activities').insert(draft);
+    const { error } = await supabase
+      .from('activities')
+      .upsert(draft, { onConflict: 'id', ignoreDuplicates: true });
     return error === null;
   } catch {
     return false;

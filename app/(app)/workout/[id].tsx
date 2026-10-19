@@ -9,9 +9,8 @@ import { SlideToFinish } from '@/components/workout/SlideToFinish';
 import { WorkoutControls } from '@/components/workout/WorkoutControls';
 import { WorkoutTopBar } from '@/components/workout/WorkoutTopBar';
 import { useRunTracker } from '@/hooks/useRunTracker';
-import { useSaveActivity } from '@/hooks/useSaveActivity';
+import { useSaveActivity, type NewActivity } from '@/hooks/useSaveActivity';
 import { useStopwatch } from '@/hooks/useStopwatch';
-import type { ActivityDraft } from '@/lib/activities';
 import { formatDistanceStat, formatPace } from '@/lib/geo';
 import { colors, layout, spacing } from '@/theme';
 
@@ -57,7 +56,7 @@ export default function WorkoutScreen(): ReactElement {
       leave();
       return;
     }
-    const draft: ActivityDraft = {
+    const draft: NewActivity = {
       type: 'run',
       started_at: startedAtRef.current.toISOString(),
       ended_at: new Date().toISOString(),

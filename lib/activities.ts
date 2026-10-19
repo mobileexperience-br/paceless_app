@@ -3,6 +3,8 @@ import type { RoutePoint } from '@/lib/geo';
 export type ActivityType = 'run' | 'strength';
 
 export interface ActivityDraft {
+  id: string;
+  user_id: string;
   type: ActivityType;
   started_at: string;
   ended_at: string;
