@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Card, ListRow, Screen, ScreenHeader, Text } from '@/components';
 import { useOpenLink } from '@/hooks/useOpenLink';
 import { HEALTH_DISCLAIMER } from '@/lib/healthDisclaimer';
@@ -8,24 +9,30 @@ import { colors, layout } from '@/theme';
 
 interface Topic {
   title: string;
-  onPress: (() => void) | null;
+  onPress: () => void;
 }
 
 export default function HelpScreen(): ReactElement {
-  const { error, openUrl, openSupportEmail } = useOpenLink();
-  const { faqUrl, supportEmail, termsUrl, privacyUrl, accountDeletionUrl } = links;
+  const router = useRouter();
+  const { error, openUrl, openSupportEmail, openLegal } = useOpenLink();
+  const { faqUrl, supportEmail, accountDeletionUrl } = links;
 
   const topics: Topic[] = [
-    { title: 'Perguntas frequentes', onPress: faqUrl ? (): void => void openUrl(faqUrl) : null },
     {
-      title: 'Fale conosco',
-      onPress: supportEmail ? (): void => void openSupportEmail(supportEmail) : null,
+      title: 'Perguntas frequentes',
+      onPress: (): void => {
+        if (faqUrl) {
+          void openUrl(faqUrl);
+          return;
+        }
+        router.push('/profile/faq');
+      },
     },
-    { title: 'Termos de uso', onPress: termsUrl ? (): void => void openUrl(termsUrl) : null },
-    {
-      title: 'Política de privacidade',
-      onPress: privacyUrl ? (): void => void openUrl(privacyUrl) : null,
-    },
+    ...(supportEmail
+      ? [{ title: 'Fale conosco', onPress: (): void => void openSupportEmail(supportEmail) }]
+      : []),
+    { title: 'Termos de uso', onPress: (): void => { openLegal('terms'); } },
+    { title: 'Política de privacidade', onPress: (): void => { openLegal('privacy'); } },
     ...(accountDeletionUrl
       ? [{ title: 'Excluir conta pela web', onPress: (): void => void openUrl(accountDeletionUrl) }]
       : []),
@@ -41,9 +48,8 @@ export default function HelpScreen(): ReactElement {
               key={topic.title}
               title={topic.title}
               divider={index < topics.length - 1}
-              {...(topic.onPress
-                ? { onPress: topic.onPress, showChevron: true }
-                : { value: 'Em breve' })}
+              onPress={topic.onPress}
+              showChevron
             />
           ))}
         </Card>

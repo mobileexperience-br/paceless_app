@@ -15,6 +15,7 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 | Restaurar compras no paywall | Apple (obrig.) / Play | código | `[x]` |
 | Sign in with Apple (código, `usesAppleSignIn`) | Apple 4.8 | código | `[x]` |
 | Links de Termos/Privacidade via env (`EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_PRIVACY_URL`), no cadastro e em Ajuda | Ambas | código | `[x]` |
+| Termos, Privacidade e Perguntas frequentes dentro do app (telas internas; usadas quando a URL da env não está definida) | Ambas | código | `[x]` |
 | Localização só em primeiro plano, sem background nem foreground service | Ambas | código | `[x]` |
 | Texto de permissão de localização em PT-BR | Apple / Play | código | `[x]` |
 | Dados protegidos por RLS; tabelas em cascata na exclusão | Ambas | código | `[x]` |
@@ -68,3 +69,5 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 | Webhook do RevenueCat e secrets das Edge Functions em produção | Ambas | painel | `[ ]` |
 | Encarregado (DPO) e contato LGPD definidos | LGPD | Pedro | `[ ]` |
 | Revisão jurídica dos textos legais | Ambas | Pedro (advogado) | `[ ]` |
+
+> Nota: o app agora tem Termos, Privacidade e FAQ dentro dele (conteúdo em `content/legal/` e `content/faq.ts`, sem o aviso de rascunho). As lojas continuam exigindo **URLs públicas** de Termos/Privacidade (e de exclusão de dados no Play), que ainda precisam ser hospedadas e configuradas nas envs. Os textos seguem como rascunho e precisam de revisão jurídica; os placeholders (`[RAZÃO SOCIAL]`, `[DATA]` etc.) ainda não foram preenchidos.

@@ -3,7 +3,6 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { Text } from './Text';
 import type { Plan } from '@/hooks/useOfferings';
 import { useOpenLink } from '@/hooks/useOpenLink';
-import { links } from '@/lib/links';
 import { colors, spacing } from '@/theme';
 
 interface SubscriptionDisclosureProps {
@@ -27,20 +26,16 @@ function cancelSteps(): string {
 
 interface LegalLinkProps {
   label: string;
-  url: string | null;
-  onOpen: (url: string) => Promise<void>;
+  onPress: () => void;
 }
 
-function LegalLink({ label, url, onOpen }: LegalLinkProps): ReactElement {
-  if (!url) {
-    return <Text variant="caption" color={colors.textSecondary}>{label}</Text>;
-  }
+function LegalLink({ label, onPress }: LegalLinkProps): ReactElement {
   return (
     <Text
       variant="captionStrong"
       color={colors.primaryDeep}
       accessibilityRole="link"
-      onPress={() => { void onOpen(url); }}
+      onPress={onPress}
     >
       {label}
     </Text>
@@ -48,7 +43,7 @@ function LegalLink({ label, url, onOpen }: LegalLinkProps): ReactElement {
 }
 
 export function SubscriptionDisclosure({ plan }: SubscriptionDisclosureProps): ReactElement {
-  const { error, openUrl } = useOpenLink();
+  const { error, openLegal } = useOpenLink();
   const account = accountLabel();
 
   return (
@@ -62,9 +57,9 @@ export function SubscriptionDisclosure({ plan }: SubscriptionDisclosureProps): R
         atual. Você pode gerenciar e cancelar a qualquer momento em {cancelSteps()}.
       </Text>
       <Text variant="caption" color={colors.textSecondary}>
-        <LegalLink label="Termos de uso" url={links.termsUrl} onOpen={openUrl} />
+        <LegalLink label="Termos de uso" onPress={() => { openLegal('terms'); }} />
         {' e '}
-        <LegalLink label="Política de privacidade" url={links.privacyUrl} onOpen={openUrl} />
+        <LegalLink label="Política de privacidade" onPress={() => { openLegal('privacy'); }} />
       </Text>
       {error ? (
         <Text variant="caption" color={colors.danger}>

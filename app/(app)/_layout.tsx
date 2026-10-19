@@ -30,6 +30,7 @@ export default function AppLayout(): ReactElement | null {
       <Stack.Screen name="profile/devices" />
       <Stack.Screen name="profile/notifications" />
       <Stack.Screen name="profile/help" />
+      <Stack.Screen name="profile/faq" />
     </Stack>
   );
 }

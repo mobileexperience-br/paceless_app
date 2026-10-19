@@ -47,6 +47,8 @@ export default function RootLayout(): ReactElement | null {
         >
           <Stack.Screen name="(pre-auth)" />
           <Stack.Screen name="(app)" />
+          <Stack.Screen name="legal/terms" />
+          <Stack.Screen name="legal/privacy" />
         </Stack>
       </SessionProvider>
     </SafeAreaProvider>
