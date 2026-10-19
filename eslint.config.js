@@ -22,7 +22,7 @@ const noComments = {
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*', 'public/*', '.expo/*'],
+    ignores: ['dist/*', 'public/*', '.expo/*', '.claude/*'],
   },
   {
     files: ['*.config.js'],
