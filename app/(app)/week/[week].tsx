@@ -25,7 +25,7 @@ export default function WeekScreen(): ReactElement {
   const { week } = useLocalSearchParams<{ week: string }>();
 
   return (
-    <Screen scroll flush>
+    <Screen scroll flush edges={['top', 'bottom']}>
       <ScreenHeader showBack title={`Semana ${week}`} />
 
       <View style={styles.body}>
@@ -62,7 +62,6 @@ export default function WeekScreen(): ReactElement {
 const styles = StyleSheet.create({
   body: {
     paddingHorizontal: layout.screenPadding,
-    paddingTop: spacing.xs,
   },
   progress: {
     marginTop: spacing.md,

@@ -10,6 +10,7 @@ export { ProgressBar } from './ProgressBar';
 export { Ring } from './Ring';
 export { Screen } from './Screen';
 export { ScreenHeader } from './ScreenHeader';
+export { ScreenTitle } from './ScreenTitle';
 export { SegmentedTabs } from './SegmentedTabs';
 export { SocialButton } from './SocialButton';
 export { StatRow } from './StatRow';

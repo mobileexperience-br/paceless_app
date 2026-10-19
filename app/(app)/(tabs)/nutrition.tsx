@@ -6,6 +6,7 @@ import {
   ListRow,
   Ring,
   Screen,
+  ScreenTitle,
   SegmentedTabs,
   Text,
 } from '@/components';
@@ -26,9 +27,7 @@ export default function NutritionScreen(): ReactElement {
 
   return (
     <Screen scroll flush>
-      <Text variant="title2" style={styles.title}>
-        Nutrição
-      </Text>
+      <ScreenTitle title="Nutrição" />
 
       <SegmentedTabs items={tabs} value={tab} onChange={setTab} />
 
@@ -89,10 +88,6 @@ export default function NutritionScreen(): ReactElement {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    paddingHorizontal: layout.screenPadding,
-    paddingVertical: spacing.md,
-  },
   body: {
     paddingHorizontal: layout.screenPadding,
     paddingTop: spacing.lg,

@@ -6,7 +6,7 @@ import { colors, layout, sizes } from '@/theme';
 
 export default function NotificationsScreen(): ReactElement {
   return (
-    <Screen scroll flush>
+    <Screen scroll flush edges={['top', 'bottom']}>
       <ScreenHeader showBack title="Notificações" />
       <View style={styles.body}>
         <EmptyState

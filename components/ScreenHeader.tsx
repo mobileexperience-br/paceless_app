@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Text } from './Text';
-import { colors, layout, spacing } from '@/theme';
+import { colors, layout, sizes, spacing } from '@/theme';
 
 interface ScreenHeaderProps {
   title?: string;
@@ -34,10 +34,10 @@ export function ScreenHeader({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Voltar"
-            hitSlop={12}
+            hitSlop={sizes.hitSlop}
             onPress={onBack ?? ((): void => { router.back(); })}
           >
-            <ArrowLeft size={24} color={tint} strokeWidth={2} />
+            <ArrowLeft size={sizes.iconLg} color={tint} strokeWidth={sizes.iconStroke} />
           </Pressable>
         ) : null}
 
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 44,
+    minHeight: layout.headerHeight,
     gap: spacing.md,
   },
   centerLabel: {
@@ -80,5 +80,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: spacing.sm,
+    marginBottom: layout.titleGap,
   },
 });

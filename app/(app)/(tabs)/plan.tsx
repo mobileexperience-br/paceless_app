@@ -8,6 +8,7 @@ import {
   ListRow,
   ProgressBar,
   Screen,
+  ScreenTitle,
   Text,
 } from '@/components';
 import { colors, layout, radius, sizes, spacing } from '@/theme';
@@ -17,10 +18,8 @@ export default function PlanScreen(): ReactElement {
 
   return (
     <Screen scroll flush>
+      <ScreenTitle title="Plano" />
       <View style={styles.body}>
-        <Text variant="title2" style={styles.title}>
-          Plano
-        </Text>
 
         <Card flush>
           <View style={styles.hero}>
@@ -80,9 +79,6 @@ const styles = StyleSheet.create({
   body: {
     paddingHorizontal: layout.screenPadding,
     gap: layout.cardGap,
-  },
-  title: {
-    paddingVertical: spacing.md,
   },
   hero: {
     backgroundColor: colors.primary,

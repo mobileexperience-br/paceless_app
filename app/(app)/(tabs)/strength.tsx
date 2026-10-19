@@ -4,8 +4,8 @@ import {
   Button,
   EmptyState,
   Screen,
+  ScreenTitle,
   SegmentedTabs,
-  Text,
 } from '@/components';
 import { layout, spacing } from '@/theme';
 
@@ -16,9 +16,7 @@ export default function StrengthScreen(): ReactElement {
 
   return (
     <Screen flush>
-      <Text variant="title2" style={styles.title}>
-        Musculação
-      </Text>
+      <ScreenTitle title="Musculação" />
 
       <SegmentedTabs items={tabs} value={tab} onChange={setTab} />
 
@@ -41,10 +39,6 @@ export default function StrengthScreen(): ReactElement {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    paddingHorizontal: layout.screenPadding,
-    paddingVertical: spacing.md,
-  },
   body: {
     flex: 1,
     justifyContent: 'center',

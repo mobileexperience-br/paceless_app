@@ -7,7 +7,7 @@ const options = ['Unidades de distância', 'Tema'];
 
 export default function PreferencesScreen(): ReactElement {
   return (
-    <Screen scroll flush>
+    <Screen scroll flush edges={['top', 'bottom']}>
       <ScreenHeader showBack title="Preferências" />
       <View style={styles.body}>
         <Card flush>

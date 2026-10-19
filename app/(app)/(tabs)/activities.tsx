@@ -6,6 +6,7 @@ import {
   Card,
   EmptyState,
   Screen,
+  ScreenTitle,
   SegmentedTabs,
   StatRow,
   Text,
@@ -66,14 +67,14 @@ export default function ActivitiesScreen(): ReactElement {
 
   return (
     <Screen flush>
-      <View style={styles.header}>
-        <Text variant="title2" style={styles.grow}>
-          Atividades
-        </Text>
-        <Pressable accessibilityRole="button" accessibilityLabel="Filtrar" hitSlop={sizes.hitSlop}>
-          <ListFilter size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />
-        </Pressable>
-      </View>
+      <ScreenTitle
+        title="Atividades"
+        trailing={
+          <Pressable accessibilityRole="button" accessibilityLabel="Filtrar" hitSlop={sizes.hitSlop}>
+            <ListFilter size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />
+          </Pressable>
+        }
+      />
 
       <SegmentedTabs items={activityFilters} value={filter} onChange={setFilter} />
 
@@ -113,19 +114,10 @@ function Separator(): ReactElement {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: layout.screenPadding,
-    paddingVertical: spacing.md,
-  },
-  grow: {
-    flex: 1,
-  },
   body: {
     paddingHorizontal: layout.screenPadding,
     paddingTop: spacing.lg,
-    paddingBottom: spacing.xxxl,
+    paddingBottom: layout.screenBottom,
   },
   listHeader: {
     gap: layout.cardGap,

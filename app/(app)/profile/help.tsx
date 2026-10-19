@@ -32,7 +32,7 @@ export default function HelpScreen(): ReactElement {
   ];
 
   return (
-    <Screen scroll flush>
+    <Screen scroll flush edges={['top', 'bottom']}>
       <ScreenHeader showBack title="Ajuda e suporte" />
       <View style={styles.body}>
         <Card flush>

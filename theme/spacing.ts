@@ -11,6 +11,10 @@ export const spacing = {
 
 export const layout = {
   screenPadding: 20,
+  titleGap: 16,
+  sectionGap: 24,
+  screenBottom: 32,
+  headerHeight: 44,
   cardGap: 12,
   cardPadding: 16,
   controlHeight: 52,

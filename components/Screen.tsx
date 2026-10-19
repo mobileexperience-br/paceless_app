@@ -1,7 +1,7 @@
 import { type ReactNode, type ReactElement } from 'react';
 import { ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, layout, spacing } from '@/theme';
+import { colors, layout } from '@/theme';
 
 interface ScreenProps {
   children: ReactNode;
@@ -53,6 +53,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: spacing.xxxl,
+    paddingBottom: layout.screenBottom,
   },
 });
