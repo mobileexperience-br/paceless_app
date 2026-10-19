@@ -8,6 +8,7 @@ declare namespace NodeJS {
     EXPO_PUBLIC_PRIVACY_URL?: string;
     EXPO_PUBLIC_SUPPORT_EMAIL?: string;
     EXPO_PUBLIC_FAQ_URL?: string;
+    EXPO_PUBLIC_ACCOUNT_DELETION_URL?: string;
     EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?: string;
     EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?: string;
   }

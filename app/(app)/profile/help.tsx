@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, ListRow, Screen, ScreenHeader, Text } from '@/components';
 import { useOpenLink } from '@/hooks/useOpenLink';
+import { HEALTH_DISCLAIMER } from '@/lib/healthDisclaimer';
 import { links } from '@/lib/links';
 import { colors, layout } from '@/theme';
 
@@ -12,7 +13,7 @@ interface Topic {
 
 export default function HelpScreen(): ReactElement {
   const { error, openUrl, openSupportEmail } = useOpenLink();
-  const { faqUrl, supportEmail, termsUrl, privacyUrl } = links;
+  const { faqUrl, supportEmail, termsUrl, privacyUrl, accountDeletionUrl } = links;
 
   const topics: Topic[] = [
     { title: 'Perguntas frequentes', onPress: faqUrl ? (): void => void openUrl(faqUrl) : null },
@@ -25,6 +26,9 @@ export default function HelpScreen(): ReactElement {
       title: 'Política de privacidade',
       onPress: privacyUrl ? (): void => void openUrl(privacyUrl) : null,
     },
+    ...(accountDeletionUrl
+      ? [{ title: 'Excluir conta pela web', onPress: (): void => void openUrl(accountDeletionUrl) }]
+      : []),
   ];
 
   return (
@@ -43,6 +47,9 @@ export default function HelpScreen(): ReactElement {
             />
           ))}
         </Card>
+        <Text variant="caption" color={colors.textSecondary}>
+          {HEALTH_DISCLAIMER}
+        </Text>
         {error ? (
           <Text variant="caption" color={colors.danger}>
             {error}

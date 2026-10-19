@@ -2,7 +2,15 @@ import { useState, type ReactElement } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Check } from 'lucide-react-native';
-import { Button, Card, IconBadge, Screen, ScreenHeader, Text } from '@/components';
+import {
+  Button,
+  Card,
+  IconBadge,
+  Screen,
+  ScreenHeader,
+  SubscriptionDisclosure,
+  Text,
+} from '@/components';
 import { useOfferings, type PlanId } from '@/hooks/useOfferings';
 import { usePremium, type PurchaseResult } from '@/hooks/usePremium';
 import { colors, layout, radius, spacing } from '@/theme';
@@ -41,7 +49,7 @@ export default function PaywallScreen(): ReactElement {
   };
 
   return (
-    <Screen flush>
+    <Screen flush scroll>
       <ScreenHeader showBack />
 
       <View style={styles.body}>
@@ -112,6 +120,8 @@ export default function PaywallScreen(): ReactElement {
             })}
           </View>
         ) : null}
+
+        {ready ? <SubscriptionDisclosure plan={selected} /> : null}
 
         {message ? (
           <Text variant="caption" color={colors.danger}>

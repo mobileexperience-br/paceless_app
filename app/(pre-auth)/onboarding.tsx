@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, Card, Screen, ScreenHeader, Text } from '@/components';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { HEALTH_DISCLAIMER } from '@/lib/healthDisclaimer';
 import { onboardingSteps } from '@/lib/onboardingSteps';
 import { colors, layout, radius, spacing } from '@/theme';
 
@@ -58,6 +59,11 @@ export default function OnboardingScreen(): ReactElement {
       </View>
 
       <View style={styles.footer}>
+        {isLast ? (
+          <Text variant="caption" color={colors.textSecondary} center>
+            {HEALTH_DISCLAIMER}
+          </Text>
+        ) : null}
         <Button
           label={isLast ? 'Ver meu plano' : 'Continuar'}
           disabled={!selected}
@@ -89,5 +95,6 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: layout.screenPadding,
     paddingBottom: spacing.xxl,
+    gap: spacing.md,
   },
 });

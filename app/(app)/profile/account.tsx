@@ -28,7 +28,7 @@ export default function AccountScreen(): ReactElement {
   const confirmDeletion = (): void => {
     Alert.alert(
       'Excluir conta',
-      'Esta ação é permanente. Sua conta e todos os seus dados serão apagados e não poderão ser recuperados.',
+      'Esta ação é permanente. Sua conta e todos os seus dados serão apagados e não poderão ser recuperados. Uma assinatura ativa não é cancelada ao excluir a conta: cancele-a nos ajustes de assinaturas da App Store ou do Google Play.',
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Excluir', style: 'destructive', onPress: runDeletion },

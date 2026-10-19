@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { Settings } from 'lucide-react-native';
+import { useManageSubscription } from '@/hooks/useManageSubscription';
 import { useProfile } from '@/hooks/useProfile';
 import { useSession } from '@/hooks/useSession';
 import { AssetPlaceholder, Card, ListRow, Screen, Text } from '@/components';
@@ -24,6 +25,7 @@ export default function ProfileScreen(): ReactElement {
   const router = useRouter();
   const { signOut } = useSession();
   const { name } = useProfile();
+  const { isPremium, error, manage } = useManageSubscription();
 
   return (
     <Screen scroll flush>
@@ -63,6 +65,16 @@ export default function ProfileScreen(): ReactElement {
               }}
             />
           ))}
+          {isPremium ? (
+            <ListRow
+              title="Gerenciar assinatura"
+              showChevron
+              divider
+              onPress={(): void => {
+                void manage();
+              }}
+            />
+          ) : null}
           <ListRow
             title="Sair"
             showChevron
@@ -73,6 +85,11 @@ export default function ProfileScreen(): ReactElement {
             }}
           />
         </Card>
+        {error ? (
+          <Text variant="caption" color={colors.danger}>
+            {error}
+          </Text>
+        ) : null}
       </View>
     </Screen>
   );

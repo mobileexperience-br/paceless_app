@@ -13,5 +13,6 @@ export { ScreenHeader } from './ScreenHeader';
 export { SegmentedTabs } from './SegmentedTabs';
 export { SocialButton } from './SocialButton';
 export { StatRow } from './StatRow';
+export { SubscriptionDisclosure } from './SubscriptionDisclosure';
 export type { Stat } from './StatRow';
 export { Text } from './Text';
