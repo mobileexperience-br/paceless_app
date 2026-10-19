@@ -7,6 +7,7 @@ Planejamento e acordos do projeto. O código diz *como* está; esta pasta diz
 |---|---|
 | [estado-atual.md](./estado-atual.md) | Diagnóstico do que existe hoje, tela por tela, e as dívidas encontradas |
 | [roadmap.md](./roadmap.md) | Fases de trabalho, em ordem, com critério de pronto de cada uma |
+| [sprint-01.md](./sprint-01.md) | Trilhas paralelas da sprint atual (worktrees + agentes) |
 | [colaboracao.md](./colaboracao.md) | Como a gente trabalha junto: branches, PR, review, padrões de código |
 | [design-system.md](./design-system.md) | Origem e uso dos tokens, e o que foi feito fora do mockup |
 | [decisoes.md](./decisoes.md) | Registro de decisões (o que, por quê, quando) |
