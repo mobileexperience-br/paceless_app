@@ -44,15 +44,6 @@ module.exports = defineConfig([
     },
   },
   {
-    files: [
-      'app/(app)/workout/[[]id].tsx',
-      'app/(app)/workout/summary.tsx',
-      'components/workout/**',
-      'app/(app)/(tabs)/profile/account.tsx',
-    ],
-    rules: { 'no-restricted-properties': 'off' },
-  },
-  {
     files: ['supabase/functions/**/*.ts'],
     rules: { 'import/no-unresolved': 'off' },
   },

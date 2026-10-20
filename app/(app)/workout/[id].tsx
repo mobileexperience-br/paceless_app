@@ -10,7 +10,7 @@ import { SlideToFinish } from '@/components/workout/SlideToFinish';
 import { WorkoutControls } from '@/components/workout/WorkoutControls';
 import { WorkoutMenu } from '@/components/workout/WorkoutMenu';
 import { WorkoutTopBar } from '@/components/workout/WorkoutTopBar';
-import { confirmDiscard, confirmStop, showGpsHelp } from '@/components/workout/workoutDialogs';
+import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
 import { useRunTracker } from '@/hooks/useRunTracker';
 import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { useStopwatch } from '@/hooks/useStopwatch';
@@ -25,6 +25,7 @@ const MS_PER_SECOND = 1000;
 export default function WorkoutScreen(): ReactElement {
   useKeepAwake();
   const router = useRouter();
+  const { confirmDiscard, confirmStop, showGpsHelp } = useWorkoutDialogs();
   const { distanceUnit } = usePreferences();
   const insets = useSafeAreaInsets();
   const { elapsedMs, formatted, running, start, pause, resume } = useStopwatch();
