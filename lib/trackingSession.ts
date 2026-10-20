@@ -26,6 +26,7 @@ const updateOptions = {
 };
 
 let fallback: LocationSubscription | null = null;
+let currentSession = 0;
 
 async function requestNotificationPermission(): Promise<void> {
   if (Platform.OS !== 'android' || Platform.Version < ANDROID_NOTIFICATION_API) return;
@@ -36,13 +37,21 @@ async function requestNotificationPermission(): Promise<void> {
   }
 }
 
-export async function startTracking(): Promise<LocationState> {
+export function openTrackingSession(): number {
+  currentSession += 1;
+  return currentSession;
+}
+
+export async function startTracking(session: number): Promise<LocationState> {
   if (Platform.OS === 'web') return 'unavailable';
   try {
     const response = await requestForegroundPermissionsAsync();
     if (!response.granted) return 'denied';
     await requestNotificationPermission();
     await drainFixes();
+    if (session !== currentSession) return 'unavailable';
+    fallback?.remove();
+    fallback = null;
     try {
       await startLocationUpdatesAsync(TRACKING_TASK, {
         ...updateOptions,
@@ -57,9 +66,11 @@ export async function startTracking(): Promise<LocationState> {
         },
       });
     } catch {
-      fallback = await watchPositionAsync(updateOptions, (location) => {
+      const subscription = await watchPositionAsync(updateOptions, (location) => {
         void appendFixes(toFixes({ locations: [location] }));
       });
+      if (session === currentSession) fallback = subscription;
+      else subscription.remove();
     }
     return 'granted';
   } catch {
@@ -67,12 +78,14 @@ export async function startTracking(): Promise<LocationState> {
   }
 }
 
-export async function stopTracking(): Promise<void> {
+export async function stopTracking(session: number): Promise<void> {
+  if (session !== currentSession) return;
   fallback?.remove();
   fallback = null;
   if (Platform.OS === 'web') return;
   try {
     if (await hasStartedLocationUpdatesAsync(TRACKING_TASK)) {
+      if (session !== currentSession) return;
       await stopLocationUpdatesAsync(TRACKING_TASK);
     }
   } catch {

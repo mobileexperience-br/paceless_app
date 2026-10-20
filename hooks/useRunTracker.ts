@@ -4,7 +4,12 @@ import { paceSecondsPerKm, type RoutePoint } from '@/lib/geo';
 import type { Split } from '@/lib/splits';
 import { drainFixes, subscribeFixes } from '@/lib/trackBuffer';
 import { applyFix, currentPace, createTrack, trackSplits, type TrackState } from '@/lib/trackProcessor';
-import { startTracking, stopTracking, type LocationState } from '@/lib/trackingSession';
+import {
+  openTrackingSession,
+  startTracking,
+  stopTracking,
+  type LocationState,
+} from '@/lib/trackingSession';
 
 export type { LocationState } from '@/lib/trackingSession';
 
@@ -16,6 +21,12 @@ interface RunTrackerOptions {
   splitMeters: number;
 }
 
+export interface TrackSnapshot {
+  distanceMeters: number;
+  route: RoutePoint[];
+  splits: Split[];
+}
+
 export interface RunTracker {
   permission: LocationState;
   distanceMeters: number;
@@ -23,7 +34,7 @@ export interface RunTracker {
   averagePaceSecondsPerKm: number | null;
   route: RoutePoint[];
   splits: Split[];
-  stop: () => Promise<void>;
+  stop: () => Promise<TrackSnapshot>;
 }
 
 export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTrackerOptions): RunTracker {
@@ -34,6 +45,9 @@ export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTracke
   const [nowMs, setNowMs] = useState<number>(() => Date.now());
   const activeRef = useRef<boolean>(active);
   const rebaseRef = useRef<boolean>(false);
+  const trackRef = useRef<TrackState>(track);
+  const mountedRef = useRef<boolean>(true);
+  const sessionRef = useRef<number>(0);
 
   useEffect(() => {
     activeRef.current = active;
@@ -50,29 +64,32 @@ export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTracke
     };
   }, [active]);
 
+  const consume = useCallback(async (): Promise<void> => {
+    const fixes = await drainFixes();
+    if (!mountedRef.current || fixes.length === 0) return;
+    const rebase = rebaseRef.current;
+    rebaseRef.current = false;
+    const prev = trackRef.current;
+    const start: TrackState = rebase ? { ...prev, last: null, jumps: 0 } : prev;
+    const next = fixes.reduce((state, fix) => applyFix(state, fix, activeRef.current), start);
+    trackRef.current = next;
+    setTrack(next);
+  }, []);
+
   useEffect(() => {
     if (Platform.OS === 'web') return undefined;
-    let cancelled = false;
-
-    const consume = async (): Promise<void> => {
-      const fixes = await drainFixes();
-      if (cancelled || fixes.length === 0) return;
-      const rebase = rebaseRef.current;
-      rebaseRef.current = false;
-      setTrack((prev) => {
-        const start: TrackState = rebase ? { ...prev, last: null, jumps: 0 } : prev;
-        return fixes.reduce((state, fix) => applyFix(state, fix, activeRef.current), start);
-      });
-    };
+    mountedRef.current = true;
+    const session = openTrackingSession();
+    sessionRef.current = session;
 
     const unsubscribe = subscribeFixes((): void => {
       void consume();
     });
 
     const begin = async (): Promise<void> => {
-      const result = await startTracking();
-      if (cancelled) {
-        await stopTracking();
+      const result = await startTracking(session);
+      if (!mountedRef.current) {
+        await stopTracking(session);
         return;
       }
       setPermission(result);
@@ -80,13 +97,22 @@ export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTracke
 
     void begin();
     return (): void => {
-      cancelled = true;
+      mountedRef.current = false;
       unsubscribe();
-      void stopTracking();
+      void stopTracking(session);
     };
-  }, []);
+  }, [consume]);
 
-  const stop = useCallback((): Promise<void> => stopTracking(), []);
+  const stop = useCallback(async (): Promise<TrackSnapshot> => {
+    await stopTracking(sessionRef.current);
+    await consume();
+    const latest = trackRef.current;
+    return {
+      distanceMeters: latest.distanceMeters,
+      route: latest.route,
+      splits: trackSplits(latest),
+    };
+  }, [consume]);
 
   const hasSignal = permission === 'granted' && track.distanceMeters > 0;
   return {

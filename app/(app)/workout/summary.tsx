@@ -16,6 +16,7 @@ const MS_PER_SECOND = 1000;
 const statusMessages: Record<SummaryStatus, string> = {
   saved: 'Treino salvo',
   queued: 'Treino guardado. Será enviado quando houver conexão.',
+  failed: 'Não foi possível guardar o treino. Entre na sua conta novamente.',
 };
 
 export default function WorkoutSummaryScreen(): ReactElement {

@@ -2,7 +2,7 @@ import type { WorkoutType } from '@/lib/activities';
 import type { DistanceUnit } from '@/types/preferences';
 import type { Split } from '@/lib/splits';
 
-export type SummaryStatus = 'saved' | 'queued';
+export type SummaryStatus = 'saved' | 'queued' | 'failed';
 
 export interface WorkoutSummary {
   type: WorkoutType;

@@ -48,6 +48,16 @@ async function writeQueue(queue: readonly ActivityDraft[]): Promise<void> {
   }
 }
 
+async function currentUserId(): Promise<string | null> {
+  if (!supabase) return null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.user.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function insertActivity(draft: ActivityDraft): Promise<boolean> {
   if (!supabase) return false;
   try {
@@ -71,9 +81,12 @@ export async function flushPendingActivities(): Promise<number> {
   if (flushing || !supabase) return 0;
   flushing = true;
   try {
+    const userId = await currentUserId();
+    if (userId === null) return 0;
     const queue = await readQueue();
     const sentIds = new Set<string>();
     for (const draft of queue) {
+      if (draft.user_id !== userId) continue;
       if (await insertActivity(draft)) sentIds.add(draft.id);
     }
     if (sentIds.size === 0) return 0;

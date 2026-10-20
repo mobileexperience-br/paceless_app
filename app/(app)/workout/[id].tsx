@@ -19,6 +19,7 @@ import { activityLabels, type WorkoutType } from '@/lib/activities';
 import { splitMetersFor } from '@/lib/splits';
 import { distanceLabel, formatDistanceStat, formatPaceForUnit, paceLabel } from '@/lib/units';
 import { colors, layout, spacing, workout } from '@/theme';
+import type { DistanceUnit } from '@/types/preferences';
 
 const MS_PER_SECOND = 1000;
 
@@ -26,7 +27,8 @@ export default function WorkoutScreen(): ReactElement {
   useKeepAwake();
   const router = useRouter();
   const { confirmDiscard, confirmStop, showGpsHelp } = useWorkoutDialogs();
-  const { distanceUnit } = usePreferences();
+  const preferences = usePreferences();
+  const [distanceUnit] = useState<DistanceUnit>(preferences.distanceUnit);
   const insets = useSafeAreaInsets();
   const { elapsedMs, formatted, running, start, pause, resume } = useStopwatch();
   const [locked, setLocked] = useState<boolean>(false);
