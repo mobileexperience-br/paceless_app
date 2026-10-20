@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
-import type * as ImagePickerModule from 'expo-image-picker';
-import type * as ManipulatorModule from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { supabase } from '@/lib/supabase';
 
 const BUCKET = 'avatars';
@@ -11,24 +11,6 @@ export type AvatarSource = 'library' | 'camera';
 
 export class AvatarError extends Error {}
 
-const UNAVAILABLE_MESSAGE = 'Atualize o app para trocar a foto.';
-
-async function loadPicker(): Promise<typeof ImagePickerModule> {
-  try {
-    return await import('expo-image-picker');
-  } catch {
-    throw new AvatarError(UNAVAILABLE_MESSAGE);
-  }
-}
-
-async function loadManipulator(): Promise<typeof ManipulatorModule> {
-  try {
-    return await import('expo-image-manipulator');
-  } catch {
-    throw new AvatarError(UNAVAILABLE_MESSAGE);
-  }
-}
-
 export function avatarPublicUrl(path: string | null): string | null {
   if (!supabase || !path) return null;
   return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
@@ -36,7 +18,6 @@ export function avatarPublicUrl(path: string | null): string | null {
 
 async function ensurePermission(source: AvatarSource): Promise<void> {
   if (Platform.OS === 'web') return;
-  const ImagePicker = await loadPicker();
   const response =
     source === 'camera'
       ? await ImagePicker.requestCameraPermissionsAsync()
@@ -48,8 +29,7 @@ async function ensurePermission(source: AvatarSource): Promise<void> {
 
 export async function pickAvatar(source: AvatarSource): Promise<string | null> {
   await ensurePermission(source);
-  const ImagePicker = await loadPicker();
-  const options: ImagePickerModule.ImagePickerOptions = {
+  const options: ImagePicker.ImagePickerOptions = {
     mediaTypes: ['images'],
     allowsEditing: true,
     aspect: [1, 1],
@@ -64,7 +44,6 @@ export async function pickAvatar(source: AvatarSource): Promise<string | null> {
 }
 
 async function toJpegBuffer(uri: string): Promise<ArrayBuffer> {
-  const { ImageManipulator, SaveFormat } = await loadManipulator();
   const context = ImageManipulator.manipulate(uri);
   context.resize({ width: AVATAR_SIZE });
   const image = await context.renderAsync();
