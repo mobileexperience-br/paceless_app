@@ -35,3 +35,11 @@ Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações c
 - RevenueCat: app Play Store `com.paceless.app`. Chave `goog_` em `production`; development e preview seguem com a chave de teste.
 - Play Console (conta de organização "MXPBR"): o app ainda não foi criado porque falta o Pedro verificar o telefone da conta.
 - Falta: cliente OAuth Android com o SHA-1 de produção e o da assinatura do Play, depois do primeiro build enviado.
+
+## Situação em 20/10 à tarde
+
+- Convites aceitos: Google Cloud, Play Console, RevenueCat, Supabase e Expo.
+- E-mails do Pedro: `mobileexperiencebr@gmail.com` (dono do Google Cloud, Owner no RevenueCat, dono do Play Console MXPBR) e `pedrinhoadias@gmail.com`. Os dois estão nos contatos do desenvolvedor da tela OAuth.
+- Bloqueios:
+  - JSON da conta de serviço ainda não enviado ao RevenueCat (Jonatas). Sem ele, não dá para criar o tópico Pub/Sub.
+  - Pedro precisa concluir a verificação do Play Console: identidade e os dois telefones (contato e desenvolvedor) em "Detalhes da conta". Sem isso o app não pode ser criado.
