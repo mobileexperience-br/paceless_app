@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
@@ -70,6 +70,16 @@ export default function WorkoutScreen(): ReactElement {
     void tracker.stop();
     router.back();
   };
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', (): boolean => {
+      if (!finishing) confirmDiscard(leave);
+      return true;
+    });
+    return (): void => {
+      subscription.remove();
+    };
+  });
 
   const togglePause = (): void => {
     if (running) pause();

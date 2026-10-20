@@ -1,4 +1,4 @@
-import { useState, type RefObject } from 'react';
+import { useRef, useState, type RefObject } from 'react';
 import { useRouter } from 'expo-router';
 import type { RunTracker } from '@/hooks/useRunTracker';
 import { useSaveActivity, type NewActivity } from '@/hooks/useSaveActivity';
@@ -33,9 +33,11 @@ export function useFinishWorkout({
   const router = useRouter();
   const { save } = useSaveActivity();
   const [finishing, setFinishing] = useState<boolean>(false);
+  const finishingRef = useRef<boolean>(false);
 
   const finish = async (): Promise<void> => {
-    if (finishing) return;
+    if (finishingRef.current) return;
+    finishingRef.current = true;
     setFinishing(true);
     pause();
     await tracker.stop();
