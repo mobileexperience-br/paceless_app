@@ -97,18 +97,39 @@ as $$
 declare
   v_user uuid := auth.uid();
   v_user_plan uuid;
+  v_is_premium boolean;
   v_week_start date := date_trunc('week', p_start_date)::date;
 begin
   if v_user is null then
     raise exception 'not authenticated' using errcode = '28000';
   end if;
 
-  if not exists (
-    select 1 from public.plans p
-    where p.id = p_plan_id and (p.owner_id is null or p.owner_id = v_user)
-  ) then
+  perform pg_advisory_xact_lock(hashtextextended(v_user::text, 0));
+
+  select p.is_premium into v_is_premium
+  from public.plans p
+  where p.id = p_plan_id and (p.owner_id is null or p.owner_id = v_user);
+
+  if not found then
     raise exception 'plan not found' using errcode = 'P0002';
   end if;
+
+  if v_is_premium and not exists (
+    select 1 from public.subscriptions s
+    where s.user_id = v_user
+      and s.entitlement = 'premium'
+      and s.is_active
+      and (s.expires_at is null or s.expires_at > now())
+  ) then
+    raise exception 'premium required' using errcode = '42501';
+  end if;
+
+  delete from public.user_plan_workouts uw
+  using public.user_plans up
+  where uw.user_plan_id = up.id
+    and up.user_id = v_user
+    and up.status = 'active'
+    and uw.status = 'planned';
 
   update public.user_plans
   set status = 'cancelled'

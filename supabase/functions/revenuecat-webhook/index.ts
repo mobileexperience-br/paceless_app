@@ -6,6 +6,7 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 interface RevenueCatEvent {
   type?: string;
   app_user_id?: string;
+  transferred_from?: string[];
   transferred_to?: string[];
   entitlement_ids?: string[] | null;
   expiration_at_ms?: number | null;
@@ -64,8 +65,13 @@ async function fetchEntitlement(userId: string): Promise<Entitlement | null> {
 
 async function resolveEntitlements(event: RevenueCatEvent): Promise<Entitlement[]> {
   if (event.type === 'TRANSFER') {
-    const targets = (event.transferred_to ?? []).filter((id) => UUID_PATTERN.test(id));
+    const targets = [...(event.transferred_from ?? []), ...(event.transferred_to ?? [])].filter(
+      (id) => UUID_PATTERN.test(id),
+    );
     const results = await Promise.all(targets.map(fetchEntitlement));
+    if (results.some((item) => item === null)) {
+      throw new Error('Entitlement lookup failed');
+    }
     return results.filter((item): item is Entitlement => item !== null);
   }
   const userId = event.app_user_id;

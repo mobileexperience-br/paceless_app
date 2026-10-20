@@ -73,8 +73,10 @@ Sessão de força executada vira linha em `activities` com `type = 'strength'`
 `search_path = ''`, só `authenticated`): valida que o plano é visível, cancela o plano
 ativo anterior, cria `user_plans` e materializa a agenda a partir da segunda-feira
 da semana de `p_start_date` (descansos não geram linha; a tela deriva "Descanso" dos dias vazios).
-Não verifica `is_premium`: o limite free x premium continua pendente (regra do
-CLAUDE.md: verificado no servidor).
+Planos com `is_premium` exigem linha ativa em `subscriptions` (entitlement `premium`,
+não expirada); caso contrário levanta `premium required` (`42501`). Um `pg_advisory_xact_lock`
+por usuário serializa inscrições concorrentes, e as linhas `planned` do plano cancelado são
+removidas para não duplicar a agenda (histórico `done`/`skipped` é mantido).
 
 ### Gamificação (`20261019210300_gamification.sql`)
 
@@ -144,6 +146,10 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 8. `20261019210400_notification_settings.sql`
 9. `20261019210500_connected_devices.sql`
 10. `20261019210600_nutrition.sql`
+11. `20261019230000_profile_preferences.sql`
+12. `20261019230100_avatars_storage.sql`
+13. `20261019230200_activities_walk_type.sql` (tipo `walk` e `splits`)
+14. `20261020000000_restrict_core_table_grants.sql` (revoga `anon` e privilégios excessivos em `activities` e `profiles`)
 
 As trilhas paralelas (colunas novas em `profiles`, tipo `walk` e splits em `activities`)
 não conflitam com estas migrations; só precisam vir antes se alguma passar a depender delas.
