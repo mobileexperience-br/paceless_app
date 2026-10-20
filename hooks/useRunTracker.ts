@@ -33,9 +33,11 @@ export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTracke
   const [track, setTrack] = useState<TrackState>(() => createTrack(splitMeters));
   const [nowMs, setNowMs] = useState<number>(() => Date.now());
   const activeRef = useRef<boolean>(active);
+  const rebaseRef = useRef<boolean>(false);
 
   useEffect(() => {
     activeRef.current = active;
+    if (active) rebaseRef.current = true;
   }, [active]);
 
   useEffect(() => {
@@ -55,7 +57,12 @@ export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTracke
     const consume = async (): Promise<void> => {
       const fixes = await drainFixes();
       if (cancelled || fixes.length === 0) return;
-      setTrack((prev) => fixes.reduce((state, fix) => applyFix(state, fix, activeRef.current), prev));
+      const rebase = rebaseRef.current;
+      rebaseRef.current = false;
+      setTrack((prev) => {
+        const start: TrackState = rebase ? { ...prev, last: null, jumps: 0 } : prev;
+        return fixes.reduce((state, fix) => applyFix(state, fix, activeRef.current), start);
+      });
     };
 
     const unsubscribe = subscribeFixes((): void => {
