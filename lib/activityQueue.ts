@@ -5,6 +5,13 @@ import { supabase } from '@/lib/supabase';
 export const PENDING_ACTIVITIES_KEY = 'paceless:pending-activities';
 
 let flushing = false;
+let queueLock: Promise<unknown> = Promise.resolve();
+
+function withQueueLock<T>(job: () => Promise<T>): Promise<T> {
+  const run = queueLock.then(job, job);
+  queueLock = run.catch(() => undefined);
+  return run;
+}
 
 function isDraft(value: unknown): value is ActivityDraft {
   if (!isRecord(value)) return false;
@@ -53,9 +60,11 @@ export async function insertActivity(draft: ActivityDraft): Promise<boolean> {
   }
 }
 
-export async function enqueueActivity(draft: ActivityDraft): Promise<void> {
-  const queue = await readQueue();
-  await writeQueue([...queue, draft]);
+export function enqueueActivity(draft: ActivityDraft): Promise<void> {
+  return withQueueLock(async () => {
+    const queue = await readQueue();
+    await writeQueue([...queue, draft]);
+  });
 }
 
 export async function flushPendingActivities(): Promise<number> {
@@ -63,12 +72,16 @@ export async function flushPendingActivities(): Promise<number> {
   flushing = true;
   try {
     const queue = await readQueue();
-    const remaining: ActivityDraft[] = [];
+    const sentIds = new Set<string>();
     for (const draft of queue) {
-      if (!(await insertActivity(draft))) remaining.push(draft);
+      if (await insertActivity(draft)) sentIds.add(draft.id);
     }
-    await writeQueue(remaining);
-    return queue.length - remaining.length;
+    if (sentIds.size === 0) return 0;
+    await withQueueLock(async () => {
+      const latest = await readQueue();
+      await writeQueue(latest.filter((draft) => !sentIds.has(draft.id)));
+    });
+    return sentIds.size;
   } finally {
     flushing = false;
   }
