@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { requireOptionalNativeModule } from 'expo';
 import type * as ImagePickerModule from 'expo-image-picker';
 import type * as ManipulatorModule from 'expo-image-manipulator';
 import { supabase } from '@/lib/supabase';
@@ -13,7 +14,13 @@ export class AvatarError extends Error {}
 
 const UNAVAILABLE_MESSAGE = 'Atualize o app para trocar a foto.';
 
+function ensureNative(moduleName: string): void {
+  if (Platform.OS === 'web') return;
+  if (!requireOptionalNativeModule(moduleName)) throw new AvatarError(UNAVAILABLE_MESSAGE);
+}
+
 async function loadPicker(): Promise<typeof ImagePickerModule> {
+  ensureNative('ExponentImagePicker');
   try {
     return await import('expo-image-picker');
   } catch {
@@ -22,6 +29,7 @@ async function loadPicker(): Promise<typeof ImagePickerModule> {
 }
 
 async function loadManipulator(): Promise<typeof ManipulatorModule> {
+  ensureNative('ExpoImageManipulator');
   try {
     return await import('expo-image-manipulator');
   } catch {
