@@ -1,7 +1,8 @@
 import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Lock, Pause, Play, Square } from 'lucide-react-native';
+import { Pause, Play, Square } from 'lucide-react-native';
 import { createStyles, palettes, radius, workout } from '@/theme';
+import { AnimatedLockIcon } from './AnimatedLockIcon';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface WorkoutControlsProps {
@@ -32,10 +33,12 @@ export function WorkoutControls({
         onPress={onToggleLock}
         style={styles.secondary}
       >
-        <Lock
+        <AnimatedLockIcon
+          locked={locked}
           size={workout.secondaryIconSize}
-          color={locked ? colors.primary : palettes.dark.ink}
           strokeWidth={1.75}
+          lockedColor={colors.primary}
+          unlockedColor={palettes.dark.ink}
         />
       </Pressable>
 
