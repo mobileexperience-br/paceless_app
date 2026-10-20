@@ -1,7 +1,7 @@
 import { useMemo, type ReactElement } from 'react';
 import { CircleHelp, Flag, Trash2, type LucideIcon } from 'lucide-react-native';
 import { useDialog } from '@/hooks/useDialog';
-import { colors, sizes } from '@/theme';
+import { palettes, sizes } from '@/theme';
 
 interface WorkoutDialogs {
   confirmDiscard: (onConfirm: () => void) => void;
@@ -17,7 +17,7 @@ const gpsHelpMessage = [
 ].join('\n\n');
 
 function renderIcon(Icon: LucideIcon): ReactElement {
-  return <Icon size={sizes.iconMd} color={colors.ink} strokeWidth={sizes.iconStroke} />;
+  return <Icon size={sizes.iconMd} color={palettes.dark.onPrimary} strokeWidth={sizes.iconStroke} />;
 }
 
 export function useWorkoutDialogs(): WorkoutDialogs {

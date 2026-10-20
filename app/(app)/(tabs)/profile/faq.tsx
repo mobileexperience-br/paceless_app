@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { Card, Screen, ScreenHeader, Text } from '@/components';
 import { faq, type FaqEntry } from '@/content/faq';
-import { colors, layout, sizes, spacing } from '@/theme';
+import { createStyles, layout, sizes, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface FaqItemProps {
   entry: FaqEntry;
@@ -11,6 +12,8 @@ interface FaqItemProps {
 }
 
 function FaqItem({ entry, divider }: FaqItemProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const [open, setOpen] = useState(false);
   const Chevron = open ? ChevronUp : ChevronDown;
 
@@ -37,6 +40,7 @@ function FaqItem({ entry, divider }: FaqItemProps): ReactElement {
 }
 
 export default function FaqScreen(): ReactElement {
+  const styles = useThemedStyles(makeStyles);
   return (
     <Screen scroll flush>
       <ScreenHeader showBack title="Perguntas frequentes" />
@@ -51,27 +55,29 @@ export default function FaqScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    paddingHorizontal: layout.screenPadding,
-  },
-  divider: {
-    borderBottomWidth: sizes.hairline,
-    borderBottomColor: colors.border,
-  },
-  question: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: layout.cardPadding,
-    minHeight: 56,
-  },
-  questionText: {
-    flex: 1,
-  },
-  answer: {
-    paddingHorizontal: layout.cardPadding,
-    paddingBottom: layout.cardPadding,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    body: {
+      paddingHorizontal: layout.screenPadding,
+    },
+    divider: {
+      borderBottomWidth: sizes.hairline,
+      borderBottomColor: colors.border,
+    },
+    question: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      paddingVertical: spacing.md,
+      paddingHorizontal: layout.cardPadding,
+      minHeight: 56,
+    },
+    questionText: {
+      flex: 1,
+    },
+    answer: {
+      paddingHorizontal: layout.cardPadding,
+      paddingBottom: layout.cardPadding,
+    },
+  }),
+);

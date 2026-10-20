@@ -10,7 +10,8 @@ import {
   Play,
   User,
 } from 'lucide-react-native';
-import { colors, fonts, layout, radius, shadows, sizes, spacing } from '@/theme';
+import { createStyles, fonts, layout, radius, shadows, sizes, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 function ActivitiesTabButton({
   onPress,
@@ -18,6 +19,8 @@ function ActivitiesTabButton({
   accessibilityState,
   style,
 }: BottomTabBarButtonProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={[style, styles.fabSlot]}>
       <Pressable
@@ -27,13 +30,14 @@ function ActivitiesTabButton({
         onLongPress={onLongPress}
         style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
       >
-        <Play size={sizes.iconXl} color={colors.ink} fill={colors.ink} strokeWidth={0} />
+        <Play size={sizes.iconXl} color={colors.onPrimary} fill={colors.onPrimary} strokeWidth={0} />
       </Pressable>
     </View>
   );
 }
 
 export default function TabsLayout(): ReactElement {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, spacing.sm);
 
@@ -123,22 +127,24 @@ export default function TabsLayout(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  fabSlot: {
-    top: -sizes.fabLift,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fab: {
-    width: sizes.fab,
-    height: sizes.fab,
-    borderRadius: radius.full,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadows.fab,
-  },
-  fabPressed: {
-    backgroundColor: colors.primaryPressed,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    fabSlot: {
+      top: -sizes.fabLift,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    fab: {
+      width: sizes.fab,
+      height: sizes.fab,
+      borderRadius: radius.full,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...shadows.fab,
+    },
+    fabPressed: {
+      backgroundColor: colors.primaryPressed,
+    },
+  }),
+);

@@ -1,6 +1,5 @@
 import { useEffect, type ReactElement } from 'react';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import {
@@ -15,7 +14,8 @@ import { DialogProvider } from '@/providers/DialogProvider';
 import '@/lib/trackingTask';
 import { PreferencesProvider } from '@/providers/PreferencesProvider';
 import { SessionProvider } from '@/providers/SessionProvider';
-import { colors } from '@/theme';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import { ThemedStack } from '@/components/ThemedStack';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -39,25 +39,21 @@ export default function RootLayout(): ReactElement | null {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <DialogProvider>
-        <SessionProvider>
-          <PreferencesProvider>
-            <PurchasesSync />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: colors.background },
-              }}
-            >
-              <Stack.Screen name="(pre-auth)" />
-              <Stack.Screen name="(app)" />
-              <Stack.Screen name="legal/terms" />
-              <Stack.Screen name="legal/privacy" />
-            </Stack>
-          </PreferencesProvider>
-        </SessionProvider>
-      </DialogProvider>
+      <SessionProvider>
+        <PreferencesProvider>
+          <ThemeProvider>
+            <DialogProvider>
+              <PurchasesSync />
+              <ThemedStack>
+                <Stack.Screen name="(pre-auth)" />
+                <Stack.Screen name="(app)" />
+                <Stack.Screen name="legal/terms" />
+                <Stack.Screen name="legal/privacy" />
+              </ThemedStack>
+            </DialogProvider>
+          </ThemeProvider>
+        </PreferencesProvider>
+      </SessionProvider>
     </SafeAreaProvider>
   );
 }

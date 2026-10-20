@@ -2,7 +2,8 @@ import type { ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { Image as ImageIcon } from 'lucide-react-native';
 import { Text } from './Text';
-import { colors, radius, spacing } from '@/theme';
+import { createStyles, radius, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface AssetPlaceholderProps {
   label?: string;
@@ -17,6 +18,8 @@ export function AssetPlaceholder({
   rounded = 'md',
   style,
 }: AssetPlaceholderProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={[styles.box, { borderRadius: radius[rounded] }, style]}>
       <ImageIcon size={iconSize} color={colors.textSecondary} strokeWidth={1.5} />
@@ -29,13 +32,15 @@ export function AssetPlaceholder({
   );
 }
 
-const styles = StyleSheet.create({
-  box: {
-    flex: 1,
-    backgroundColor: colors.track,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-    padding: spacing.sm,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    box: {
+      flex: 1,
+      backgroundColor: colors.track,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+      padding: spacing.sm,
+    },
+  }),
+);

@@ -11,7 +11,7 @@ import {
 } from 'expo-location';
 import { appendFixes, drainFixes } from '@/lib/trackBuffer';
 import { TRACKING_TASK, toFixes } from '@/lib/trackingTask';
-import { colors } from '@/theme';
+import { palettes } from '@/theme';
 
 export type LocationState = 'checking' | 'granted' | 'denied' | 'unavailable';
 
@@ -61,7 +61,7 @@ export async function startTracking(session: number): Promise<LocationState> {
         foregroundService: {
           notificationTitle: 'Paceless — treino em andamento',
           notificationBody: 'Registrando distância e ritmo do seu treino.',
-          notificationColor: colors.primary,
+          notificationColor: palettes.light.primary,
           killServiceOnDestroy: true,
         },
       });

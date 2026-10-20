@@ -8,7 +8,8 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
-import { colors, layout, radius, typography } from '@/theme';
+import { createStyles, layout, radius, typography } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 type InputProps = Omit<TextInputProps, 'style'> & {
   secure?: boolean;
@@ -16,12 +17,15 @@ type InputProps = Omit<TextInputProps, 'style'> & {
 };
 
 export function Input({ secure, style, ...rest }: InputProps): ReactElement {
+  const { colors, isDark } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const [hidden, setHidden] = useState(true);
 
   return (
     <View style={[styles.container, style]}>
       <TextInput
         placeholderTextColor={colors.textSecondary}
+        keyboardAppearance={isDark ? 'dark' : 'light'}
         secureTextEntry={secure && hidden}
         style={styles.input}
         {...rest}
@@ -44,22 +48,24 @@ export function Input({ secure, style, ...rest }: InputProps): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    height: layout.controlHeight,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: layout.cardPadding,
-    gap: 12,
-  },
-  input: {
-    flex: 1,
-    height: '100%',
-    color: colors.ink,
-    ...typography.body,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    container: {
+      height: layout.controlHeight,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: layout.cardPadding,
+      gap: 12,
+    },
+    input: {
+      flex: 1,
+      height: '100%',
+      color: colors.ink,
+      ...typography.body,
+    },
+  }),
+);

@@ -2,9 +2,11 @@ import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Watch } from 'lucide-react-native';
 import { EmptyState, Screen, ScreenHeader } from '@/components';
-import { colors, layout, sizes } from '@/theme';
+import { layout, sizes } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function DevicesScreen(): ReactElement {
+  const { colors } = useTheme();
   return (
     <Screen scroll flush edges={['top', 'bottom']}>
       <ScreenHeader showBack title="Dispositivos conectados" />

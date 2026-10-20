@@ -5,11 +5,14 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, SocialButton, Text } from '@/components';
 import { useSocialSignIn, type SocialResult } from '@/hooks/useSocialSignIn';
-import { colors, layout, sizes, spacing } from '@/theme';
+import { createStyles, layout, palettes, sizes, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 import heroWelcome from '@/assets/hero-welcome.jpg';
 import logoMark from '@/assets/logo-mark.png';
 
 export default function WelcomeScreen(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const social = useSocialSignIn();
   const [error, setError] = useState<string | null>(null);
@@ -83,41 +86,43 @@ export default function WelcomeScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.ink,
-  },
-  hero: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: colors.textSecondary,
-  },
-  scrim: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: colors.scrim,
-  },
-  safe: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingHorizontal: layout.screenPadding,
-    paddingBottom: spacing.xxl,
-  },
-  brand: {
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.huge,
-  },
-  logoMark: {
-    width: sizes.logoMarkWidth,
-    height: sizes.logoMarkHeight,
-  },
-  actions: {
-    gap: spacing.md,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: palettes.dark.background,
+    },
+    hero: {
+      ...StyleSheet.absoluteFill,
+      backgroundColor: colors.textSecondary,
+    },
+    scrim: {
+      ...StyleSheet.absoluteFill,
+      backgroundColor: colors.scrim,
+    },
+    safe: {
+      flex: 1,
+      justifyContent: 'flex-end',
+      paddingHorizontal: layout.screenPadding,
+      paddingBottom: spacing.xxl,
+    },
+    brand: {
+      alignItems: 'center',
+      gap: spacing.sm,
+      marginBottom: spacing.huge,
+    },
+    logoMark: {
+      width: sizes.logoMarkWidth,
+      height: sizes.logoMarkHeight,
+    },
+    actions: {
+      gap: spacing.md,
+    },
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: spacing.sm,
+    },
+  }),
+);

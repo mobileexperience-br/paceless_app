@@ -1,19 +1,20 @@
 import { useState, type ReactElement } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Check } from 'lucide-react-native';
 import {
   Button,
-  Card,
   IconBadge,
   Screen,
   ScreenHeader,
   SubscriptionDisclosure,
   Text,
 } from '@/components';
+import { PlanSelector } from '@/components/paywall/PlanSelector';
 import { useOfferings, type PlanId } from '@/hooks/useOfferings';
 import { usePremium, type PurchaseResult } from '@/hooks/usePremium';
-import { colors, layout, radius, spacing } from '@/theme';
+import { createStyles, layout, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 const benefits = [
   'Plano de corrida personalizado',
@@ -23,6 +24,8 @@ const benefits = [
 ];
 
 export default function PaywallScreen(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { status, plans, reload } = useOfferings();
   const { busy, purchase, restore } = usePremium();
@@ -95,30 +98,7 @@ export default function PaywallScreen(): ReactElement {
         ) : null}
 
         {status === 'ready' ? (
-          <View style={styles.plans}>
-            {plans.map((plan) => {
-              const active = plan.id === selected?.id;
-              return (
-                <Pressable
-                  key={plan.id}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: active }}
-                  onPress={() => { setSelectedId(plan.id); }}
-                  style={styles.planPressable}
-                >
-                  <Card style={[styles.plan, active && styles.planActive]}>
-                    <Text variant="bodyStrong">{plan.title}</Text>
-                    <Text variant="title2">{plan.price}</Text>
-                    {plan.note ? (
-                      <Text variant="caption" color={colors.primaryDeep}>
-                        {plan.note}
-                      </Text>
-                    ) : null}
-                  </Card>
-                </Pressable>
-              );
-            })}
-          </View>
+          <PlanSelector plans={plans} selectedId={selected?.id} onSelect={setSelectedId} />
         ) : null}
 
         {ready ? <SubscriptionDisclosure plan={selected} /> : null}
@@ -152,49 +132,36 @@ export default function PaywallScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    paddingHorizontal: layout.screenPadding,
-    paddingTop: spacing.xxl,
-    gap: spacing.xxl,
-  },
-  intro: {
-    gap: spacing.sm,
-  },
-  benefits: {
-    gap: spacing.md,
-  },
-  benefit: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  benefitLabel: {
-    flex: 1,
-  },
-  plans: {
-    flexDirection: 'row',
-    gap: layout.cardGap,
-  },
-  status: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  planPressable: {
-    flex: 1,
-  },
-  plan: {
-    flex: 1,
-    borderWidth: 2,
-    borderRadius: radius.lg,
-  },
-  planActive: {
-    borderColor: colors.primary,
-  },
-  footer: {
-    paddingHorizontal: layout.screenPadding,
-    paddingBottom: spacing.xxl,
-    gap: spacing.xs,
-  },
-});
+const makeStyles = createStyles(() =>
+  StyleSheet.create({
+    body: {
+      flex: 1,
+      paddingHorizontal: layout.screenPadding,
+      paddingTop: spacing.xxl,
+      gap: spacing.xxl,
+    },
+    intro: {
+      gap: spacing.sm,
+    },
+    benefits: {
+      gap: spacing.md,
+    },
+    benefit: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+    },
+    benefitLabel: {
+      flex: 1,
+    },
+    status: {
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    footer: {
+      paddingHorizontal: layout.screenPadding,
+      paddingBottom: spacing.xxl,
+      gap: spacing.xs,
+    },
+  }),
+);

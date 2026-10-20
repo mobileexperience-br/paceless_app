@@ -13,19 +13,32 @@ zero comentários). Os tokens moram em `theme/`.
 
 ## Cores (`theme/colors.ts`)
 
-| Token | Uso |
-|---|---|
-| `primary` | Verde da marca: botões, progresso, aba ativa, cronômetro |
-| `primaryPressed` | Estado pressionado — derivado, **não está no mockup** |
-| `primarySoft` | Círculos de ícone nas listas de atividade |
-| `primaryDeep` | Verde-oliva das sombras da ilustração do plano |
-| `ink` | Texto primário e fundo da tela de treino |
-| `textSecondary` | Texto secundário, metadados, ícones inativos |
-| `border` | Hairline de cards, inputs e divisórias |
-| `track` | Trilho de progresso e círculos neutros |
-| `dark.*` | Tela de treino em andamento |
-| `scrim` | Sobreposição escura sobre a foto do welcome |
+Duas paletas com os mesmos tokens (`palettes.light` e `palettes.dark`). Telas e componentes leem as cores pelo tema: `useTheme()` devolve `{ scheme, isDark, colors }` e `useThemedStyles(makeStyles)` memoiza estilos criados com `createStyles((colors) => StyleSheet.create({...}))`. Nunca importe cores estáticas.
 
+| Token | Claro | Escuro | Uso |
+|---|---|---|---|
+| `primary` | `#BCD243` | `#BCD243` | Verde da marca: botões, progresso, aba ativa, cronômetro |
+| `primaryPressed` | `#A9BE33` | `#A9BE33` | Estado pressionado, derivado, **não está no mockup** |
+| `primarySoft` | `#EBF4C3` | `#2C3019` | Círculos de ícone. Escuro: primary a 16% sobre o fundo, **derivado** |
+| `primaryDeep` | `#83952A` | `#BCD243` | Texto e ícones de destaque. No escuro vira o próprio primary para manter contraste |
+| `onPrimary` | `#111111` | `#111111` | Texto e ícones sobre superfícies `primary`. **Token novo**: `ink` vira branco no escuro |
+| `ink` | `#111111` | `#FFFFFF` | Texto primário |
+| `textSecondary` | `#687280` | `#A9A9A9` | Texto secundário, metadados, ícones inativos. Escuro: branco a 64% sobre `#111111` |
+| `border` | `#E5E7EB` | `#323232` | Hairline de cards, inputs e divisórias. Escuro: branco a 14% sobre `#111111` |
+| `track` | `#EDEEF0` | `#2A2A2A` | Trilho de progresso e círculos neutros. Escuro **derivado** |
+| `background` | `#FFFFFF` | `#111111` | Fundo das telas (no escuro, o fundo que já era da tela de treino) |
+| `surface` | `#FFFFFF` | `#1F1F1F` | Cards, inputs, tab bar. Escuro: branco a 6% sobre `#111111` |
+| `white` | `#FFFFFF` | `#FFFFFF` | Texto sobre foto ou scrim |
+| `danger` | `#D92D20` | `#F97066` | Erros e ações destrutivas. Escuro **derivado** (mais claro para contraste) |
+| `scrim` | `rgba(17,17,17,0.45)` | igual | Sobreposição escura sobre foto ou modal |
+
+Os valores escuros de `background`, `surface`, `border` e `textSecondary` são os antigos `colors.dark.*` (translúcidos) convertidos para o equivalente opaco sobre `#111111`, necessário para tab bar e inputs. `primarySoft`, `track` e `danger` escuros não existiam e foram derivados.
+
+## Tema
+
+`ThemeProvider` resolve o esquema: `system` segue `useColorScheme()`; `light` e `dark` forçam e também chamam `Appearance.setColorScheme` para que componentes nativos acompanhem. `ThemeScope scheme="dark"` força o escuro numa subárvore: as telas de treino e resumo são sempre escuras, e `Dialog` com `tone="dark"` também. Sem `tone`, o diálogo segue o tema.
+
+`app.json` usa `userInterfaceStyle: "automatic"`. No Android, aplicar a mudança nativa pode exigir `expo-system-ui`.
 ## Raio (`theme/radius.ts`)
 
 `md` botões, inputs, tiles de acesso rápido · `lg` cards · `xl` card hero do plano.
@@ -55,7 +68,7 @@ discreta. `fab` **não vem do mockup** — só no botão de Atividades da tab ba
 
 - `AssetPlaceholder` ocupa o lugar de fotos/ilustrações ainda não fornecidas
   (lista no README, "Assets pendentes").
-- `Dialog` / `useDialog()`: diálogo modal no lugar de `Alert.alert` (proibido por lint). `confirm({ title, message, confirmLabel, cancelLabel, destructive, icon, tone })` retorna `Promise<boolean>`; `alert({ title, message, okLabel, tone })` retorna `Promise<void>`. `tone: 'dark'` para a tela de treino. Um por vez (fila); botão voltar do Android cancela.
+- `Dialog` / `useDialog()`: diálogo modal no lugar de `Alert.alert` (proibido por lint). `confirm({ title, message, confirmLabel, cancelLabel, destructive, icon, tone })` retorna `Promise<boolean>`; `alert({ title, message, okLabel, tone })` retorna `Promise<void>`. `tone: 'dark'` força o escuro (tela de treino); sem `tone`, segue o tema. Um por vez (fila); botão voltar do Android cancela.
 - `IconBadge`: círculo colorido atrás de ícone (cards e listas de treino).
 - `CheckCircle`: treino concluído — vazio ou verde com check.
 - `ProgressBar` e `Ring` recebem `progress` de 0 a 1.

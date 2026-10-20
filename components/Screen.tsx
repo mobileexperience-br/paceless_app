@@ -1,7 +1,8 @@
 import { type ReactNode, type ReactElement } from 'react';
 import { ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, layout } from '@/theme';
+import { layout, palettes } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ScreenProps {
   children: ReactNode;
@@ -20,7 +21,8 @@ export function Screen({
   edges = ['top'],
   style,
 }: ScreenProps): ReactElement {
-  const background = dark ? colors.dark.background : colors.background;
+  const { colors } = useTheme();
+  const background = dark ? palettes.dark.background : colors.background;
   const padding = flush ? undefined : layout.screenPadding;
 
   return (

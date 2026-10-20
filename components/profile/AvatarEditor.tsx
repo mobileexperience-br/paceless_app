@@ -6,11 +6,14 @@ import { Button } from '@/components/Button';
 import { Text } from '@/components/Text';
 import { useAvatar } from '@/hooks/useAvatar';
 import type { AvatarSource } from '@/lib/avatar';
-import { colors, radius, sizes, spacing } from '@/theme';
+import { createStyles, radius, sizes, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 const canUseCamera = Platform.OS !== 'web';
 
 export function AvatarEditor(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { avatarUrl, uploading, error, pickAndUpload, remove } = useAvatar();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -87,38 +90,40 @@ export function AvatarEditor(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  avatarWrap: {
-    width: sizes.avatarXl,
-    height: sizes.avatarXl,
-  },
-  fallback: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: radius.full,
-    backgroundColor: colors.scrim,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  menuButton: {
-    paddingHorizontal: spacing.lg,
-  },
-  actions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    avatarWrap: {
+      width: sizes.avatarXl,
+      height: sizes.avatarXl,
+    },
+    fallback: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    overlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderRadius: radius.full,
+      backgroundColor: colors.scrim,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    menuButton: {
+      paddingHorizontal: spacing.lg,
+    },
+    actions: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      gap: spacing.sm,
+    },
+  }),
+);

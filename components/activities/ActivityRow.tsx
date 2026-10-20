@@ -8,7 +8,8 @@ import { activityLabels, type Activity } from '@/lib/activities';
 import { dayLabel, formatDuration } from '@/lib/activityStats';
 import { usePreferences } from '@/hooks/usePreferences';
 import { distanceLabel, formatDistance } from '@/lib/units';
-import { colors, sizes } from '@/theme';
+import { sizes } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ActivityRowProps {
   activity: Activity;
@@ -22,6 +23,7 @@ const activityIcons: Record<Activity['type'], LucideIcon> = {
 };
 
 export function ActivityRow({ activity, now }: ActivityRowProps): ReactElement {
+  const { colors } = useTheme();
   const { distanceUnit } = usePreferences();
   const hasDistance = activity.type !== 'strength';
   const Icon = activityIcons[activity.type];

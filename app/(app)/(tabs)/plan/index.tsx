@@ -11,9 +11,12 @@ import {
   ScreenTitle,
   Text,
 } from '@/components';
-import { colors, layout, radius, sizes, spacing } from '@/theme';
+import { createStyles, layout, radius, sizes, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 export default function PlanScreen(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
 
   return (
@@ -24,8 +27,8 @@ export default function PlanScreen(): ReactElement {
         <Card flush>
           <View style={styles.hero}>
             <View style={styles.heroText}>
-              <Text variant="title3">Nenhum plano ativo</Text>
-              <Text variant="caption">Escolha um plano para começar</Text>
+              <Text variant="title3" color={colors.onPrimary}>Nenhum plano ativo</Text>
+              <Text variant="caption" color={colors.onPrimary}>Escolha um plano para começar</Text>
             </View>
             <AssetPlaceholder
               label="ilustração do plano"
@@ -75,34 +78,36 @@ export default function PlanScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    paddingHorizontal: layout.screenPadding,
-    gap: layout.cardGap,
-  },
-  hero: {
-    backgroundColor: colors.primary,
-    padding: layout.cardPadding,
-    gap: spacing.lg,
-  },
-  heroText: {
-    gap: spacing.xs,
-  },
-  heroArt: {
-    height: sizes.planArtHeight,
-    borderRadius: radius.sm,
-    backgroundColor: colors.primarySoft,
-  },
-  heroFooter: {
-    padding: layout.cardPadding,
-    gap: spacing.md,
-  },
-  heroProgress: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  grow: {
-    flex: 1,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    body: {
+      paddingHorizontal: layout.screenPadding,
+      gap: layout.cardGap,
+    },
+    hero: {
+      backgroundColor: colors.primary,
+      padding: layout.cardPadding,
+      gap: spacing.lg,
+    },
+    heroText: {
+      gap: spacing.xs,
+    },
+    heroArt: {
+      height: sizes.planArtHeight,
+      borderRadius: radius.sm,
+      backgroundColor: colors.primarySoft,
+    },
+    heroFooter: {
+      padding: layout.cardPadding,
+      gap: spacing.md,
+    },
+    heroProgress: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+    },
+    grow: {
+      flex: 1,
+    },
+  }),
+);

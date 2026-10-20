@@ -6,7 +6,8 @@ import { useManageSubscription } from '@/hooks/useManageSubscription';
 import { useProfile } from '@/hooks/useProfile';
 import { useSession } from '@/hooks/useSession';
 import { Avatar, AssetPlaceholder, Card, ListRow, Screen, ScreenTitle, Text } from '@/components';
-import { colors, layout, radius, sizes } from '@/theme';
+import { layout, radius, sizes } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface MenuItem {
   label: string;
@@ -22,6 +23,7 @@ const menu: MenuItem[] = [
 ];
 
 export default function ProfileScreen(): ReactElement {
+  const { colors } = useTheme();
   const router = useRouter();
   const { signOut } = useSession();
   const { name, avatarUrl } = useProfile();

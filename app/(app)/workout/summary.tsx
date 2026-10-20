@@ -9,7 +9,9 @@ import { formatElapsed } from '@/hooks/useStopwatch';
 import { activityLabels } from '@/lib/activities';
 import { distanceLabel, formatDistanceStat, formatPaceForUnit, paceLabel } from '@/lib/units';
 import { getWorkoutSummary, type SummaryStatus } from '@/lib/workoutSummary';
-import { colors, layout, spacing, workout } from '@/theme';
+import { layout, palettes, spacing, workout } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeScope } from '@/providers/ThemeProvider';
 
 const MS_PER_SECOND = 1000;
 
@@ -19,7 +21,8 @@ const statusMessages: Record<SummaryStatus, string> = {
   failed: 'Não foi possível guardar o treino. Entre na sua conta novamente.',
 };
 
-export default function WorkoutSummaryScreen(): ReactElement {
+function WorkoutSummaryContent(): ReactElement {
+  const { colors } = useTheme();
   const router = useRouter();
   const summary = getWorkoutSummary();
 
@@ -36,24 +39,24 @@ export default function WorkoutSummaryScreen(): ReactElement {
     <Screen dark scroll edges={['top', 'bottom']}>
       <StatusBar style="light" />
       <View style={styles.heading}>
-        <Text variant="title1" color={colors.dark.text}>
+        <Text variant="title1" color={palettes.dark.ink}>
           {activityLabels[summary.type]}
         </Text>
-        <Text variant="caption" color={colors.dark.textSecondary}>
+        <Text variant="caption" color={palettes.dark.textSecondary}>
           Treino livre
         </Text>
       </View>
 
       <View style={styles.status}>
         <StatusIcon size={workout.statusIconSize} color={colors.primary} strokeWidth={2} />
-        <Text variant="caption" color={colors.dark.text} style={styles.statusText}>
+        <Text variant="caption" color={palettes.dark.ink} style={styles.statusText}>
           {statusMessages[summary.status]}
         </Text>
       </View>
 
       <StatRow stats={stats} dark style={styles.stats} />
 
-      <Text variant="title3" color={colors.dark.text} style={styles.sectionTitle}>
+      <Text variant="title3" color={palettes.dark.ink} style={styles.sectionTitle}>
         Parciais
       </Text>
       <SplitsTable splits={summary.splits} unit={summary.distanceUnit} />
@@ -68,6 +71,10 @@ export default function WorkoutSummaryScreen(): ReactElement {
       </View>
     </Screen>
   );
+}
+
+export default function WorkoutSummaryScreen(): ReactElement {
+  return <ThemeScope scheme="dark"><WorkoutSummaryContent /></ThemeScope>;
 }
 
 const styles = StyleSheet.create({

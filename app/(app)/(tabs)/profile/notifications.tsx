@@ -2,9 +2,11 @@ import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BellOff } from 'lucide-react-native';
 import { EmptyState, Screen, ScreenHeader } from '@/components';
-import { colors, layout, sizes } from '@/theme';
+import { layout, sizes } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function NotificationsScreen(): ReactElement {
+  const { colors } = useTheme();
   return (
     <Screen scroll flush edges={['top', 'bottom']}>
       <ScreenHeader showBack title="Notificações" />

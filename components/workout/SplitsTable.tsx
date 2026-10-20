@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/Text';
 import { splitMetersFor, type Split } from '@/lib/splits';
 import { formatDistance, formatPaceForUnit, paceLabel } from '@/lib/units';
-import { colors, spacing, workout } from '@/theme';
+import { palettes, spacing, workout } from '@/theme';
 import type { DistanceUnit } from '@/types/preferences';
 
 interface SplitsTableProps {
@@ -26,24 +26,24 @@ export function SplitsTable({ splits, unit }: SplitsTableProps): ReactElement {
   return (
     <View>
       <View style={styles.row}>
-        <Text variant="label" color={colors.dark.textSecondary} style={styles.cell}>
+        <Text variant="label" color={palettes.dark.textSecondary} style={styles.cell}>
           {unit === 'mi' ? 'MI' : 'KM'}
         </Text>
-        <Text variant="label" color={colors.dark.textSecondary} style={styles.cellEnd}>
+        <Text variant="label" color={palettes.dark.textSecondary} style={styles.cellEnd}>
           {`RITMO (${paceLabel(unit).toUpperCase()})`}
         </Text>
       </View>
       {splits.length === 0 ? (
-        <Text variant="caption" color={colors.dark.textSecondary} style={styles.empty}>
+        <Text variant="caption" color={palettes.dark.textSecondary} style={styles.empty}>
           Nenhuma parcial completa ainda.
         </Text>
       ) : (
         splits.map((split) => (
           <View key={split.index} style={styles.row}>
-            <Text variant="bodyStrong" color={colors.dark.text} style={styles.cell}>
+            <Text variant="bodyStrong" color={palettes.dark.ink} style={styles.cell}>
               {splitLabel(split, unit)}
             </Text>
-            <Text variant="bodyStrong" color={colors.dark.text} style={styles.cellEnd}>
+            <Text variant="bodyStrong" color={palettes.dark.ink} style={styles.cellEnd}>
               {formatPaceForUnit(splitPace(split), unit)}
             </Text>
           </View>
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: workout.splitRowHeight,
     borderBottomWidth: 1,
-    borderBottomColor: colors.dark.border,
+    borderBottomColor: palettes.dark.border,
   },
   cell: {
     flex: 1,

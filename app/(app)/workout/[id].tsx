@@ -18,12 +18,15 @@ import { usePreferences } from '@/hooks/usePreferences';
 import { activityLabels, type WorkoutType } from '@/lib/activities';
 import { splitMetersFor } from '@/lib/splits';
 import { distanceLabel, formatDistanceStat, formatPaceForUnit, paceLabel } from '@/lib/units';
-import { colors, layout, spacing, workout } from '@/theme';
+import { layout, palettes, spacing, workout } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeScope } from '@/providers/ThemeProvider';
 import type { DistanceUnit } from '@/types/preferences';
 
 const MS_PER_SECOND = 1000;
 
-export default function WorkoutScreen(): ReactElement {
+function WorkoutContent(): ReactElement {
+  const { colors } = useTheme();
   useKeepAwake();
   const router = useRouter();
   const { confirmDiscard, confirmStop, showGpsHelp } = useWorkoutDialogs();
@@ -102,10 +105,10 @@ export default function WorkoutScreen(): ReactElement {
         />
 
         <View style={styles.heading}>
-          <Text variant="title1" color={colors.dark.text}>
+          <Text variant="title1" color={palettes.dark.ink}>
             {activityLabels[type]}
           </Text>
-          <Text variant="caption" color={colors.dark.textSecondary}>
+          <Text variant="caption" color={palettes.dark.textSecondary}>
             Treino livre
           </Text>
         </View>
@@ -114,7 +117,7 @@ export default function WorkoutScreen(): ReactElement {
           <Text variant="timer" center color={colors.primary}>
             {formatted}
           </Text>
-          <Text variant="caption" center color={colors.dark.textSecondary}>
+          <Text variant="caption" center color={palettes.dark.textSecondary}>
             Duração
           </Text>
         </View>
@@ -166,10 +169,14 @@ export default function WorkoutScreen(): ReactElement {
   );
 }
 
+export default function WorkoutScreen(): ReactElement {
+  return <ThemeScope scheme="dark"><WorkoutContent /></ThemeScope>;
+}
+
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.dark.background,
+    backgroundColor: palettes.dark.background,
   },
   safe: {
     flex: 1,

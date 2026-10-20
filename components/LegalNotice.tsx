@@ -2,7 +2,8 @@ import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from './Text';
 import { useOpenLink } from '@/hooks/useOpenLink';
-import { colors, spacing } from '@/theme';
+import { spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface LinkNameProps {
   label: string;
@@ -10,6 +11,7 @@ interface LinkNameProps {
 }
 
 function LinkName({ label, onPress }: LinkNameProps): ReactElement {
+  const { colors } = useTheme();
   return (
     <Text
       variant="captionStrong"
@@ -23,6 +25,7 @@ function LinkName({ label, onPress }: LinkNameProps): ReactElement {
 }
 
 export function LegalNotice(): ReactElement {
+  const { colors } = useTheme();
   const { error, openLegal } = useOpenLink();
 
   return (

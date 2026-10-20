@@ -1,6 +1,7 @@
 import { useState, type ReactElement, type ReactNode } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { colors, radius } from '@/theme';
+import { createStyles, radius } from '@/theme';
+import { useThemedStyles } from '@/hooks/useTheme';
 
 interface AvatarProps {
   uri: string | null;
@@ -9,6 +10,7 @@ interface AvatarProps {
 }
 
 export function Avatar({ uri, size, fallback }: AvatarProps): ReactElement {
+  const styles = useThemedStyles(makeStyles);
   const [failedUri, setFailedUri] = useState<string | null>(null);
   const showImage = uri !== null && uri !== failedUri;
 
@@ -30,14 +32,16 @@ export function Avatar({ uri, size, fallback }: AvatarProps): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  frame: {
-    borderRadius: radius.full,
-    overflow: 'hidden',
-    backgroundColor: colors.track,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    frame: {
+      borderRadius: radius.full,
+      overflow: 'hidden',
+      backgroundColor: colors.track,
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+    },
+  }),
+);

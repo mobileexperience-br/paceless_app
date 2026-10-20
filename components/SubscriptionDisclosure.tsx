@@ -3,7 +3,8 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { Text } from './Text';
 import type { Plan } from '@/hooks/useOfferings';
 import { useOpenLink } from '@/hooks/useOpenLink';
-import { colors, spacing } from '@/theme';
+import { spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface SubscriptionDisclosureProps {
   plan: Plan;
@@ -30,6 +31,7 @@ interface LegalLinkProps {
 }
 
 function LegalLink({ label, onPress }: LegalLinkProps): ReactElement {
+  const { colors } = useTheme();
   return (
     <Text
       variant="captionStrong"
@@ -43,6 +45,7 @@ function LegalLink({ label, onPress }: LegalLinkProps): ReactElement {
 }
 
 export function SubscriptionDisclosure({ plan }: SubscriptionDisclosureProps): ReactElement {
+  const { colors } = useTheme();
   const { error, openLegal } = useOpenLink();
   const account = accountLabel();
 

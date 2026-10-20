@@ -3,7 +3,8 @@ import { Image, Pressable, StyleSheet, type ImageSourcePropType, type ViewStyle 
 import logoApple from '@/assets/logo-apple.png';
 import logoGoogle from '@/assets/logo-google.png';
 import { Text } from './Text';
-import { colors, layout, radius, spacing } from '@/theme';
+import { createStyles, layout, radius, spacing } from '@/theme';
+import { useThemedStyles } from '@/hooks/useTheme';
 
 type SocialProvider = 'apple' | 'google';
 
@@ -25,6 +26,7 @@ const logos: Record<SocialProvider, ImageSourcePropType> = {
 };
 
 export function SocialButton({ provider, onPress, disabled, style }: SocialButtonProps): ReactElement {
+  const styles = useThemedStyles(makeStyles);
   return (
     <Pressable
       accessibilityRole="button"
@@ -38,23 +40,25 @@ export function SocialButton({ provider, onPress, disabled, style }: SocialButto
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    height: layout.controlHeight,
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  pressed: {
-    backgroundColor: colors.track,
-  },
-  logo: {
-    width: 20,
-    height: 20,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    button: {
+      height: layout.controlHeight,
+      borderRadius: radius.md,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.md,
+    },
+    pressed: {
+      backgroundColor: colors.track,
+    },
+    logo: {
+      width: 20,
+      height: 20,
+    },
+  }),
+);

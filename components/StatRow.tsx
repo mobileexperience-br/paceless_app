@@ -1,7 +1,8 @@
 import type { ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { colors, spacing } from '@/theme';
+import { palettes, spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface Stat {
   value: string;
@@ -15,6 +16,7 @@ interface StatRowProps {
 }
 
 export function StatRow({ stats, dark, style }: StatRowProps): ReactElement {
+  const { colors } = useTheme();
   return (
     <View style={[styles.row, style]}>
       {stats.map((stat) => (
@@ -22,14 +24,14 @@ export function StatRow({ stats, dark, style }: StatRowProps): ReactElement {
           <Text
             variant="metric"
             center
-            color={dark ? colors.dark.text : colors.ink}
+            color={dark ? palettes.dark.ink : colors.ink}
           >
             {stat.value}
           </Text>
           <Text
             variant="caption"
             center
-            color={dark ? colors.dark.textSecondary : colors.textSecondary}
+            color={dark ? palettes.dark.textSecondary : colors.textSecondary}
           >
             {stat.label}
           </Text>

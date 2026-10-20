@@ -4,7 +4,8 @@ import { Check, ChevronRight, CircleHelp, Footprints, Trash2, type LucideIcon } 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/Text';
 import { activityLabels, workoutTypes, type WorkoutType } from '@/lib/activities';
-import { colors, radius, spacing, workout } from '@/theme';
+import { createStyles, palettes, radius, spacing, workout } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface WorkoutMenuProps {
   visible: boolean;
@@ -23,7 +24,8 @@ interface RowProps {
   onPress: () => void;
 }
 
-function MenuRow({ Icon, label, value, color = colors.dark.text, onPress }: RowProps): ReactElement {
+function MenuRow({ Icon, label, value, color = palettes.dark.ink, onPress }: RowProps): ReactElement {
+  const styles = useThemedStyles(makeStyles);
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={styles.row}>
       <Icon size={workout.menuIconSize} color={color} strokeWidth={1.75} />
@@ -31,7 +33,7 @@ function MenuRow({ Icon, label, value, color = colors.dark.text, onPress }: RowP
         {label}
       </Text>
       {value ? (
-        <Text variant="caption" color={colors.dark.textSecondary}>
+        <Text variant="caption" color={palettes.dark.textSecondary}>
           {value}
         </Text>
       ) : null}
@@ -47,6 +49,8 @@ export function WorkoutMenu({
   onDiscard,
   onHelp,
 }: WorkoutMenuProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const [choosing, setChoosing] = useState<boolean>(false);
 
@@ -70,7 +74,7 @@ export function WorkoutMenu({
               key={option}
               Icon={option === type ? Check : ChevronRight}
               label={activityLabels[option]}
-              color={option === type ? colors.primary : colors.dark.text}
+              color={option === type ? colors.primary : palettes.dark.ink}
               onPress={() => {
                 pickType(option);
               }}
@@ -110,27 +114,29 @@ export function WorkoutMenu({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: colors.scrim,
-  },
-  sheet: {
-    backgroundColor: colors.dark.background,
-    borderTopLeftRadius: radius.xl,
-    borderTopRightRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: colors.dark.border,
-    paddingTop: spacing.sm,
-    paddingHorizontal: spacing.xl,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    minHeight: workout.menuRowHeight,
-  },
-  rowLabel: {
-    flex: 1,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    backdrop: {
+      flex: 1,
+      backgroundColor: colors.scrim,
+    },
+    sheet: {
+      backgroundColor: palettes.dark.background,
+      borderTopLeftRadius: radius.xl,
+      borderTopRightRadius: radius.xl,
+      borderWidth: 1,
+      borderColor: palettes.dark.border,
+      paddingTop: spacing.sm,
+      paddingHorizontal: spacing.xl,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      minHeight: workout.menuRowHeight,
+    },
+    rowLabel: {
+      flex: 1,
+    },
+  }),
+);

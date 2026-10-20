@@ -24,11 +24,13 @@ import {
   summarizeWeek,
 } from '@/lib/activityStats';
 import { distanceLabel } from '@/lib/units';
-import { colors, layout, sizes, spacing } from '@/theme';
+import { layout, sizes, spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 const EMPTY_VALUE = '—';
 
 export default function ActivitiesScreen(): ReactElement {
+  const { colors } = useTheme();
   const { distanceUnit } = usePreferences();
   const [filter, setFilter] = useState<string>(activityFilters[0]);
   const { activities, loading, refreshing, error, load, refresh } = useActivities();

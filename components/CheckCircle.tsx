@@ -1,7 +1,8 @@
 import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Check } from 'lucide-react-native';
-import { colors, radius } from '@/theme';
+import { createStyles, radius } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface CheckCircleProps {
   checked?: boolean;
@@ -9,6 +10,8 @@ interface CheckCircleProps {
 }
 
 export function CheckCircle({ checked = false, size = 24 }: CheckCircleProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View
       accessibilityRole="checkbox"
@@ -26,16 +29,18 @@ export function CheckCircle({ checked = false, size = 24 }: CheckCircleProps): R
   );
 }
 
-const styles = StyleSheet.create({
-  circle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  unchecked: {
-    borderWidth: 1.5,
-    borderColor: colors.border,
-  },
-  checked: {
-    backgroundColor: colors.primary,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    circle: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    unchecked: {
+      borderWidth: 1.5,
+      borderColor: colors.border,
+    },
+    checked: {
+      backgroundColor: colors.primary,
+    },
+  }),
+);

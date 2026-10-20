@@ -5,7 +5,8 @@ import { Card, ListRow, Screen, ScreenHeader, Text } from '@/components';
 import { useOpenLink } from '@/hooks/useOpenLink';
 import { HEALTH_DISCLAIMER } from '@/lib/healthDisclaimer';
 import { links } from '@/lib/links';
-import { colors, layout } from '@/theme';
+import { layout } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Topic {
   title: string;
@@ -13,6 +14,7 @@ interface Topic {
 }
 
 export default function HelpScreen(): ReactElement {
+  const { colors } = useTheme();
   const router = useRouter();
   const { error, openUrl, openSupportEmail, openLegal } = useOpenLink();
   const { faqUrl, supportEmail, accountDeletionUrl } = links;

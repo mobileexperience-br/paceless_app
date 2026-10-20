@@ -8,9 +8,11 @@ import { NameField } from '@/components/profile/NameField';
 import { useDeleteAccount } from '@/hooks/useDeleteAccount';
 import { useDialog } from '@/hooks/useDialog';
 import { useProfile } from '@/hooks/useProfile';
-import { colors, layout, sizes } from '@/theme';
+import { layout, sizes } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function AccountScreen(): ReactElement {
+  const { colors } = useTheme();
   const router = useRouter();
   const { confirm } = useDialog();
   const { name, email } = useProfile();

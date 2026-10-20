@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Text } from './Text';
-import { colors, layout, sizes, spacing } from '@/theme';
+import { layout, palettes, sizes, spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ScreenHeaderProps {
   title?: string;
@@ -24,8 +25,9 @@ export function ScreenHeader({
   dark,
   style,
 }: ScreenHeaderProps): ReactElement {
+  const { colors } = useTheme();
   const router = useRouter();
-  const tint = dark ? colors.dark.text : colors.ink;
+  const tint = dark ? palettes.dark.ink : colors.ink;
 
   return (
     <View style={[styles.container, style]}>

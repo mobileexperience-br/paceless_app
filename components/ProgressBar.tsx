@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
-import { colors, layout, radius } from '@/theme';
+import { createStyles, layout, radius } from '@/theme';
+import { useThemedStyles } from '@/hooks/useTheme';
 
 interface ProgressBarProps {
   progress: number;
@@ -8,6 +9,7 @@ interface ProgressBarProps {
 }
 
 export function ProgressBar({ progress, style }: ProgressBarProps): ReactElement {
+  const styles = useThemedStyles(makeStyles);
   const clamped = Math.min(1, Math.max(0, progress));
 
   return (
@@ -21,16 +23,18 @@ export function ProgressBar({ progress, style }: ProgressBarProps): ReactElement
   );
 }
 
-const styles = StyleSheet.create({
-  track: {
-    height: layout.progressHeight,
-    borderRadius: radius.full,
-    backgroundColor: colors.track,
-    overflow: 'hidden',
-  },
-  fill: {
-    height: '100%',
-    borderRadius: radius.full,
-    backgroundColor: colors.primary,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    track: {
+      height: layout.progressHeight,
+      borderRadius: radius.full,
+      backgroundColor: colors.track,
+      overflow: 'hidden',
+    },
+    fill: {
+      height: '100%',
+      borderRadius: radius.full,
+      backgroundColor: colors.primary,
+    },
+  }),
+);

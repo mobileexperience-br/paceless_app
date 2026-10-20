@@ -4,12 +4,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CircleAlert, MailCheck } from 'lucide-react-native';
 import { Button, IconBadge, Screen, ScreenHeader, Text } from '@/components';
 import { supabase } from '@/lib/supabase';
-import { colors, layout, spacing } from '@/theme';
+import { layout, spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 const COOLDOWN_SECONDS = 60;
 const RESEND_ERROR = 'Não foi possível reenviar o e-mail. Tente novamente.';
 
 export default function VerifyEmailScreen(): ReactElement {
+  const { colors } = useTheme();
   const router = useRouter();
   const params = useLocalSearchParams<{ email?: string }>();
   const email = params.email ?? '';

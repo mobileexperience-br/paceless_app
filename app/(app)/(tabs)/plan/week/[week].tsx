@@ -9,7 +9,8 @@ import {
   ScreenHeader,
   Text,
 } from '@/components';
-import { colors, layout, spacing } from '@/theme';
+import { createStyles, layout, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 const weekdays = [
   'Segunda',
@@ -22,6 +23,8 @@ const weekdays = [
 ];
 
 export default function WeekScreen(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { week } = useLocalSearchParams<{ week: string }>();
 
   return (
@@ -59,28 +62,30 @@ export default function WeekScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    paddingHorizontal: layout.screenPadding,
-  },
-  progress: {
-    marginTop: spacing.md,
-  },
-  days: {
-    marginTop: spacing.lg,
-  },
-  day: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  divider: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  dayText: {
-    flex: 1,
-    gap: 2,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    body: {
+      paddingHorizontal: layout.screenPadding,
+    },
+    progress: {
+      marginTop: spacing.md,
+    },
+    days: {
+      marginTop: spacing.lg,
+    },
+    day: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      paddingVertical: spacing.md,
+    },
+    divider: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    dayText: {
+      flex: 1,
+      gap: 2,
+    },
+  }),
+);

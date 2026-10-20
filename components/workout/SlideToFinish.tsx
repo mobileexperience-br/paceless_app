@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { ArrowRight } from 'lucide-react-native';
 import { Text } from '../Text';
-import { colors, radius, spacing, workout } from '@/theme';
+import { createStyles, palettes, radius, spacing, workout } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface SlideToFinishProps {
   disabled: boolean;
@@ -37,6 +38,8 @@ class Gate {
 }
 
 export function SlideToFinish({ disabled, onFinish }: SlideToFinishProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const [x] = useState<Animated.Value>(() => new Animated.Value(0));
   const [maxX, setMaxX] = useState<number>(0);
   const [gate] = useState<Gate>(() => new Gate(disabled, onFinish));
@@ -100,10 +103,10 @@ export function SlideToFinish({ disabled, onFinish }: SlideToFinishProps): React
         {...panResponder.panHandlers}
         style={[styles.thumb, { transform: [{ translateX: x }] }]}
       >
-        <ArrowRight size={workout.thumbIconSize} color={colors.ink} strokeWidth={2.5} />
+        <ArrowRight size={workout.thumbIconSize} color={colors.onPrimary} strokeWidth={2.5} />
       </Animated.View>
       <Animated.View style={[styles.label, { opacity: labelOpacity }]}>
-        <Text variant="caption" center color={colors.dark.textSecondary}>
+        <Text variant="caption" center color={palettes.dark.textSecondary}>
           Deslize para finalizar
         </Text>
       </Animated.View>
@@ -111,28 +114,30 @@ export function SlideToFinish({ disabled, onFinish }: SlideToFinishProps): React
   );
 }
 
-const styles = StyleSheet.create({
-  track: {
-    height: workout.sliderHeight,
-    borderRadius: radius.md,
-    backgroundColor: colors.dark.surface,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.xs,
-  },
-  thumb: {
-    width: workout.thumbWidth,
-    height: workout.thumbHeight,
-    borderRadius: radius.sm,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  label: {
-    flex: 1,
-  },
-  disabled: {
-    opacity: workout.disabledOpacity,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    track: {
+      height: workout.sliderHeight,
+      borderRadius: radius.md,
+      backgroundColor: palettes.dark.surface,
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: spacing.xs,
+    },
+    thumb: {
+      width: workout.thumbWidth,
+      height: workout.thumbHeight,
+      borderRadius: radius.sm,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1,
+    },
+    label: {
+      flex: 1,
+    },
+    disabled: {
+      opacity: workout.disabledOpacity,
+    },
+  }),
+);

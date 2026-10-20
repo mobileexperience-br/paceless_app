@@ -10,7 +10,8 @@ import {
   SegmentedTabs,
   Text,
 } from '@/components';
-import { colors, layout, radius, sizes, spacing } from '@/theme';
+import { createStyles, layout, radius, sizes, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 const tabs = ['Hoje', 'Plano', 'Receitas'] as const;
 
@@ -23,6 +24,8 @@ const legend = [
 const meals = ['Café da manhã', 'Almoço', 'Jantar', 'Lanches'];
 
 export default function NutritionScreen(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const [tab, setTab] = useState<string>(tabs[0]);
 
   return (
@@ -87,46 +90,48 @@ export default function NutritionScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    paddingHorizontal: layout.screenPadding,
-    paddingTop: spacing.lg,
-    gap: layout.cardGap,
-  },
-  summaryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  grow: {
-    flex: 1,
-  },
-  summary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.lg,
-    marginTop: spacing.lg,
-  },
-  legend: {
-    flex: 1,
-    gap: spacing.md,
-  },
-  legendItem: {
-    gap: sizes.micro,
-  },
-  legendRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  dot: {
-    width: sizes.dot,
-    height: sizes.dot,
-    borderRadius: radius.full,
-    backgroundColor: colors.primary,
-  },
-  mealsTitle: {
-    paddingHorizontal: layout.cardPadding,
-    paddingTop: layout.cardPadding,
-    paddingBottom: spacing.xs,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    body: {
+      paddingHorizontal: layout.screenPadding,
+      paddingTop: spacing.lg,
+      gap: layout.cardGap,
+    },
+    summaryHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    grow: {
+      flex: 1,
+    },
+    summary: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.lg,
+      marginTop: spacing.lg,
+    },
+    legend: {
+      flex: 1,
+      gap: spacing.md,
+    },
+    legendItem: {
+      gap: sizes.micro,
+    },
+    legendRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    dot: {
+      width: sizes.dot,
+      height: sizes.dot,
+      borderRadius: radius.full,
+      backgroundColor: colors.primary,
+    },
+    mealsTitle: {
+      paddingHorizontal: layout.cardPadding,
+      paddingTop: layout.cardPadding,
+      paddingBottom: spacing.xs,
+    },
+  }),
+);

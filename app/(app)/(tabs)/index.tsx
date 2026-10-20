@@ -20,7 +20,8 @@ import {
   Text,
 } from '@/components';
 import { useProfile } from '@/hooks/useProfile';
-import { colors, layout, radius, sizes, spacing } from '@/theme';
+import { createStyles, layout, radius, sizes, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 const quickAccess = [
   { label: 'Musculação', href: '/strength', Icon: Dumbbell },
@@ -29,6 +30,8 @@ const quickAccess = [
 ] as const;
 
 export default function HomeScreen(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { name, avatarUrl } = useProfile();
   const firstName = name?.split(/\s+/)[0];
@@ -42,7 +45,7 @@ export default function HomeScreen(): ReactElement {
             size={sizes.badgeSm}
             fallback={
               <IconBadge tone="primary" size={sizes.badgeSm}>
-                <User size={sizes.iconMd} color={colors.ink} strokeWidth={sizes.iconStroke} />
+                <User size={sizes.iconMd} color={colors.onPrimary} strokeWidth={sizes.iconStroke} />
               </IconBadge>
             }
           />
@@ -91,7 +94,7 @@ export default function HomeScreen(): ReactElement {
           <Text variant="captionStrong">Próximo treino</Text>
           <View style={[styles.rowBetween, styles.nextWorkout]}>
             <IconBadge tone="primary" size={sizes.badgeLg}>
-              <Footprints size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />
+              <Footprints size={sizes.iconLg} color={colors.onPrimary} strokeWidth={sizes.iconStroke} />
             </IconBadge>
             <View style={styles.grow}>
               <Text variant="bodyStrong">Nenhum treino agendado</Text>
@@ -126,67 +129,69 @@ export default function HomeScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    paddingHorizontal: layout.screenPadding,
-    gap: layout.cardGap,
-  },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.sm,
-  },
-  spacer: {
-    flex: 1,
-  },
-  greeting: {
-    gap: spacing.xs,
-    marginTop: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  rowBetween: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  grow: {
-    flex: 1,
-  },
-  planTitle: {
-    marginTop: spacing.xs,
-  },
-  planMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  progressLabel: {
-    marginTop: spacing.xs,
-  },
-  progressBar: {
-    marginTop: spacing.md,
-  },
-  nextWorkout: {
-    marginTop: spacing.md,
-  },
-  quickAccess: {
-    gap: spacing.md,
-    marginTop: spacing.sm,
-  },
-  tiles: {
-    flexDirection: 'row',
-    gap: layout.cardGap,
-  },
-  tile: {
-    flex: 1,
-    aspectRatio: 1,
-    borderRadius: radius.md,
-    borderWidth: sizes.hairline,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    body: {
+      paddingHorizontal: layout.screenPadding,
+      gap: layout.cardGap,
+    },
+    topBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: spacing.sm,
+    },
+    spacer: {
+      flex: 1,
+    },
+    greeting: {
+      gap: spacing.xs,
+      marginTop: spacing.sm,
+      marginBottom: spacing.xs,
+    },
+    rowBetween: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+    },
+    grow: {
+      flex: 1,
+    },
+    planTitle: {
+      marginTop: spacing.xs,
+    },
+    planMeta: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      marginTop: spacing.sm,
+    },
+    progressLabel: {
+      marginTop: spacing.xs,
+    },
+    progressBar: {
+      marginTop: spacing.md,
+    },
+    nextWorkout: {
+      marginTop: spacing.md,
+    },
+    quickAccess: {
+      gap: spacing.md,
+      marginTop: spacing.sm,
+    },
+    tiles: {
+      flexDirection: 'row',
+      gap: layout.cardGap,
+    },
+    tile: {
+      flex: 1,
+      aspectRatio: 1,
+      borderRadius: radius.md,
+      borderWidth: sizes.hairline,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.sm,
+    },
+  }),
+);

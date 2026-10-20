@@ -1,7 +1,8 @@
 import { type ReactNode, type ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { colors, spacing } from '@/theme';
+import { spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface EmptyStateProps {
   title: string;
@@ -18,6 +19,7 @@ export function EmptyState({
   action,
   style,
 }: EmptyStateProps): ReactElement {
+  const { colors } = useTheme();
   return (
     <View style={[styles.container, style]}>
       {icon}

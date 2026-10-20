@@ -5,9 +5,12 @@ import { Button, Card, Screen, ScreenHeader, Text } from '@/components';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { HEALTH_DISCLAIMER } from '@/lib/healthDisclaimer';
 import { onboardingSteps } from '@/lib/onboardingSteps';
-import { colors, layout, radius, spacing } from '@/theme';
+import { createStyles, layout, radius, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 export default function OnboardingScreen(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { loading, step, stepCount, stepKey, answers, isFirst, isLast, answer, next, back } =
     useOnboarding();
@@ -74,27 +77,29 @@ export default function OnboardingScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    paddingHorizontal: layout.screenPadding,
-    paddingTop: spacing.xxl,
-    gap: spacing.xxl,
-  },
-  intro: {
-    gap: spacing.sm,
-  },
-  options: {
-    gap: layout.cardGap,
-  },
-  optionActive: {
-    borderColor: colors.primary,
-    borderWidth: 2,
-    borderRadius: radius.lg,
-  },
-  footer: {
-    paddingHorizontal: layout.screenPadding,
-    paddingBottom: spacing.xxl,
-    gap: spacing.md,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    body: {
+      flex: 1,
+      paddingHorizontal: layout.screenPadding,
+      paddingTop: spacing.xxl,
+      gap: spacing.xxl,
+    },
+    intro: {
+      gap: spacing.sm,
+    },
+    options: {
+      gap: layout.cardGap,
+    },
+    optionActive: {
+      borderColor: colors.primary,
+      borderWidth: 2,
+      borderRadius: radius.lg,
+    },
+    footer: {
+      paddingHorizontal: layout.screenPadding,
+      paddingBottom: spacing.xxl,
+      gap: spacing.md,
+    },
+  }),
+);

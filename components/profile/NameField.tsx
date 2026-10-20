@@ -6,13 +6,16 @@ import { Input } from '@/components/Input';
 import { ListRow } from '@/components/ListRow';
 import { Text } from '@/components/Text';
 import { useUpdateName } from '@/hooks/useUpdateName';
-import { colors, layout, sizes, spacing } from '@/theme';
+import { createStyles, layout, sizes, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface NameFieldProps {
   name: string | null;
 }
 
 export function NameField({ name }: NameFieldProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { saving, error, save, clearError } = useUpdateName();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
@@ -80,20 +83,22 @@ export function NameField({ name }: NameFieldProps): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: layout.cardPadding,
-    gap: spacing.sm,
-    borderBottomWidth: sizes.hairline,
-    borderBottomColor: colors.border,
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  save: {
-    paddingHorizontal: spacing.xxl,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    container: {
+      padding: layout.cardPadding,
+      gap: spacing.sm,
+      borderBottomWidth: sizes.hairline,
+      borderBottomColor: colors.border,
+    },
+    actions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      gap: spacing.md,
+    },
+    save: {
+      paddingHorizontal: spacing.xxl,
+    },
+  }),
+);

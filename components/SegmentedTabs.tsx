@@ -1,7 +1,8 @@
 import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { colors, spacing } from '@/theme';
+import { createStyles, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface SegmentedTabsProps {
   items: readonly string[];
@@ -16,6 +17,8 @@ export function SegmentedTabs({
   onChange,
   style,
 }: SegmentedTabsProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={[styles.container, style]}>
       {items.map((item) => {
@@ -41,21 +44,23 @@ export function SegmentedTabs({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-    marginBottom: -1,
-  },
-  tabActive: {
-    borderBottomColor: colors.primary,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    tab: {
+      flex: 1,
+      alignItems: 'center',
+      paddingVertical: spacing.md,
+      borderBottomWidth: 2,
+      borderBottomColor: 'transparent',
+      marginBottom: -1,
+    },
+    tabActive: {
+      borderBottomColor: colors.primary,
+    },
+  }),
+);

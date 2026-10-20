@@ -14,9 +14,12 @@ import { LegalNotice } from '@/components/LegalNotice';
 import { useSession } from '@/hooks/useSession';
 import { useSocialSignIn, type SocialResult } from '@/hooks/useSocialSignIn';
 import { validateSignUp } from '@/hooks/validateAuth';
-import { colors, layout, spacing } from '@/theme';
+import { createStyles, layout, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 export default function SignUpScreen(): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { signUp } = useSession();
   const [name, setName] = useState('');
@@ -152,42 +155,44 @@ export default function SignUpScreen(): ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  body: {
-    paddingHorizontal: layout.screenPadding,
-    paddingTop: spacing.lg,
-    gap: spacing.xxl,
-  },
-  intro: {
-    gap: spacing.xs,
-  },
-  form: {
-    gap: spacing.md,
-  },
-  error: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  errorText: {
-    flex: 1,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  social: {
-    gap: spacing.md,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    body: {
+      paddingHorizontal: layout.screenPadding,
+      paddingTop: spacing.lg,
+      gap: spacing.xxl,
+    },
+    intro: {
+      gap: spacing.xs,
+    },
+    form: {
+      gap: spacing.md,
+    },
+    error: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    errorText: {
+      flex: 1,
+    },
+    divider: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+    },
+    line: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    social: {
+      gap: spacing.md,
+    },
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  }),
+);

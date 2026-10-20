@@ -1,7 +1,8 @@
 import { type ReactNode, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { colors, layout, radius, spacing } from '@/theme';
+import { createStyles, layout, type Palette, radius, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'text' | 'danger';
 
@@ -14,11 +15,10 @@ interface ButtonProps {
   style?: ViewStyle;
 }
 
-function labelColor(variant: ButtonVariant): string {
-  if (variant === 'text') {
-    return colors.primaryDeep;
-  }
-  return variant === 'danger' ? colors.danger : colors.ink;
+function labelColor(variant: ButtonVariant, colors: Palette): string {
+  if (variant === 'text') return colors.primaryDeep;
+  if (variant === 'danger') return colors.danger;
+  return variant === 'primary' ? colors.onPrimary : colors.ink;
 }
 
 export function Button({
@@ -29,6 +29,8 @@ export function Button({
   onPress,
   style,
 }: ButtonProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const isText = variant === 'text';
 
   return (
@@ -51,7 +53,7 @@ export function Button({
       {icon ? <View style={styles.icon}>{icon}</View> : null}
       <Text
         variant={isText ? 'body' : 'bodyStrong'}
-        color={labelColor(variant)}
+        color={labelColor(variant, colors)}
       >
         {label}
       </Text>
@@ -59,41 +61,43 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    height: layout.controlHeight,
-    borderRadius: radius.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textBase: {
-    height: undefined,
-    paddingVertical: spacing.sm,
-  },
-  primary: {
-    backgroundColor: colors.primary,
-  },
-  primaryPressed: {
-    backgroundColor: colors.primaryPressed,
-  },
-  secondary: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  danger: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.danger,
-  },
-  secondaryPressed: {
-    backgroundColor: colors.track,
-  },
-  disabled: {
-    opacity: 0.4,
-  },
-  icon: {
-    marginRight: spacing.sm,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    base: {
+      height: layout.controlHeight,
+      borderRadius: radius.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    textBase: {
+      height: undefined,
+      paddingVertical: spacing.sm,
+    },
+    primary: {
+      backgroundColor: colors.primary,
+    },
+    primaryPressed: {
+      backgroundColor: colors.primaryPressed,
+    },
+    secondary: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    danger: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.danger,
+    },
+    secondaryPressed: {
+      backgroundColor: colors.track,
+    },
+    disabled: {
+      opacity: 0.4,
+    },
+    icon: {
+      marginRight: spacing.sm,
+    },
+  }),
+);

@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 import { Text } from '@/components/Text';
 import type { LocationState } from '@/hooks/useRunTracker';
-import { colors, spacing } from '@/theme';
+import { palettes, spacing } from '@/theme';
 
 interface GpsNoticeProps {
   state: LocationState;
@@ -19,7 +19,7 @@ export function GpsNotice({ state }: GpsNoticeProps): ReactElement | null {
   const message = messages[state];
   if (!message) return null;
   return (
-    <Text variant="caption" center color={colors.dark.textSecondary} style={styles.notice}>
+    <Text variant="caption" center color={palettes.dark.textSecondary} style={styles.notice}>
       {message}
     </Text>
   );

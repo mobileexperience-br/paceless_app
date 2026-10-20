@@ -2,7 +2,8 @@ import { type ReactNode, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { Text } from './Text';
-import { colors, layout, spacing } from '@/theme';
+import { createStyles, layout, spacing } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface ListRowProps {
   title: string;
@@ -29,6 +30,8 @@ export function ListRow({
   onPress,
   style,
 }: ListRowProps): ReactElement {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <Pressable
       accessibilityRole={onPress ? 'button' : undefined}
@@ -70,27 +73,29 @@ export function ListRow({
   );
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: layout.cardPadding,
-    minHeight: 56,
-  },
-  divider: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  pressed: {
-    backgroundColor: colors.track,
-  },
-  leading: {
-    justifyContent: 'center',
-  },
-  content: {
-    flex: 1,
-    gap: 2,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      paddingVertical: spacing.md,
+      paddingHorizontal: layout.cardPadding,
+      minHeight: 56,
+    },
+    divider: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    pressed: {
+      backgroundColor: colors.track,
+    },
+    leading: {
+      justifyContent: 'center',
+    },
+    content: {
+      flex: 1,
+      gap: 2,
+    },
+  }),
+);

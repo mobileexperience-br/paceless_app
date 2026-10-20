@@ -4,7 +4,8 @@ import { Screen } from './Screen';
 import { ScreenHeader } from './ScreenHeader';
 import { Text } from './Text';
 import type { LegalContent } from '@/content/legal/types';
-import { colors, layout, spacing } from '@/theme';
+import { layout, spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface LegalDocumentProps {
   content: LegalContent;
@@ -15,6 +16,7 @@ interface BulletListProps {
 }
 
 function BulletList({ items }: BulletListProps): ReactElement {
+  const { colors } = useTheme();
   return (
     <View style={styles.bullets}>
       {items.map((item) => (
@@ -32,6 +34,7 @@ function BulletList({ items }: BulletListProps): ReactElement {
 }
 
 export function LegalDocument({ content }: LegalDocumentProps): ReactElement {
+  const { colors } = useTheme();
   return (
     <Screen scroll flush>
       <ScreenHeader showBack title={content.title} />

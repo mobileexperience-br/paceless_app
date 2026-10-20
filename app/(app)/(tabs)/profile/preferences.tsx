@@ -3,7 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { Card, ListRow, Screen, ScreenHeader, Text } from '@/components';
 import { usePreferences } from '@/hooks/usePreferences';
-import { colors, layout, sizes, spacing } from '@/theme';
+import { layout, sizes, spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 import type { DistanceUnit, ThemePreference } from '@/types/preferences';
 
 interface Option<T extends string> {
@@ -35,6 +36,7 @@ function OptionGroup<T extends string>({
   selected,
   onSelect,
 }: OptionGroupProps<T>): ReactElement {
+  const { colors } = useTheme();
   return (
     <View style={styles.group}>
       <Text variant="captionStrong">{title}</Text>
@@ -60,6 +62,7 @@ function OptionGroup<T extends string>({
 }
 
 export default function PreferencesScreen(): ReactElement {
+  const { colors } = useTheme();
   const { distanceUnit, theme, error, setDistanceUnit, setTheme } = usePreferences();
 
   return (
@@ -82,9 +85,6 @@ export default function PreferencesScreen(): ReactElement {
             void setTheme(value);
           }}
         />
-        <Text variant="caption" color={colors.textSecondary}>
-          O tema escuro chega em breve
-        </Text>
         {error ? (
           <Text variant="caption" color={colors.danger}>
             {error}

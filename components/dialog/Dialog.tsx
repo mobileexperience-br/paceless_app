@@ -1,4 +1,4 @@
-import { useRef, type ComponentRef, type ReactElement, type ReactNode } from 'react';
+import { useMemo, useRef, type ComponentRef, type ReactElement, type ReactNode } from 'react';
 import {
   AccessibilityInfo,
   Modal,
@@ -11,7 +11,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../Button';
 import { IconBadge } from '../IconBadge';
 import { Text } from '../Text';
-import { colors, radius, shadows, spacing } from '@/theme';
+import { createStyles, palettes, radius, shadows, spacing } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { ThemeScope } from '@/providers/ThemeProvider';
 
 export type DialogTone = 'light' | 'dark';
 export type DialogActionVariant = 'primary' | 'secondary' | 'danger' | 'text';
@@ -39,13 +41,17 @@ export function Dialog({
   title,
   message,
   icon,
-  tone = 'light',
+  tone,
   actions,
   onDismiss,
 }: DialogProps): ReactElement {
+  const { scheme } = useTheme();
+  const effectiveScheme = tone ?? scheme;
+  const colors = palettes[effectiveScheme];
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
   const titleRef = useRef<ComponentRef<typeof View>>(null);
-  const isDark = tone === 'dark';
+  const isDark = effectiveScheme === 'dark';
 
   const focusTitle = (): void => {
     if (titleRef.current && Platform.select({ web: false, default: true })) {
@@ -62,95 +68,99 @@ export function Dialog({
       onRequestClose={onDismiss}
       onShow={focusTitle}
     >
-      <View
-        accessibilityViewIsModal
-        style={[
-          styles.overlay,
-          {
-            paddingTop: insets.top + spacing.xxl,
-            paddingBottom: insets.bottom + spacing.xxl,
-          },
-        ]}
-      >
-        <Pressable
-          accessible={false}
-          focusable={false}
-          style={styles.scrim}
-          onPress={onDismiss}
-        />
-        <View style={[styles.card, isDark ? styles.cardDark : styles.cardLight]}>
-          {icon ? (
-            <IconBadge tone={isDark ? 'primary' : 'soft'} style={styles.badge}>
-              {icon}
-            </IconBadge>
-          ) : null}
-          <View ref={titleRef} accessible accessibilityRole="header">
-            <Text variant="title3" center color={isDark ? colors.dark.text : colors.ink}>
-              {title}
-            </Text>
-          </View>
-          {message ? (
-            <Text
-              variant="body"
-              center
-              color={isDark ? colors.dark.textSecondary : colors.textSecondary}
-              style={styles.message}
-            >
-              {message}
-            </Text>
-          ) : null}
-          <View style={styles.actions}>
-            {actions.map((action) => (
-              <Button
-                key={action.label}
-                label={action.label}
-                variant={action.variant}
-                onPress={action.onPress}
-              />
-            ))}
+      <ThemeScope scheme={effectiveScheme}>
+        <View
+          accessibilityViewIsModal
+          style={[
+            styles.overlay,
+            {
+              paddingTop: insets.top + spacing.xxl,
+              paddingBottom: insets.bottom + spacing.xxl,
+            },
+          ]}
+        >
+          <Pressable
+            accessible={false}
+            focusable={false}
+            style={styles.scrim}
+            onPress={onDismiss}
+          />
+          <View style={[styles.card, isDark ? styles.cardDark : styles.cardLight]}>
+            {icon ? (
+              <IconBadge tone={tone === 'dark' ? 'primary' : 'soft'} style={styles.badge}>
+                {icon}
+              </IconBadge>
+            ) : null}
+            <View ref={titleRef} accessible accessibilityRole="header">
+              <Text variant="title3" center color={colors.ink}>
+                {title}
+              </Text>
+            </View>
+            {message ? (
+              <Text
+                variant="body"
+                center
+                color={colors.textSecondary}
+                style={styles.message}
+              >
+                {message}
+              </Text>
+            ) : null}
+            <View style={styles.actions}>
+              {actions.map((action) => (
+                <Button
+                  key={action.label}
+                  label={action.label}
+                  variant={action.variant}
+                  onPress={action.onPress}
+                />
+              ))}
+            </View>
           </View>
         </View>
-      </View>
+      </ThemeScope>
     </Modal>
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xxl,
-  },
-  scrim: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: colors.scrim,
-  },
-  card: {
-    width: '100%',
-    maxWidth,
-    borderRadius: radius.lg,
-    padding: spacing.xxl,
-    alignItems: 'stretch',
-    ...shadows.fab,
-  },
-  cardLight: {
-    backgroundColor: colors.surface,
-  },
-  cardDark: {
-    backgroundColor: colors.dark.background,
-    borderWidth: 1,
-    borderColor: colors.dark.border,
-  },
-  badge: {
-    alignSelf: 'center',
-    marginBottom: spacing.lg,
-  },
-  message: {
-    marginTop: spacing.sm,
-  },
-  actions: {
-    marginTop: spacing.xxl,
-    gap: spacing.md,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: spacing.xxl,
+    },
+    scrim: {
+      ...StyleSheet.absoluteFill,
+      backgroundColor: colors.scrim,
+    },
+    card: {
+      width: '100%',
+      maxWidth,
+      borderRadius: radius.lg,
+      padding: spacing.xxl,
+      alignItems: 'stretch',
+      ...shadows.fab,
+    },
+    cardLight: {
+      backgroundColor: colors.surface,
+    },
+    cardDark: {
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    badge: {
+      alignSelf: 'center',
+      marginBottom: spacing.lg,
+    },
+    message: {
+      marginTop: spacing.sm,
+    },
+    actions: {
+      marginTop: spacing.xxl,
+      gap: spacing.md,
+    },
+  }),
+);

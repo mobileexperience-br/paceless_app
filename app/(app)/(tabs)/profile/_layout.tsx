@@ -1,8 +1,9 @@
 import type { ReactElement } from 'react';
 import { Stack } from 'expo-router';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function ProfileLayout(): ReactElement {
+  const { colors } = useTheme();
   return (
     <Stack
       screenOptions={{

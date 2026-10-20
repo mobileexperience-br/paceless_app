@@ -1,7 +1,7 @@
 import { type ReactNode, type ReactElement } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { colors } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface RingProps {
   progress: number;
@@ -18,6 +18,7 @@ export function Ring({
   children,
   style,
 }: RingProps): ReactElement {
+  const { colors } = useTheme();
   const clamped = Math.min(1, Math.max(0, progress));
   const r = (size - thickness) / 2;
   const circumference = 2 * Math.PI * r;

@@ -1,8 +1,10 @@
-export { colors } from './colors';
+export { palettes } from './colors';
+export type { Palette, ColorScheme } from './colors';
 export { fonts, typography } from './typography';
 export type { TypographyVariant } from './typography';
 export { spacing, layout } from './spacing';
 export { radius } from './radius';
+export { createStyles } from './createStyles';
 export { shadows } from './shadows';
 export { sizes } from './sizes';
 export { workout } from './workout';
