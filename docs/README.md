@@ -18,6 +18,7 @@ Planejamento e acordos do projeto. O código diz *como* está; esta pasta diz
 | [pesquisa/](./pesquisa/README.md) | Propostas da Trilha R: relógios e saúde, notificações, compartilhar corrida, gamificação e musculação |
 | [colaboracao.md](./colaboracao.md) | Como a gente trabalha junto: branches, PR, review, padrões de código |
 | [design-system.md](./design-system.md) | Origem e uso dos tokens, e o que foi feito fora do mockup |
+| [pendencias-pedro.md](./pendencias-pedro.md) | O que o Pedro já respondeu e o que falta |
 | [decisoes.md](./decisoes.md) | Registro de decisões (o que, por quê, quando) |
 
 Regras de código e arquitetura continuam no [CLAUDE.md](../CLAUDE.md) — ele é
