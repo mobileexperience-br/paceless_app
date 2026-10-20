@@ -9,8 +9,12 @@ interface WorkoutDialogs {
   showGpsHelp: () => void;
 }
 
-const gpsHelpMessage =
-  'Fique ao ar livre, com céu aberto, e aguarde alguns segundos até o sinal estabilizar.\n\nMantenha a localização ativada e permita o acesso ao Paceless durante o treino.\n\nSe a distância parar de contar com a tela bloqueada, desative a economia de bateria para o Paceless.\n\nO ritmo atual aparece após 100 m ou 30 s de treino.';
+const gpsHelpMessage = [
+  'Fique ao ar livre, com céu aberto, e aguarde alguns segundos até o sinal estabilizar.',
+  'Mantenha a localização ativada e permita o acesso ao Paceless durante o treino.',
+  'Se a distância parar de contar com a tela bloqueada, desative a economia de bateria para o Paceless.',
+  'O ritmo atual aparece após 100 m ou 30 s de treino.',
+].join('\n\n');
 
 function renderIcon(Icon: LucideIcon): ReactElement {
   return <Icon size={sizes.iconMd} color={colors.ink} strokeWidth={sizes.iconStroke} />;
