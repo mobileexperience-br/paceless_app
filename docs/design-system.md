@@ -73,6 +73,16 @@ discreta. `fab` **não vem do mockup** — só no botão de Atividades da tab ba
 - `CheckCircle`: treino concluído — vazio ou verde com check.
 - `ProgressBar` e `Ring` recebem `progress` de 0 a 1.
 
+## Safe areas e insets
+
+Regra: todo conteúdo ancorado em uma borda da tela usa insets.
+
+- `Screen` aplica `top`, `bottom`, `left` e `right` por padrão. Telas dentro das abas não duplicam o padding inferior, pois a barra de abas já cobre a borda e o `SafeAreaView` só aplica o que realmente toca a borda.
+- Elementos fixos embaixo (CTA, slider, tab bar) somam `insets.bottom` ao espaçamento do tema. Nunca use valor fixo.
+- Bottom sheets somam `insets.bottom + spacing.xxl` no padding inferior (folga extra para cantos de tela arredondados) e `insets.left/right` nas laterais.
+- `Modal` abre uma janela nova no Android: use `statusBarTranslucent` e `navigationBarTranslucent` e envolva o conteúdo em `ModalSafeArea` (um `SafeAreaProvider` interno), para que `useSafeAreaInsets` meça a janela do próprio modal.
+- Cabeçalhos respeitam `insets.top`.
+
 ## Build
 
 - `babel.config.js`: o plugin `react-native-worklets/plugin` é obrigatório

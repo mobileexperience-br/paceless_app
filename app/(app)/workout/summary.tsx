@@ -36,7 +36,7 @@ function WorkoutSummaryContent(): ReactElement {
   ];
 
   return (
-    <Screen dark scroll edges={['top', 'bottom']}>
+    <Screen dark scroll edges={['top', 'bottom', 'left', 'right']}>
       <StatusBar style="light" />
       <View style={styles.heading}>
         <Text variant="title1" color={palettes.dark.ink}>

@@ -41,7 +41,7 @@ export default function HelpScreen(): ReactElement {
   ];
 
   return (
-    <Screen scroll flush edges={['top', 'bottom']}>
+    <Screen scroll flush>
       <ScreenHeader showBack title="Ajuda e suporte" />
       <View style={styles.body}>
         <Card flush>

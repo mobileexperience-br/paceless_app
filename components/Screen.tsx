@@ -1,6 +1,6 @@
 import { type ReactNode, type ReactElement } from 'react';
 import { ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 import { layout, palettes } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -9,16 +9,18 @@ interface ScreenProps {
   scroll?: boolean;
   flush?: boolean;
   dark?: boolean;
-  edges?: ('top' | 'bottom')[];
+  edges?: Edge[];
   style?: ViewStyle;
 }
+
+const defaultEdges: Edge[] = ['top', 'bottom', 'left', 'right'];
 
 export function Screen({
   children,
   scroll = false,
   flush = false,
   dark = false,
-  edges = ['top'],
+  edges = defaultEdges,
   style,
 }: ScreenProps): ReactElement {
   const { colors } = useTheme();

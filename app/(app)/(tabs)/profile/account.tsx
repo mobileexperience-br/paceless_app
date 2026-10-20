@@ -46,7 +46,7 @@ export default function AccountScreen(): ReactElement {
   };
 
   return (
-    <Screen scroll flush edges={['top', 'bottom']}>
+    <Screen scroll flush>
       <ScreenHeader showBack title="Minha conta" />
       <View style={styles.body}>
         {empty ? (

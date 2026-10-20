@@ -36,7 +36,7 @@ export default function WelcomeScreen(): ReactElement {
       <Image source={heroWelcome} style={styles.hero} resizeMode="cover" />
       <View style={styles.scrim} />
 
-      <SafeAreaView edges={['top', 'bottom']} style={styles.safe}>
+      <SafeAreaView edges={['top', 'bottom', 'left', 'right']} style={styles.safe}>
         <View style={styles.brand}>
           <Image
             source={logoMark}

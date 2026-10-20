@@ -28,7 +28,7 @@ export default function WeekScreen(): ReactElement {
   const { week } = useLocalSearchParams<{ week: string }>();
 
   return (
-    <Screen scroll flush edges={['top', 'bottom']}>
+    <Screen scroll flush>
       <ScreenHeader showBack title={`Semana ${week}`} />
 
       <View style={styles.body}>

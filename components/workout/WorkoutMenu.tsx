@@ -2,6 +2,7 @@ import { useState, type ReactElement } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { Check, ChevronRight, CircleHelp, Footprints, Trash2, type LucideIcon } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ModalSafeArea } from '@/components/ModalSafeArea';
 import { Text } from '@/components/Text';
 import { activityLabels, workoutTypes, type WorkoutType } from '@/lib/activities';
 import { createStyles, palettes, radius, spacing, workout } from '@/theme';
@@ -65,9 +66,26 @@ export function WorkoutMenu({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={close}
+    >
+      <ModalSafeArea>
       <Pressable accessibilityLabel="Fechar menu" style={styles.backdrop} onPress={close} />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom + spacing.lg }]}>
+      <View
+        style={[
+          styles.sheet,
+          {
+            paddingBottom: insets.bottom + spacing.xxl,
+            paddingLeft: insets.left + spacing.xl,
+            paddingRight: insets.right + spacing.xl,
+          },
+        ]}
+      >
         {choosing ? (
           workoutTypes.map((option) => (
             <MenuRow
@@ -110,6 +128,7 @@ export function WorkoutMenu({
           </>
         )}
       </View>
+      </ModalSafeArea>
     </Modal>
   );
 }
@@ -127,7 +146,6 @@ const makeStyles = createStyles((colors) =>
       borderWidth: 1,
       borderColor: palettes.dark.border,
       paddingTop: spacing.sm,
-      paddingHorizontal: spacing.xl,
     },
     row: {
       flexDirection: 'row',

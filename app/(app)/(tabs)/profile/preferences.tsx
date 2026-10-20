@@ -66,7 +66,7 @@ export default function PreferencesScreen(): ReactElement {
   const { distanceUnit, theme, error, setDistanceUnit, setTheme } = usePreferences();
 
   return (
-    <Screen scroll flush edges={['top', 'bottom']}>
+    <Screen scroll flush>
       <ScreenHeader showBack title="Preferências" />
       <View style={styles.body}>
         <OptionGroup

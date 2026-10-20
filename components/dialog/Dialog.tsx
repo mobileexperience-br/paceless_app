@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ModalSafeArea } from '../ModalSafeArea';
 import { Button } from '../Button';
 import { IconBadge } from '../IconBadge';
 import { Text } from '../Text';
@@ -65,9 +66,11 @@ export function Dialog({
       visible={visible}
       animationType="fade"
       statusBarTranslucent
+      navigationBarTranslucent
       onRequestClose={onDismiss}
       onShow={focusTitle}
     >
+      <ModalSafeArea>
       <ThemeScope scheme={effectiveScheme}>
         <View
           accessibilityViewIsModal
@@ -76,6 +79,8 @@ export function Dialog({
             {
               paddingTop: insets.top + spacing.xxl,
               paddingBottom: insets.bottom + spacing.xxl,
+              paddingLeft: insets.left + spacing.xxl,
+              paddingRight: insets.right + spacing.xxl,
             },
           ]}
         >
@@ -119,6 +124,7 @@ export function Dialog({
           </View>
         </View>
       </ThemeScope>
+      </ModalSafeArea>
     </Modal>
   );
 }
@@ -129,7 +135,6 @@ const makeStyles = createStyles((colors) =>
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      paddingHorizontal: spacing.xxl,
     },
     scrim: {
       ...StyleSheet.absoluteFill,

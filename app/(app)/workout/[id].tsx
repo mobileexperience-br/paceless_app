@@ -94,7 +94,7 @@ function WorkoutContent(): ReactElement {
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
-      <SafeAreaView edges={['top']} style={styles.safe}>
+      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
         <WorkoutTopBar
           onBack={() => {
             confirmDiscard(leave);

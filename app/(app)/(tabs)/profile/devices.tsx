@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 export default function DevicesScreen(): ReactElement {
   const { colors } = useTheme();
   return (
-    <Screen scroll flush edges={['top', 'bottom']}>
+    <Screen scroll flush>
       <ScreenHeader showBack title="Dispositivos conectados" />
       <View style={styles.body}>
         <EmptyState
