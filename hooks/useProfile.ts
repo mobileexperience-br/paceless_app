@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from '@/hooks/useSession';
 import { avatarPublicUrl } from '@/lib/avatar';
 import { parseProfileRow } from '@/lib/profileRow';
@@ -38,6 +38,10 @@ export function useProfile(): Profile {
   const { user } = useSession();
   const userId = user?.id ?? null;
   const [loaded, setLoaded] = useState<Loaded | null>(null);
+  const currentUserId = useRef<string | null>(userId);
+  useEffect(() => {
+    currentUserId.current = userId;
+  }, [userId]);
 
   useEffect(() => {
     listeners.add(setLoaded);
@@ -60,6 +64,7 @@ export function useProfile(): Profile {
   const refresh = useCallback(async (): Promise<void> => {
     if (!userId) return;
     const next: Loaded = { userId, row: await fetchProfile(userId) };
+    if (currentUserId.current !== userId) return;
     listeners.forEach((listener) => {
       listener(next);
     });

@@ -69,9 +69,8 @@ export function DialogProvider({ children }: { children: ReactNode }): ReactElem
   );
 
   const close = useCallback(
-    (result: boolean): void => {
-      const closing = active.current;
-      if (!closing) {
+    (closing: DialogRequest | null, result: boolean): void => {
+      if (!closing || active.current !== closing) {
         return;
       }
       closing.resolve(result);
@@ -134,11 +133,11 @@ export function DialogProvider({ children }: { children: ReactNode }): ReactElem
           label: action.label,
           variant: action.variant,
           onPress: (): void => {
-            close(action.result);
+            close(shown, action.result);
           },
         }))}
         onDismiss={() => {
-          close(false);
+          close(shown, false);
         }}
       />
     </DialogContext.Provider>

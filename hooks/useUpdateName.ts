@@ -43,11 +43,9 @@ export function useUpdateName(): UseUpdateName {
       setError(null);
       setSaving(true);
       const profileResult = await supabase.from('profiles').update({ name }).eq('id', userId);
-      const metadataResult = profileResult.error
-        ? null
-        : await supabase.auth.updateUser({ data: { name } });
+      if (!profileResult.error) await supabase.auth.updateUser({ data: { name } });
       setSaving(false);
-      if (profileResult.error || metadataResult?.error) {
+      if (profileResult.error) {
         setError('Não foi possível salvar o nome. Tente novamente.');
         return false;
       }

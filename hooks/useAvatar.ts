@@ -44,7 +44,7 @@ export function useAvatar(): UseAvatar {
         try {
           await saveAvatarPath(userId, path);
         } catch (saveError) {
-          await removeAvatarFile(path);
+          await removeAvatarFile(path).catch(() => undefined);
           throw saveError;
         }
         if (currentPath) await removeAvatarFile(currentPath);

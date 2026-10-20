@@ -28,10 +28,9 @@ export function ensurePurchases(): boolean {
   return true;
 }
 
-export async function syncPurchasesUser(userId: string | null): Promise<void> {
-  if (!ensurePurchases()) {
-    return;
-  }
+let syncQueue: Promise<void> = Promise.resolve();
+
+async function runPurchasesSync(userId: string | null): Promise<void> {
   try {
     if (userId) {
       await Purchases.logIn(userId);
@@ -41,6 +40,14 @@ export async function syncPurchasesUser(userId: string | null): Promise<void> {
   } catch {
     return;
   }
+}
+
+export function syncPurchasesUser(userId: string | null): Promise<void> {
+  if (!ensurePurchases()) {
+    return Promise.resolve();
+  }
+  syncQueue = syncQueue.then(() => runPurchasesSync(userId));
+  return syncQueue;
 }
 
 export function isUserCancelled(error: unknown): boolean {
