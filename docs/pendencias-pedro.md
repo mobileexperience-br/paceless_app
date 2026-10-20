@@ -7,7 +7,11 @@ Lista enviada no WhatsApp em 19/10/2026 (22 itens). Este arquivo registra o que 
 | Item | Resposta | Data |
 |---|---|---|
 | 1. Organização Expo | Criada (`paceless`), projeto transferido | 19/10 |
-| 2. Google Play Console | A conta antiga dele foi **encerrada por inatividade** em 20/10/2021 e não pode ser reativada. Ele perguntou se precisa criar outra e pagar de novo | 19/10 |
+| 2. Google Play Console | A conta antiga foi encerrada por inatividade (2021). Ele criou conta nova e convidou o Jonatas como Admin. Procurou o D-U-N-S, então a ideia é conta de organização | 20/10 |
+| 3. Apple Developer | Ainda falta. Ele está em dúvida entre PF e PJ | 20/10 |
+| 4. RevenueCat | Conta criada, convite enviado. Chave do Test Store cadastrada no `.env` e no EAS (development e preview) | 20/10 |
+| 5. Google Cloud | Projeto criado, convite enviado | 20/10 |
+| 6. Supabase | Marcado como feito | 20/10 |
 | 22. Expo x Flutter | Não respondeu explicitamente; seguimos em Expo | — |
 
 ## Google Play: conta encerrada
@@ -18,6 +22,6 @@ Lista enviada no WhatsApp em 19/10/2026 (22 itens). Este arquivo registra o que 
 
 ## Em aberto
 
-Todos os demais itens (3 a 21): Apple Developer, RevenueCat, Google Cloud, papel no Supabase, preços, grátis x premium, relógios, dias de treino, gamificação, musculação, Stories, iPad, concorrente, dados jurídicos, advogado, hospedagem das páginas legais, documento de requisitos, anotações, conversa com o Igor.
+Item 3 (Apple, PF ou PJ) e itens 7 a 21: preços, grátis x premium, relógios, dias de treino, gamificação, musculação, Stories, iPad, concorrente, dados jurídicos, advogado, hospedagem das páginas legais, documento de requisitos, anotações, conversa com o Igor.
 
 Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações combinadas" e mandar em seguida.
