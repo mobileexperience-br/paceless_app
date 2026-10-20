@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { Settings } from 'lucide-react-native';
@@ -26,6 +26,7 @@ export default function ProfileScreen(): ReactElement {
   const { signOut } = useSession();
   const { name, avatarUrl } = useProfile();
   const { isPremium, error, manage } = useManageSubscription();
+  const [signOutError, setSignOutError] = useState<string | null>(null);
 
   return (
     <Screen scroll flush>
@@ -82,15 +83,20 @@ export default function ProfileScreen(): ReactElement {
             title="Sair"
             showChevron
             onPress={(): void => {
-              void signOut().then(() => {
+              setSignOutError(null);
+              void signOut().then((result) => {
+                if (result.error) {
+                  setSignOutError(result.error);
+                  return;
+                }
                 router.replace('/(pre-auth)/welcome');
               });
             }}
           />
         </Card>
-        {error ? (
+        {error ?? signOutError ? (
           <Text variant="caption" color={colors.danger}>
-            {error}
+            {error ?? signOutError}
           </Text>
         ) : null}
       </View>
