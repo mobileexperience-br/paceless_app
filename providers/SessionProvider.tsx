@@ -97,6 +97,9 @@ export function SessionProvider({ children }: { children: ReactNode }): ReactEle
         password,
         options: { data: { name } },
       });
+      if (!error && data.user?.identities?.length === 0) {
+        return { error: translateError('already registered'), needsConfirmation: false };
+      }
       return {
         ...toResult(error),
         needsConfirmation: !error && data.user !== null && data.session === null,
