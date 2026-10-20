@@ -48,7 +48,7 @@ module.exports = defineConfig([
       'app/(app)/workout/[[]id].tsx',
       'app/(app)/workout/summary.tsx',
       'components/workout/**',
-      'app/(app)/profile/account.tsx',
+      'app/(app)/(tabs)/profile/account.tsx',
     ],
     rules: { 'no-restricted-properties': 'off' },
   },

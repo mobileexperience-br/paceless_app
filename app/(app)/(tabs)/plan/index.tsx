@@ -53,7 +53,7 @@ export default function PlanScreen(): ReactElement {
             }
             showChevron
             divider
-            onPress={() => { router.push('/week/1'); }}
+            onPress={() => { router.push('/plan/week/1'); }}
           />
           <ListRow
             title="Calendário de treinos"
@@ -62,7 +62,7 @@ export default function PlanScreen(): ReactElement {
             }
             showChevron
             divider
-            onPress={() => { router.push('/week/1'); }}
+            onPress={() => { router.push('/plan/week/1'); }}
           />
           <ListRow
             title="Configurações do plano"

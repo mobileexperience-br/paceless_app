@@ -23,15 +23,8 @@ export default function AppLayout(): ReactElement | null {
       }}
     >
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="week/[week]" />
       <Stack.Screen name="workout/[id]" options={{ animation: 'fade' }} />
       <Stack.Screen name="workout/summary" options={{ animation: 'fade' }} />
-      <Stack.Screen name="profile/account" />
-      <Stack.Screen name="profile/preferences" />
-      <Stack.Screen name="profile/devices" />
-      <Stack.Screen name="profile/notifications" />
-      <Stack.Screen name="profile/help" />
-      <Stack.Screen name="profile/faq" />
     </Stack>
   );
 }
