@@ -11,7 +11,10 @@ async function syncOnboarding(userId: string): Promise<void> {
   const result = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
   if (result.error) return;
   const raw: unknown = result.data;
-  if (parseProfileRow(raw)?.onboarding_completed_at) return;
+  if (parseProfileRow(raw)?.onboarding_completed_at) {
+    await clearOnboardingState();
+    return;
+  }
   const { error: upsertError } = await supabase.from('profiles').upsert({
     id: userId,
     goal: answers.goal,
