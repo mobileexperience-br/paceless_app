@@ -39,11 +39,14 @@ async function fetchPreferences(userId: string): Promise<Preferences | null> {
 
 async function pushPreferences(userId: string, patch: Partial<Preferences>): Promise<boolean> {
   if (!supabase) return false;
-  const { error } = await supabase.from('profiles').upsert({
-    id: userId,
-    ...(patch.distanceUnit !== undefined && { distance_unit: patch.distanceUnit }),
-    ...(patch.theme !== undefined && { theme: patch.theme }),
-  });
+  const { error } = await supabase.from('profiles').upsert(
+    {
+      id: userId,
+      ...(patch.distanceUnit !== undefined && { distance_unit: patch.distanceUnit }),
+      ...(patch.theme !== undefined && { theme: patch.theme }),
+    },
+    { onConflict: 'id', defaultToNull: false },
+  );
   return error === null;
 }
 

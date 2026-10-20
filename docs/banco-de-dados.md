@@ -6,6 +6,15 @@ tem acesso a nada e cada política usa `(select auth.uid())`.
 Contexto: [decisoes.md](./decisoes.md).
 
 Tabelas já existentes e fora desta trilha: `profiles`, `subscriptions`, `activities`.
+O perfil nasce por trigger: `on_auth_user_created` (`after insert on auth.users`) chama
+`public.handle_new_user()` (`security definer`, `search_path = ''`, execute revogado de
+`public`/`anon`/`authenticated`), que insere `profiles (id, name)` com o `name` de
+`raw_user_meta_data` e `on conflict (id) do nothing`. A migration
+`20261020010000_handle_new_user.sql` recria função e trigger de forma idempotente e faz
+backfill dos usuários sem perfil (o trigger original não existia no banco remoto). O client
+nunca assume que a linha existe: updates em `profiles` usam `.select('id')` e tratam
+zero linhas como erro; upserts parciais usam `defaultToNull: false`.
+
 Sem geração de plano por IA: o schema só guarda planos (catálogo ou do usuário) e
 a agenda.
 

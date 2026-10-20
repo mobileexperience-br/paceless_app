@@ -42,10 +42,15 @@ export function useUpdateName(): UseUpdateName {
       const name = value.trim();
       setError(null);
       setSaving(true);
-      const profileResult = await supabase.from('profiles').update({ name }).eq('id', userId);
-      if (!profileResult.error) await supabase.auth.updateUser({ data: { name } });
+      const profileResult = await supabase
+        .from('profiles')
+        .update({ name })
+        .eq('id', userId)
+        .select('id');
+      const saved = !profileResult.error && profileResult.data.length > 0;
+      if (saved) await supabase.auth.updateUser({ data: { name } });
       setSaving(false);
-      if (profileResult.error) {
+      if (!saved) {
         setError('Não foi possível salvar o nome. Tente novamente.');
         return false;
       }

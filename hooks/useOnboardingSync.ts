@@ -15,14 +15,17 @@ async function syncOnboarding(userId: string): Promise<void> {
     await clearOnboardingState();
     return;
   }
-  const { error: upsertError } = await supabase.from('profiles').upsert({
-    id: userId,
-    goal: answers.goal,
-    level: answers.level,
-    days_per_week: answers.daysPerWeek,
-    strength: answers.strength,
-    onboarding_completed_at: new Date().toISOString(),
-  });
+  const { error: upsertError } = await supabase.from('profiles').upsert(
+    {
+      id: userId,
+      goal: answers.goal,
+      level: answers.level,
+      days_per_week: answers.daysPerWeek,
+      strength: answers.strength,
+      onboarding_completed_at: new Date().toISOString(),
+    },
+    { onConflict: 'id', defaultToNull: false },
+  );
   if (upsertError) return;
   await clearOnboardingState();
 }

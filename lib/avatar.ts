@@ -70,6 +70,10 @@ export async function removeAvatarFile(path: string): Promise<void> {
 
 export async function saveAvatarPath(userId: string, path: string | null): Promise<void> {
   if (!supabase) throw new AvatarError('Serviço não configurado.');
-  const { error } = await supabase.from('profiles').update({ avatar_path: path }).eq('id', userId);
-  if (error) throw new AvatarError('Não foi possível salvar a foto. Tente novamente.');
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ avatar_path: path })
+    .eq('id', userId)
+    .select('id');
+  if (error || data.length === 0) throw new AvatarError('Não foi possível salvar a foto. Tente novamente.');
 }
