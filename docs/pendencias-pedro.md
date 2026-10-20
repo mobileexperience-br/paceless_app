@@ -25,3 +25,13 @@ Lista enviada no WhatsApp em 19/10/2026 (22 itens). Este arquivo registra o que 
 Item 3 (Apple, PF ou PJ) e itens 7 a 21: preços, grátis x premium, relógios, dias de treino, gamificação, musculação, Stories, iPad, concorrente, dados jurídicos, advogado, hospedagem das páginas legais, documento de requisitos, anotações, conversa com o Igor.
 
 Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações combinadas" e mandar em seguida.
+
+## Configuração Google (20/10)
+
+- Google Cloud: projeto `paceless`. Tela OAuth externa em modo de teste, domínio autorizado `twfqvvfpnspbdaytrerm.supabase.co` (o Google recusa `supabase.co`, que é sufixo público).
+- Clientes OAuth Web, Android (SHA-1 de desenvolvimento) e iOS criados. Client IDs no `.env` e no EAS (três ambientes).
+- Supabase: provider Google ativo, com os três Client IDs e "Skip nonce check".
+- Conta de serviço `paceless-play-publisher@paceless.iam.gserviceaccount.com`, convidada no Play Console. Chave JSON fica fora do repositório.
+- RevenueCat: app Play Store `com.paceless.app`. Chave `goog_` em `production`; development e preview seguem com a chave de teste.
+- Play Console (conta de organização "MXPBR"): o app ainda não foi criado porque falta o Pedro verificar o telefone da conta.
+- Falta: cliente OAuth Android com o SHA-1 de produção e o da assinatura do Play, depois do primeiro build enviado.
