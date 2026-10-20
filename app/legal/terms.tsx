@@ -1,7 +1,6 @@
 import type { ReactElement } from 'react';
-import { LegalDocument } from '@/components/LegalDocument';
-import { terms } from '@/content/legal/terms';
+import { TermsContent } from '@/components/legal/TermsContent';
 
 export default function TermsScreen(): ReactElement {
-  return <LegalDocument content={terms} />;
+  return <TermsContent />;
 }

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Linking } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import { buildSupportMailto, links } from '@/lib/links';
 
 const OPEN_ERROR = 'Não foi possível abrir o link. Tente novamente mais tarde.';
@@ -17,6 +17,7 @@ interface OpenLink {
 
 export function useOpenLink(): OpenLink {
   const router = useRouter();
+  const insideApp = useSegments()[0] === '(app)';
   const [error, setError] = useState<string | null>(null);
 
   const open = useCallback(async (target: string, message: string): Promise<void> => {
@@ -42,9 +43,13 @@ export function useOpenLink(): OpenLink {
         void openUrl(url);
         return;
       }
+      if (insideApp) {
+        router.push(kind === 'terms' ? '/profile/terms' : '/profile/privacy');
+        return;
+      }
       router.push(kind === 'terms' ? '/legal/terms' : '/legal/privacy');
     },
-    [openUrl, router],
+    [insideApp, openUrl, router],
   );
 
   return { error, openUrl, openSupportEmail, openLegal };

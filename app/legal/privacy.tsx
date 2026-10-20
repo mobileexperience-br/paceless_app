@@ -1,7 +1,6 @@
 import type { ReactElement } from 'react';
-import { LegalDocument } from '@/components/LegalDocument';
-import { privacy } from '@/content/legal/privacy';
+import { PrivacyContent } from '@/components/legal/PrivacyContent';
 
 export default function PrivacyScreen(): ReactElement {
-  return <LegalDocument content={privacy} />;
+  return <PrivacyContent />;
 }
