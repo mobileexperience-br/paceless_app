@@ -70,6 +70,14 @@ export function drainFixes(): Promise<RawFix[]> {
   });
 }
 
+export function peekLastFixTimestamp(): Promise<number | null> {
+  return enqueue(async () => {
+    const current = await readFixes();
+    const latest = current[current.length - 1];
+    return latest ? latest.timestamp : null;
+  });
+}
+
 export function subscribeFixes(listener: Listener): () => void {
   listeners.add(listener);
   return (): void => {

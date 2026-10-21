@@ -1,5 +1,5 @@
 import { useMemo, type ReactElement } from 'react';
-import { CircleHelp, Flag, Trash2, type LucideIcon } from 'lucide-react-native';
+import { CircleHelp, Flag, Play, Trash2, type LucideIcon } from 'lucide-react-native';
 import { useDialog } from '@/hooks/useDialog';
 import { palettes, sizes } from '@/theme';
 
@@ -7,6 +7,7 @@ interface WorkoutDialogs {
   confirmDiscard: (onConfirm: () => void) => void;
   confirmStop: (onConfirm: () => void) => void;
   showGpsHelp: () => void;
+  askResume: () => Promise<boolean>;
 }
 
 const gpsHelpMessage = [
@@ -49,6 +50,27 @@ export function useWorkoutDialogs(): WorkoutDialogs {
         }).then((confirmed) => {
           if (confirmed) onConfirm();
         });
+      },
+      askResume: async (): Promise<boolean> => {
+        const resume = await confirm({
+          title: 'Retomar treino?',
+          message: 'Você tem um treino em andamento que foi interrompido.',
+          confirmLabel: 'Retomar treino',
+          cancelLabel: 'Descartar',
+          icon: renderIcon(Play),
+          tone: 'dark',
+        });
+        if (resume) return true;
+        const discard = await confirm({
+          title: 'Descartar treino?',
+          message: 'O treino interrompido será descartado e não poderá ser recuperado.',
+          confirmLabel: 'Descartar',
+          cancelLabel: 'Voltar',
+          destructive: true,
+          icon: renderIcon(Trash2),
+          tone: 'dark',
+        });
+        return !discard;
       },
       showGpsHelp: (): void => {
         void alert({

@@ -5,12 +5,13 @@ const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
 const SECONDS_PER_HOUR = 3600;
 
-interface StopwatchState {
+export interface StopwatchState {
   accumulatedMs: number;
   startedAt: number | null;
 }
 
 interface Stopwatch {
+  state: StopwatchState;
   elapsedMs: number;
   formatted: string;
   running: boolean;
@@ -34,8 +35,8 @@ export function formatElapsed(elapsedMs: number): string {
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
-export function useStopwatch(): Stopwatch {
-  const [state, setState] = useState<StopwatchState>(initialState);
+export function useStopwatch(initial: StopwatchState = initialState): Stopwatch {
+  const [state, setState] = useState<StopwatchState>(initial);
   const [now, setNow] = useState<number>(() => Date.now());
   const running = state.startedAt !== null;
 
@@ -70,6 +71,7 @@ export function useStopwatch(): Stopwatch {
     state.accumulatedMs + (state.startedAt === null ? 0 : Math.max(0, now - state.startedAt));
 
   return {
+    state,
     elapsedMs,
     formatted: formatElapsed(elapsedMs),
     running,

@@ -1,48 +1,56 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { BackHandler, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StatRow, Text, type Stat } from '@/components';
+import { StatRow, type Stat } from '@/components';
 import { GpsNotice } from '@/components/workout/GpsNotice';
 import { SlideToFinish } from '@/components/workout/SlideToFinish';
 import { WorkoutControls } from '@/components/workout/WorkoutControls';
 import { WorkoutMenu } from '@/components/workout/WorkoutMenu';
+import { WorkoutHeading } from '@/components/workout/WorkoutHeading';
 import { WorkoutTopBar } from '@/components/workout/WorkoutTopBar';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
+import { useActiveSessionSync } from '@/hooks/useActiveSessionSync';
 import { useRunTracker } from '@/hooks/useRunTracker';
 import { useFinishWorkout } from '@/hooks/useFinishWorkout';
 import { useStopwatch } from '@/hooks/useStopwatch';
 import { usePreferences } from '@/hooks/usePreferences';
-import { activityLabels, type WorkoutType } from '@/lib/activities';
+import { loadResumableSession, type ResumableSession } from '@/lib/activeSession';
+import type { WorkoutType } from '@/lib/activities';
 import { splitMetersFor } from '@/lib/splits';
 import { distanceLabel, formatDistanceStat, formatPaceForUnit, paceLabel } from '@/lib/units';
 import { layout, palettes, spacing, workout } from '@/theme';
-import { useTheme } from '@/hooks/useTheme';
 import { ThemeScope } from '@/providers/ThemeProvider';
 import type { DistanceUnit } from '@/types/preferences';
 
 const MS_PER_SECOND = 1000;
 
-function WorkoutContent(): ReactElement {
-  const { colors } = useTheme();
+function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): ReactElement {
   useKeepAwake();
   const router = useRouter();
   const { confirmDiscard, confirmStop, showGpsHelp } = useWorkoutDialogs();
   const preferences = usePreferences();
   const [distanceUnit] = useState<DistanceUnit>(preferences.distanceUnit);
   const insets = useSafeAreaInsets();
-  const { elapsedMs, formatted, running, start, pause, resume } = useStopwatch();
+  const { state, elapsedMs, formatted, running, start, pause, resume } = useStopwatch(resumed?.stopwatch);
   const [locked, setLocked] = useState<boolean>(false);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [type, setType] = useState<WorkoutType>('run');
-  const startedAtRef = useRef<Date>(new Date());
+  const [type, setType] = useState<WorkoutType>(resumed?.session.type ?? 'run');
+  const startedAtRef = useRef<Date>(resumed ? new Date(resumed.session.startedAt) : new Date());
   const elapsedSeconds = Math.floor(elapsedMs / MS_PER_SECOND);
   const tracker = useRunTracker({
     active: running,
     elapsedSeconds,
     splitMeters: splitMetersFor(distanceUnit),
+    restored: resumed?.session.track ?? null,
+  });
+  const { clear } = useActiveSessionSync({
+    startedAtRef,
+    type,
+    stopwatch: state,
+    track: tracker.track,
   });
   const { finishing, finish } = useFinishWorkout({
     type,
@@ -51,13 +59,15 @@ function WorkoutContent(): ReactElement {
     tracker,
     distanceUnit,
     pause,
+    clearSession: clear,
   });
   const tracking = tracker.permission === 'granted';
 
   useEffect(() => {
+    if (resumed) return;
     startedAtRef.current = new Date();
     start();
-  }, [start]);
+  }, [start, resumed]);
 
   const stats: Stat[] = [
     {
@@ -72,6 +82,7 @@ function WorkoutContent(): ReactElement {
   ];
 
   const leave = (): void => {
+    void clear();
     void tracker.stop();
     router.back();
   };
@@ -104,23 +115,7 @@ function WorkoutContent(): ReactElement {
           }}
         />
 
-        <View style={styles.heading}>
-          <Text variant="title1" color={palettes.dark.ink}>
-            {activityLabels[type]}
-          </Text>
-          <Text variant="caption" color={palettes.dark.textSecondary}>
-            Treino livre
-          </Text>
-        </View>
-
-        <View style={styles.timer}>
-          <Text variant="timer" center color={colors.primary}>
-            {formatted}
-          </Text>
-          <Text variant="caption" center color={palettes.dark.textSecondary}>
-            Duração
-          </Text>
-        </View>
+        <WorkoutHeading type={type} formatted={formatted} />
 
         <View style={styles.stats}>
           <StatRow stats={stats} dark />
@@ -169,8 +164,21 @@ function WorkoutContent(): ReactElement {
   );
 }
 
-export default function WorkoutScreen(): ReactElement {
-  return <ThemeScope scheme="dark"><WorkoutContent /></ThemeScope>;
+export default function WorkoutScreen(): ReactElement | null {
+  const { resume } = useLocalSearchParams<{ resume?: string }>();
+  const [resumed, setResumed] = useState<ResumableSession | null>(null);
+  const [ready, setReady] = useState<boolean>(resume !== '1');
+
+  useEffect(() => {
+    if (resume !== '1') return;
+    void loadResumableSession().then((loaded) => {
+      setResumed(loaded);
+      setReady(true);
+    });
+  }, [resume]);
+
+  if (!ready) return null;
+  return <ThemeScope scheme="dark"><WorkoutContent resumed={resumed} /></ThemeScope>;
 }
 
 const styles = StyleSheet.create({
@@ -181,15 +189,6 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     paddingHorizontal: layout.screenPadding,
-  },
-  heading: {
-    gap: spacing.xs,
-    marginTop: spacing.lg,
-  },
-  timer: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: spacing.sm,
   },
   stats: {
     marginBottom: spacing.huge,

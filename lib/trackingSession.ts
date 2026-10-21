@@ -42,13 +42,23 @@ export function openTrackingSession(): number {
   return currentSession;
 }
 
-export async function startTracking(session: number): Promise<LocationState> {
+export async function isTrackingTaskRunning(): Promise<boolean> {
+  if (Platform.OS === 'web') return false;
+  try {
+    return await hasStartedLocationUpdatesAsync(TRACKING_TASK);
+  } catch {
+    return false;
+  }
+}
+
+export async function startTracking(session: number, resume = false): Promise<LocationState> {
   if (Platform.OS === 'web') return 'unavailable';
   try {
     const response = await requestForegroundPermissionsAsync();
     if (!response.granted) return 'denied';
     await requestNotificationPermission();
-    await drainFixes();
+    if (resume && (await isTrackingTaskRunning())) return 'granted';
+    if (!resume) await drainFixes();
     if (session !== currentSession) return 'unavailable';
     fallback?.remove();
     fallback = null;
@@ -76,6 +86,11 @@ export async function startTracking(session: number): Promise<LocationState> {
   } catch {
     return 'unavailable';
   }
+}
+
+export async function discardTracking(): Promise<void> {
+  await stopTracking(openTrackingSession());
+  await drainFixes();
 }
 
 export async function stopTracking(session: number): Promise<void> {

@@ -19,6 +19,7 @@ interface RunTrackerOptions {
   active: boolean;
   elapsedSeconds: number;
   splitMeters: number;
+  restored?: TrackState | null;
 }
 
 export interface TrackSnapshot {
@@ -29,6 +30,7 @@ export interface TrackSnapshot {
 
 export interface RunTracker {
   permission: LocationState;
+  track: TrackState;
   distanceMeters: number;
   currentPaceSecondsPerKm: number | null;
   averagePaceSecondsPerKm: number | null;
@@ -37,17 +39,25 @@ export interface RunTracker {
   stop: () => Promise<TrackSnapshot>;
 }
 
-export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTrackerOptions): RunTracker {
+export function useRunTracker({
+  active,
+  elapsedSeconds,
+  splitMeters,
+  restored = null,
+}: RunTrackerOptions): RunTracker {
   const [permission, setPermission] = useState<LocationState>(
     Platform.OS === 'web' ? 'unavailable' : 'checking',
   );
-  const [track, setTrack] = useState<TrackState>(() => createTrack(splitMeters));
+  const [track, setTrack] = useState<TrackState>(
+    () => restored ?? createTrack(splitMeters),
+  );
   const [nowMs, setNowMs] = useState<number>(() => Date.now());
   const activeRef = useRef<boolean>(active);
-  const rebaseRef = useRef<boolean>(false);
+  const rebaseRef = useRef<boolean>(restored !== null);
   const trackRef = useRef<TrackState>(track);
   const mountedRef = useRef<boolean>(true);
   const sessionRef = useRef<number>(0);
+  const resumeRef = useRef<boolean>(restored !== null);
 
   useEffect(() => {
     activeRef.current = active;
@@ -87,12 +97,13 @@ export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTracke
     });
 
     const begin = async (): Promise<void> => {
-      const result = await startTracking(session);
+      const result = await startTracking(session, resumeRef.current);
       if (!mountedRef.current) {
         await stopTracking(session);
         return;
       }
       setPermission(result);
+      if (resumeRef.current) void consume();
     };
 
     void begin();
@@ -117,6 +128,7 @@ export function useRunTracker({ active, elapsedSeconds, splitMeters }: RunTracke
   const hasSignal = permission === 'granted' && track.distanceMeters > 0;
   return {
     permission,
+    track,
     distanceMeters: track.distanceMeters,
     currentPaceSecondsPerKm: active && hasSignal ? currentPace(track, elapsedSeconds, nowMs) : null,
     averagePaceSecondsPerKm: hasSignal ? paceSecondsPerKm(track.distanceMeters, elapsedSeconds) : null,

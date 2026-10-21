@@ -16,6 +16,7 @@ interface FinishWorkoutOptions {
   tracker: RunTracker;
   distanceUnit: DistanceUnit;
   pause: () => void;
+  clearSession: () => Promise<void>;
 }
 
 interface FinishWorkout {
@@ -30,6 +31,7 @@ export function useFinishWorkout({
   tracker,
   distanceUnit,
   pause,
+  clearSession,
 }: FinishWorkoutOptions): FinishWorkout {
   const router = useRouter();
   const { save } = useSaveActivity();
@@ -43,6 +45,7 @@ export function useFinishWorkout({
     pause();
     const snapshot = await tracker.stop();
     if (elapsedSeconds < MIN_SAVE_SECONDS) {
+      await clearSession();
       router.back();
       return;
     }
@@ -60,6 +63,7 @@ export function useFinishWorkout({
       splits: snapshot.splits.length > 0 ? snapshot.splits : null,
     };
     const status = await save(draft);
+    await clearSession();
     setWorkoutSummary({
       type,
       durationSeconds: elapsedSeconds,

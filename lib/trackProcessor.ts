@@ -8,7 +8,7 @@ export interface RawFix {
   timestamp: number;
 }
 
-interface Sample {
+export interface Sample {
   timestamp: number;
   meters: number;
 }
