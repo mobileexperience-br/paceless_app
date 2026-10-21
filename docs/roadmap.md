@@ -63,7 +63,7 @@ e o "Olá, {nome}" é real.
 - Webhook RevenueCat → Edge Function → status premium no banco
 - Edge Function de verificação de limite free × premium
 - Discutir com o Pedro: cobrar pela Hotmart ou pelas lojas (ver
-  [assinaturas.md](./assinaturas.md#em-discussão-pagamento-pela-hotmart-2110))
+  [pagamento-hotmart.md](./pagamento-hotmart.md))
 
 **Pronto quando:** compra em sandbox libera premium e o servidor (não o
 client) confirma.
