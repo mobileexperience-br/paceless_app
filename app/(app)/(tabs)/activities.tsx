@@ -1,10 +1,8 @@
 import { useCallback, useMemo, useState, type ReactElement } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { ListFilter } from 'lucide-react-native';
 import {
   Card,
-  EmptyState,
   Screen,
   ScreenTitle,
   SegmentedTabs,
@@ -12,6 +10,7 @@ import {
   Text,
   type Stat,
 } from '@/components';
+import { ActivitiesEmpty } from '@/components/activities/ActivitiesEmpty';
 import { ActivityRow } from '@/components/activities/ActivityRow';
 import { useActivities } from '@/hooks/useActivities';
 import { usePreferences } from '@/hooks/usePreferences';
@@ -24,10 +23,8 @@ import {
   summarizeWeek,
 } from '@/lib/activityStats';
 import { distanceLabel } from '@/lib/units';
-import { layout, sizes, spacing } from '@/theme';
+import { layout, spacing } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
-
-const EMPTY_VALUE = '—';
 
 export default function ActivitiesScreen(): ReactElement {
   const { colors } = useTheme();
@@ -55,7 +52,6 @@ export default function ActivitiesScreen(): ReactElement {
         label: distanceLabel(distanceUnit),
       },
       { value: formatDuration(week.durationSeconds), label: 'Tempo' },
-      { value: EMPTY_VALUE, label: 'Kcal' },
     ];
   }, [activities, distanceUnit]);
 
@@ -65,9 +61,9 @@ export default function ActivitiesScreen(): ReactElement {
       <Card>
         <StatRow stats={stats} />
       </Card>
-      {error ? (
+      {error && activities.length > 0 ? (
         <Text variant="caption" color={colors.danger}>
-          {error}
+          Não foi possível carregar seus treinos.
         </Text>
       ) : null}
     </View>
@@ -75,14 +71,7 @@ export default function ActivitiesScreen(): ReactElement {
 
   return (
     <Screen flush>
-      <ScreenTitle
-        title="Atividades"
-        trailing={
-          <Pressable accessibilityRole="button" accessibilityLabel="Filtrar" hitSlop={sizes.hitSlop}>
-            <ListFilter size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />
-          </Pressable>
-        }
-      />
+      <ScreenTitle title="Atividades" />
 
       <SegmentedTabs items={activityFilters} value={filter} onChange={setFilter} />
 
@@ -95,9 +84,11 @@ export default function ActivitiesScreen(): ReactElement {
           loading ? (
             <ActivityIndicator color={colors.primary} style={styles.loader} />
           ) : (
-            <EmptyState
-              title="Nenhuma atividade ainda"
-              description="Seus treinos concluídos aparecem aqui."
+            <ActivitiesEmpty
+              filter={filter}
+              allFilter={activityFilters[0]}
+              failed={error !== null && activities.length === 0}
+              onRetry={() => { void load(); }}
             />
           )
         }

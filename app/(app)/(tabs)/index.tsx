@@ -2,11 +2,9 @@ import { useCallback, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import {
-  Apple,
   Bell,
   ChevronRight,
   ClipboardList,
-  Dumbbell,
   Footprints,
 } from 'lucide-react-native';
 import {
@@ -17,24 +15,19 @@ import {
   Screen,
   Text,
 } from '@/components';
+import { QuickAccess } from '@/components/home/QuickAccess';
 import { LastWorkoutCard } from '@/components/home/LastWorkoutCard';
 import { WeekProgressCard } from '@/components/home/WeekProgressCard';
 import { useActivities } from '@/hooks/useActivities';
 import { useProfile } from '@/hooks/useProfile';
-import { createStyles, layout, radius, sizes, spacing } from '@/theme';
+import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
-
-const quickAccess = [
-  { label: 'Musculação', href: '/strength', Icon: Dumbbell },
-  { label: 'Nutrição', href: '/nutrition', Icon: Apple },
-  { label: 'Plano', href: '/plan', Icon: ClipboardList },
-] as const;
 
 export default function HomeScreen(): ReactElement {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
-  const { name, avatarUrl } = useProfile();
+  const { name, avatarUrl, loading: profileLoading } = useProfile();
   const firstName = name?.split(/\s+/)[0];
   const { activities, load } = useActivities();
   const lastActivity = activities[0];
@@ -49,22 +42,41 @@ export default function HomeScreen(): ReactElement {
     <Screen scroll flush>
       <View style={styles.body}>
         <View style={styles.topBar}>
-          <Avatar uri={avatarUrl} size={sizes.badgeSm} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Abrir perfil"
+            hitSlop={sizes.hitSlop}
+            onPress={() => { router.push('/profile'); }}
+          >
+            <Avatar uri={avatarUrl} size={sizes.badgeSm} />
+          </Pressable>
           <View style={styles.spacer} />
-          <Pressable accessibilityRole="button" accessibilityLabel="Notificações" hitSlop={sizes.hitSlop}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Notificações"
+            hitSlop={sizes.hitSlop}
+            onPress={() => { router.push('/profile/notifications'); }}
+          >
             <Bell size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />
           </Pressable>
         </View>
 
         <View style={styles.greeting}>
-          <Text variant="title2">{firstName ? `Olá, ${firstName}!` : 'Olá!'}</Text>
+          <Text variant="title2" style={profileLoading ? styles.hidden : undefined}>
+            {firstName ? `Olá, ${firstName}!` : 'Olá!'}
+          </Text>
           <Text variant="body" color={colors.textSecondary}>
             Pronto para o seu treino de hoje?
           </Text>
         </View>
 
-        <Pressable accessibilityRole="button" onPress={() => { router.push('/plan'); }}>
-          <Card>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Plano atual. Abrir plano"
+          onPress={() => { router.push('/plan'); }}
+        >
+          {({ pressed }) => (
+          <Card style={pressed ? styles.pressed : undefined}>
             <View style={styles.rowBetween}>
               <View style={styles.grow}>
                 <Text variant="captionStrong">Plano atual</Text>
@@ -81,6 +93,7 @@ export default function HomeScreen(): ReactElement {
               <ChevronRight size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
             </View>
           </Card>
+          )}
         </Pressable>
 
         <WeekProgressCard activities={activities} />
@@ -97,7 +110,6 @@ export default function HomeScreen(): ReactElement {
                 Escolha um plano para começar
               </Text>
             </View>
-            <ChevronRight size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
           </View>
         </Card>
 
@@ -105,22 +117,7 @@ export default function HomeScreen(): ReactElement {
 
         <Button label="Iniciar treino" onPress={() => { router.push('/workout/atual'); }} />
 
-        <View style={styles.quickAccess}>
-          <Text variant="captionStrong">Acesso rápido</Text>
-          <View style={styles.tiles}>
-            {quickAccess.map(({ label, href, Icon }) => (
-              <Pressable
-                key={label}
-                accessibilityRole="button"
-                onPress={() => { router.push(href); }}
-                style={styles.tile}
-              >
-                <Icon size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />
-                <Text variant="caption">{label}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
+        <QuickAccess />
       </View>
     </Screen>
   );
@@ -145,6 +142,12 @@ const makeStyles = createStyles((colors) =>
       marginTop: spacing.sm,
       marginBottom: spacing.xs,
     },
+    hidden: {
+      opacity: 0,
+    },
+    pressed: {
+      backgroundColor: colors.track,
+    },
     rowBetween: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -164,25 +167,6 @@ const makeStyles = createStyles((colors) =>
     },
     nextWorkout: {
       marginTop: spacing.md,
-    },
-    quickAccess: {
-      gap: spacing.md,
-      marginTop: spacing.sm,
-    },
-    tiles: {
-      flexDirection: 'row',
-      gap: layout.cardGap,
-    },
-    tile: {
-      flex: 1,
-      aspectRatio: 1,
-      borderRadius: radius.md,
-      borderWidth: sizes.hairline,
-      borderColor: colors.border,
-      backgroundColor: colors.surface,
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: spacing.sm,
     },
   }),
 );
