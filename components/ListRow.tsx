@@ -1,6 +1,14 @@
 import { type ReactNode, type ReactElement } from 'react';
-import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  View,
+  type AccessibilityRole,
+  type AccessibilityState,
+  type ViewStyle,
+} from 'react-native';
+import { ChevronRight, ExternalLink } from 'lucide-react-native';
 import { Text } from './Text';
 import { createStyles, layout, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
@@ -13,6 +21,11 @@ interface ListRowProps {
   trailing?: ReactNode;
   value?: string;
   showChevron?: boolean;
+  external?: boolean;
+  loading?: boolean;
+  tone?: 'default' | 'danger';
+  accessibilityRole?: AccessibilityRole;
+  accessibilityState?: AccessibilityState;
   divider?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
@@ -26,6 +39,11 @@ export function ListRow({
   trailing,
   value,
   showChevron = false,
+  external = false,
+  loading = false,
+  tone = 'default',
+  accessibilityRole,
+  accessibilityState,
   divider = false,
   onPress,
   style,
@@ -34,8 +52,9 @@ export function ListRow({
   const styles = useThemedStyles(makeStyles);
   return (
     <Pressable
-      accessibilityRole={onPress ? 'button' : undefined}
-      disabled={!onPress}
+      accessibilityRole={accessibilityRole ?? (onPress ? 'button' : undefined)}
+      accessibilityState={{ ...accessibilityState, busy: loading }}
+      disabled={!onPress || loading}
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
@@ -47,7 +66,9 @@ export function ListRow({
       {leading ? <View style={styles.leading}>{leading}</View> : null}
 
       <View style={styles.content}>
-        <Text variant="bodyStrong">{title}</Text>
+        <Text variant="bodyStrong" color={tone === 'danger' ? colors.danger : colors.ink}>
+          {title}
+        </Text>
         {subtitle ? (
           <Text variant="caption" color={colors.textSecondary}>
             {subtitle}
@@ -66,7 +87,11 @@ export function ListRow({
         </Text>
       ) : null}
       {trailing}
-      {showChevron ? (
+      {loading ? <ActivityIndicator color={colors.textSecondary} accessibilityLabel="Carregando" /> : null}
+      {external && !loading ? (
+        <ExternalLink size={20} color={colors.textSecondary} strokeWidth={1.75} />
+      ) : null}
+      {showChevron && !external ? (
         <ChevronRight size={20} color={colors.textSecondary} strokeWidth={1.75} />
       ) : null}
     </Pressable>

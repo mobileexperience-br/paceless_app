@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { Card, ListRow, Screen, ScreenHeader, Text } from '@/components';
@@ -27,6 +27,7 @@ interface OptionGroupProps<T extends string> {
   title: string;
   options: readonly Option<T>[];
   selected: T;
+  error?: string | null;
   onSelect: (value: T) => void;
 }
 
@@ -34,6 +35,7 @@ function OptionGroup<T extends string>({
   title,
   options,
   selected,
+  error = null,
   onSelect,
 }: OptionGroupProps<T>): ReactElement {
   const { colors } = useTheme();
@@ -46,6 +48,8 @@ function OptionGroup<T extends string>({
             key={option.value}
             title={option.label}
             divider={index < options.length - 1}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: option.value === selected }}
             onPress={() => {
               onSelect(option.value);
             }}
@@ -57,13 +61,18 @@ function OptionGroup<T extends string>({
           />
         ))}
       </Card>
+      {error ? (
+        <Text variant="caption" color={colors.danger} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+          {error}
+        </Text>
+      ) : null}
     </View>
   );
 }
 
 export default function PreferencesScreen(): ReactElement {
-  const { colors } = useTheme();
   const { distanceUnit, theme, error, setDistanceUnit, setTheme } = usePreferences();
+  const [lastGroup, setLastGroup] = useState<'unit' | 'theme'>('unit');
 
   return (
     <Screen scroll flush>
@@ -73,7 +82,9 @@ export default function PreferencesScreen(): ReactElement {
           title="Unidades de distância"
           options={unitOptions}
           selected={distanceUnit}
+          error={lastGroup === 'unit' ? error : null}
           onSelect={(value) => {
+            setLastGroup('unit');
             void setDistanceUnit(value);
           }}
         />
@@ -81,15 +92,12 @@ export default function PreferencesScreen(): ReactElement {
           title="Tema"
           options={themeOptions}
           selected={theme}
+          error={lastGroup === 'theme' ? error : null}
           onSelect={(value) => {
+            setLastGroup('theme');
             void setTheme(value);
           }}
         />
-        {error ? (
-          <Text variant="caption" color={colors.danger}>
-            {error}
-          </Text>
-        ) : null}
       </View>
     </Screen>
   );

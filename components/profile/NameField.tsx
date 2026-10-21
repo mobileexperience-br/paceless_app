@@ -9,6 +9,8 @@ import { useUpdateName } from '@/hooks/useUpdateName';
 import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
+const minTouchTarget = 44;
+
 interface NameFieldProps {
   name: string | null;
 }
@@ -19,9 +21,11 @@ export function NameField({ name }: NameFieldProps): ReactElement {
   const { saving, error, save, clearError } = useUpdateName();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
+  const [notice, setNotice] = useState<string | null>(null);
 
   const start = (): void => {
     clearError();
+    setNotice(null);
     setDraft(name ?? '');
     setEditing(true);
   };
@@ -33,19 +37,29 @@ export function NameField({ name }: NameFieldProps): ReactElement {
 
   const submit = (): void => {
     void save(draft).then((saved) => {
-      if (saved) setEditing(false);
+      if (saved) {
+        setEditing(false);
+        setNotice('Nome atualizado');
+      }
     });
   };
 
   if (!editing) {
     return (
-      <ListRow
-        title="Nome"
-        subtitle={name ?? 'Não informado'}
-        divider
-        onPress={start}
-        trailing={<Pencil size={sizes.iconSm} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />}
-      />
+      <>
+        <ListRow
+          title="Nome"
+          subtitle={name ?? 'Não informado'}
+          divider
+          onPress={start}
+          trailing={<Pencil size={sizes.iconSm} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />}
+        />
+        {notice ? (
+          <Text variant="caption" accessibilityLiveRegion="polite" style={styles.hidden}>
+            {notice}
+          </Text>
+        ) : null}
+      </>
     );
   }
 
@@ -70,7 +84,7 @@ export function NameField({ name }: NameFieldProps): ReactElement {
         </Text>
       ) : null}
       <View style={styles.actions}>
-        <Button variant="text" label="Cancelar" disabled={saving} onPress={cancel} />
+        <Button variant="text" label="Cancelar" disabled={saving} onPress={cancel} style={styles.touch} />
         <Button
           variant="primary"
           label={saving ? 'Salvando...' : 'Salvar'}
@@ -96,6 +110,15 @@ const makeStyles = createStyles((colors) =>
       justifyContent: 'flex-end',
       alignItems: 'center',
       gap: spacing.md,
+    },
+    hidden: {
+      position: 'absolute',
+      width: 1,
+      height: 1,
+      opacity: 0,
+    },
+    touch: {
+      minHeight: minTouchTarget,
     },
     save: {
       paddingHorizontal: spacing.xxl,

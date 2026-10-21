@@ -13,8 +13,8 @@ export default function DevicesScreen(): ReactElement {
       <View style={styles.body}>
         <EmptyState
           icon={<Watch size={sizes.iconXl} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />}
-          title="Nenhum dispositivo conectado"
-          description="Conecte um relógio ou sensor para sincronizar seus treinos."
+          title="Dispositivos conectados"
+          description="Em breve você poderá conectar um relógio ou sensor para sincronizar seus treinos."
         />
       </View>
     </Screen>

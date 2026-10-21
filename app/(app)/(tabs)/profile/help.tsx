@@ -10,6 +10,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 interface Topic {
   title: string;
+  external?: boolean;
   onPress: () => void;
 }
 
@@ -22,6 +23,7 @@ export default function HelpScreen(): ReactElement {
   const topics: Topic[] = [
     {
       title: 'Perguntas frequentes',
+      external: Boolean(faqUrl),
       onPress: (): void => {
         if (faqUrl) {
           void openUrl(faqUrl);
@@ -31,12 +33,12 @@ export default function HelpScreen(): ReactElement {
       },
     },
     ...(supportEmail
-      ? [{ title: 'Fale conosco', onPress: (): void => void openSupportEmail(supportEmail) }]
+      ? [{ title: 'Fale conosco', external: true, onPress: (): void => void openSupportEmail(supportEmail) }]
       : []),
-    { title: 'Termos de uso', onPress: (): void => { openLegal('terms'); } },
-    { title: 'Política de privacidade', onPress: (): void => { openLegal('privacy'); } },
+    { title: 'Termos de uso', external: Boolean(links.termsUrl), onPress: (): void => { openLegal('terms'); } },
+    { title: 'Política de privacidade', external: Boolean(links.privacyUrl), onPress: (): void => { openLegal('privacy'); } },
     ...(accountDeletionUrl
-      ? [{ title: 'Excluir conta pela web', onPress: (): void => void openUrl(accountDeletionUrl) }]
+      ? [{ title: 'Excluir conta pela web', external: true, onPress: (): void => void openUrl(accountDeletionUrl) }]
       : []),
   ];
 
@@ -51,6 +53,7 @@ export default function HelpScreen(): ReactElement {
               title={topic.title}
               divider={index < topics.length - 1}
               onPress={topic.onPress}
+              external={topic.external ?? false}
               showChevron
             />
           ))}

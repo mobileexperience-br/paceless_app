@@ -13,8 +13,8 @@ export default function NotificationsScreen(): ReactElement {
       <View style={styles.body}>
         <EmptyState
           icon={<BellOff size={sizes.iconXl} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />}
-          title="Nenhuma notificação"
-          description="Você será avisado aqui quando houver novidades."
+          title="Notificações"
+          description="Em breve você poderá receber avisos de treinos e novidades por aqui."
         />
       </View>
     </Screen>

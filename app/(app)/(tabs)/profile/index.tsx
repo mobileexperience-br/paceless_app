@@ -1,9 +1,10 @@
 import { useState, type ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
-import { Settings } from 'lucide-react-native';
+import { LogOut } from 'lucide-react-native';
 import { useManageSubscription } from '@/hooks/useManageSubscription';
 import { useProfile } from '@/hooks/useProfile';
+import { useDialog } from '@/hooks/useDialog';
 import { useSession } from '@/hooks/useSession';
 import { Avatar, Card, ListRow, Screen, ScreenTitle, Text } from '@/components';
 import { layout, sizes } from '@/theme';
@@ -26,25 +27,53 @@ export default function ProfileScreen(): ReactElement {
   const { colors } = useTheme();
   const router = useRouter();
   const { signOut } = useSession();
+  const { confirm } = useDialog();
   const { name, avatarUrl } = useProfile();
   const { isPremium, error, manage } = useManageSubscription();
   const [signOutError, setSignOutError] = useState<string | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
+  const [managing, setManaging] = useState(false);
+
+  const runSignOut = (): void => {
+    setSignOutError(null);
+    setSigningOut(true);
+    void signOut().then((result) => {
+      setSigningOut(false);
+      if (result.error) {
+        setSignOutError(result.error);
+        return;
+      }
+      router.replace('/(pre-auth)/welcome');
+    });
+  };
+
+  const confirmSignOut = (): void => {
+    void confirm({
+      title: 'Sair da conta?',
+      message: 'Você precisará entrar novamente para acessar seus dados.',
+      confirmLabel: 'Sair',
+      cancelLabel: 'Cancelar',
+      icon: <LogOut size={sizes.iconMd} color={colors.danger} strokeWidth={sizes.iconStroke} />,
+    }).then((confirmed) => {
+      if (confirmed) runSignOut();
+    });
+  };
+
+  const openSubscription = (): void => {
+    setManaging(true);
+    void manage().finally(() => {
+      setManaging(false);
+    });
+  };
 
   return (
     <Screen scroll flush>
-      <ScreenTitle
-        title="Perfil"
-        trailing={
-          <Pressable accessibilityRole="button" accessibilityLabel="Configurações" hitSlop={sizes.hitSlop}>
-            <Settings size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />
-          </Pressable>
-        }
-      />
+      <ScreenTitle title="Perfil" />
       <View style={styles.body}>
         <Card flush>
           <ListRow
             title={name ?? 'Sua conta'}
-            subtitle="Ver perfil"
+            subtitle="Minha conta"
             leading={
               <Avatar uri={avatarUrl} size={sizes.avatar} />
             }
@@ -70,26 +99,17 @@ export default function ProfileScreen(): ReactElement {
           {isPremium ? (
             <ListRow
               title="Gerenciar assinatura"
-              showChevron
+              external
+              loading={managing}
               divider
-              onPress={(): void => {
-                void manage();
-              }}
+              onPress={openSubscription}
             />
           ) : null}
           <ListRow
-            title="Sair"
-            showChevron
-            onPress={(): void => {
-              setSignOutError(null);
-              void signOut().then((result) => {
-                if (result.error) {
-                  setSignOutError(result.error);
-                  return;
-                }
-                router.replace('/(pre-auth)/welcome');
-              });
-            }}
+            title={signingOut ? 'Saindo...' : 'Sair'}
+            tone="danger"
+            loading={signingOut}
+            onPress={confirmSignOut}
           />
         </Card>
         {error ?? signOutError ? (
