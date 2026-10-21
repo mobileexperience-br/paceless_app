@@ -20,11 +20,12 @@ Duas paletas com os mesmos tokens (`palettes.light` e `palettes.dark`). Telas e 
 | `primary` | `#BCD243` | `#BCD243` | Verde da marca: botões, progresso, aba ativa, cronômetro |
 | `primaryPressed` | `#A9BE33` | `#A9BE33` | Estado pressionado, derivado, **não está no mockup** |
 | `primarySoft` | `#EBF4C3` | `#2C3019` | Círculos de ícone. Escuro: primary a 16% sobre o fundo, **derivado** |
-| `primaryDeep` | `#83952A` | `#BCD243` | Texto e ícones de destaque. No escuro vira o próprio primary para manter contraste |
+| `primaryDeep` | `#5F6F17` | `#BCD243` | Texto e ícones de destaque. Também é o preenchimento do `ProgressBar` e o sublinhado da aba ativa. No claro, contraste 5,57:1 sobre branco (o antigo `#83952A` tinha 3,33:1); no escuro vira o próprio primary (11,18:1 sobre `#111111`) |
 | `onPrimary` | `#111111` | `#111111` | Texto e ícones sobre superfícies `primary`. **Token novo**: `ink` vira branco no escuro |
 | `ink` | `#111111` | `#FFFFFF` | Texto primário |
 | `textSecondary` | `#687280` | `#A9A9A9` | Texto secundário, metadados, ícones inativos. Escuro: branco a 64% sobre `#111111` |
 | `border` | `#E5E7EB` | `#323232` | Hairline de cards, inputs e divisórias. Escuro: branco a 14% sobre `#111111` |
+| `borderStrong` | `#868E9B` | `#6B6B6B` | Borda de campos e controles interativos (input, botão secundário, `CheckCircle` vazio). Contraste mínimo de 3:1 (3,30:1 sobre branco; 3,54:1 sobre `#111111`). `border` fica só para hairlines decorativas |
 | `track` | `#EDEEF0` | `#2A2A2A` | Trilho de progresso e círculos neutros. Escuro **derivado** |
 | `background` | `#FFFFFF` | `#111111` | Fundo das telas (no escuro, o fundo que já era da tela de treino) |
 | `surface` | `#FFFFFF` | `#1F1F1F` | Cards, inputs, tab bar. Escuro: branco a 6% sobre `#111111` |

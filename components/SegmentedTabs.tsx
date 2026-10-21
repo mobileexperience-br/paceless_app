@@ -60,7 +60,7 @@ const makeStyles = createStyles((colors) =>
       marginBottom: -1,
     },
     tabActive: {
-      borderBottomColor: colors.primary,
+      borderBottomColor: colors.primaryDeep,
     },
   }),
 );

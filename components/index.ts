@@ -5,6 +5,7 @@ export { Card } from './Card';
 export { CheckCircle } from './CheckCircle';
 export { EmptyState } from './EmptyState';
 export { IconBadge } from './IconBadge';
+export { InlineError } from './InlineError';
 export { Input } from './Input';
 export { ListRow } from './ListRow';
 export { ProgressBar } from './ProgressBar';

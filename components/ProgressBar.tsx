@@ -34,7 +34,7 @@ const makeStyles = createStyles((colors) =>
     fill: {
       height: '100%',
       borderRadius: radius.full,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryDeep,
     },
   }),
 );

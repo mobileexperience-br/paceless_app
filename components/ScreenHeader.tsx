@@ -37,7 +37,10 @@ export function ScreenHeader({
             accessibilityRole="button"
             accessibilityLabel="Voltar"
             hitSlop={sizes.hitSlop}
-            onPress={onBack ?? ((): void => { router.back(); })}
+            onPress={onBack ?? ((): void => {
+              if (router.canGoBack()) router.back();
+              else router.replace('/');
+            })}
           >
             <ArrowLeft size={sizes.iconLg} color={tint} strokeWidth={sizes.iconStroke} />
           </Pressable>

@@ -7,18 +7,21 @@ type TextProps = RNTextProps & {
   variant?: TypographyVariant;
   color?: string;
   center?: boolean;
+  header?: boolean;
 };
 
 export function Text({
   variant = 'body',
   color,
   center,
+  header,
   style,
   ...rest
 }: TextProps): ReactElement {
   const { colors } = useTheme();
   return (
     <RNText
+      accessibilityRole={header ? 'header' : undefined}
       style={[typography[variant], { color: color ?? colors.ink }, center && styles.center, style]}
       {...rest}
     />

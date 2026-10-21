@@ -4,6 +4,8 @@ import { Text } from './Text';
 import { createStyles, layout, type Palette, radius, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
+const minTouchTarget = 44;
+
 type ButtonVariant = 'primary' | 'secondary' | 'text' | 'danger';
 
 interface ButtonProps {
@@ -72,6 +74,7 @@ const makeStyles = createStyles((colors) =>
     },
     textBase: {
       height: undefined,
+      minHeight: minTouchTarget,
       paddingVertical: spacing.sm,
     },
     primary: {
@@ -83,7 +86,7 @@ const makeStyles = createStyles((colors) =>
     secondary: {
       backgroundColor: colors.surface,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: colors.borderStrong,
     },
     danger: {
       backgroundColor: colors.surface,

@@ -4,6 +4,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -36,6 +37,7 @@ interface DialogProps {
 }
 
 const maxWidth = 360;
+const messageMaxHeight = 240;
 
 export function Dialog({
   visible,
@@ -102,14 +104,11 @@ export function Dialog({
               </Text>
             </View>
             {message ? (
-              <Text
-                variant="body"
-                center
-                color={colors.textSecondary}
-                style={styles.message}
-              >
-                {message}
-              </Text>
+              <ScrollView style={styles.messageScroll} bounces={false}>
+                <Text variant="body" center color={colors.textSecondary}>
+                  {message}
+                </Text>
+              </ScrollView>
             ) : null}
             <View style={styles.actions}>
               {actions.map((action) => (
@@ -160,8 +159,10 @@ const makeStyles = createStyles((colors) =>
       alignSelf: 'center',
       marginBottom: spacing.lg,
     },
-    message: {
+    messageScroll: {
       marginTop: spacing.sm,
+      maxHeight: messageMaxHeight,
+      flexGrow: 0,
     },
     actions: {
       marginTop: spacing.xxl,

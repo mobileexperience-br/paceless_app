@@ -7,6 +7,7 @@ export interface Palette {
   ink: string;
   textSecondary: string;
   border: string;
+  borderStrong: string;
   track: string;
   background: string;
   surface: string;
@@ -19,11 +20,12 @@ const light: Palette = {
   primary: '#BCD243',
   primaryPressed: '#A9BE33',
   primarySoft: '#EBF4C3',
-  primaryDeep: '#83952A',
+  primaryDeep: '#5F6F17',
   onPrimary: '#111111',
   ink: '#111111',
   textSecondary: '#687280',
   border: '#E5E7EB',
+  borderStrong: '#868E9B',
   track: '#EDEEF0',
   background: '#FFFFFF',
   surface: '#FFFFFF',
@@ -41,6 +43,7 @@ const dark: Palette = {
   ink: '#FFFFFF',
   textSecondary: '#A9A9A9',
   border: '#323232',
+  borderStrong: '#6B6B6B',
   track: '#2A2A2A',
   background: '#111111',
   surface: '#1F1F1F',

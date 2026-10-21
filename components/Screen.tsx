@@ -1,5 +1,12 @@
 import { type ReactNode, type ReactElement } from 'react';
-import { ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 import { layout, palettes } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
@@ -30,16 +37,24 @@ export function Screen({
   return (
     <SafeAreaView edges={edges} style={[styles.safe, { backgroundColor: background }]}>
       {scroll ? (
-        <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingHorizontal: padding },
-            style,
-          ]}
-          showsVerticalScrollIndicator={false}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'android' ? 'height' : undefined}
+          style={styles.content}
         >
-          {children}
-        </ScrollView>
+          <ScrollView
+            automaticallyAdjustKeyboardInsets
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingHorizontal: padding },
+              style,
+            ]}
+            showsVerticalScrollIndicator={false}
+          >
+            {children}
+          </ScrollView>
+        </KeyboardAvoidingView>
       ) : (
         <View style={[styles.content, { paddingHorizontal: padding }, style]}>
           {children}

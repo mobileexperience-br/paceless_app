@@ -7,15 +7,17 @@ import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 interface CheckCircleProps {
   checked?: boolean;
   size?: number;
+  decorative?: boolean;
 }
 
-export function CheckCircle({ checked = false, size = 24 }: CheckCircleProps): ReactElement {
+export function CheckCircle({ checked = false, size = 24, decorative = false }: CheckCircleProps): ReactElement {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   return (
     <View
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
+      accessible={decorative ? false : undefined}
+      accessibilityRole={decorative ? undefined : 'checkbox'}
+      accessibilityState={decorative ? undefined : { checked }}
       style={[
         styles.circle,
         { width: size, height: size, borderRadius: radius.full },
@@ -23,7 +25,7 @@ export function CheckCircle({ checked = false, size = 24 }: CheckCircleProps): R
       ]}
     >
       {checked ? (
-        <Check size={size * 0.6} color={colors.white} strokeWidth={3} />
+        <Check size={size * 0.6} color={colors.onPrimary} strokeWidth={3} />
       ) : null}
     </View>
   );
@@ -37,7 +39,7 @@ const makeStyles = createStyles((colors) =>
     },
     unchecked: {
       borderWidth: 1.5,
-      borderColor: colors.border,
+      borderColor: colors.borderStrong,
     },
     checked: {
       backgroundColor: colors.primary,
