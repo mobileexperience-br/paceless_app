@@ -12,6 +12,17 @@ Lista enviada no WhatsApp em 19/10/2026 (22 itens). Este arquivo registra o que 
 | 4. RevenueCat | Conta criada, convite enviado. Chave do Test Store cadastrada no `.env` e no EAS (development e preview) | 20/10 |
 | 5. Google Cloud | Projeto criado, convite enviado | 20/10 |
 | 6. Supabase | Marcado como feito | 20/10 |
+| 7. Preço | R$ 267 anual e R$ 37 mensal | 20/10 |
+| 8. Grátis x premium | Período freemium de 15 ou 30 dias (duração a definir) | 20/10 |
+| 9. Relógios | Garmin, Apple Watch, Samsung, Coros e Polar | 20/10 |
+| 10. Dias de treino | Quantidade de dias com combinações predefinidas (ex.: ter/qui/sáb ou qua/sex/dom) | 20/10 |
+| 11. Gamificação | Aprovada: meta semanal sem sequência, conquistas de 1, 3, 5, 7 e 10 km | 20/10 |
+| 12. Musculação | Educador físico com apoio de IA; ele vai buscar um parceiro | 20/10 |
+| 13. Stories do Instagram | Muito importante, mas não pode travar a primeira versão | 20/10 |
+| 14. iPad | Pode ter, prioridade é celular | 20/10 |
+| 15. Concorrente | Zyla | 20/10 |
+| Área admin | Não quer no app: área web separada, em outro domínio, por segurança e LGPD | 20/10 |
+| Troca de plano | Feita pelo usuário no app, cobrança gerida pela loja; intervenção manual só em suporte | 20/10 |
 | 22. Expo x Flutter | Não respondeu explicitamente; seguimos em Expo | — |
 
 ## Google Play: conta encerrada
@@ -22,7 +33,7 @@ Lista enviada no WhatsApp em 19/10/2026 (22 itens). Este arquivo registra o que 
 
 ## Em aberto
 
-Item 3 (Apple, PF ou PJ) e itens 7 a 21: preços, grátis x premium, relógios, dias de treino, gamificação, musculação, Stories, iPad, concorrente, dados jurídicos, advogado, hospedagem das páginas legais, documento de requisitos, anotações, conversa com o Igor.
+Item 3 (Apple, PF ou PJ) e itens 16 a 21: dados jurídicos (razão social, CNPJ, e-mail, responsável LGPD), advogado, hospedagem das páginas legais, documento de requisitos, anotações, conversa com o Igor. Duração do freemium (15 ou 30 dias).
 
 Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações combinadas" e mandar em seguida.
 
@@ -43,3 +54,7 @@ Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações c
 - Bloqueios:
   - JSON da conta de serviço ainda não enviado ao RevenueCat (Jonatas). Sem ele, não dá para criar o tópico Pub/Sub.
   - Pedro precisa concluir a verificação do Play Console: identidade e os dois telefones (contato e desenvolvedor) em "Detalhes da conta". Sem isso o app não pode ser criado.
+
+## Atualização 20/10, 16h
+
+- Pedro avisou que validou o telefone e a documentação do Play Console. Falta o agente do navegador confirmar e criar o app.
