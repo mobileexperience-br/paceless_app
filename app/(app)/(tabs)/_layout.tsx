@@ -45,6 +45,7 @@ export default function TabsLayout(): ReactElement {
     <Tabs
       screenOptions={{
         headerShown: false,
+        sceneStyle: { backgroundColor: colors.background },
         tabBarActiveTintColor: colors.primaryDeep,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
