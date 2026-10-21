@@ -20,13 +20,13 @@ O ícone e o gráfico de recursos saem de `assets/` pelo script
 `scripts/store-assets.sh` (precisa do ImageMagick 7, comando `magick`):
 
 ```bash
-npm run store:assets
+bash scripts/store-assets.sh
 ```
 
 Para trocar os textos do gráfico de recursos sem editar o script:
 
 ```bash
-STORE_TITLE="Outro título" STORE_SUBTITLE="Outro subtítulo" npm run store:assets
+STORE_TITLE="Outro título" STORE_SUBTITLE="Outro subtítulo" bash scripts/store-assets.sh
 ```
 
 | Saída | Fonte |

@@ -97,7 +97,6 @@
     },
     "android": {
       "package": "com.paceless.app",
-      "backgroundColor": "#111111",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "monochromeImage": "./assets/adaptive-icon-monochrome.png",
