@@ -67,4 +67,5 @@ Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações c
   - SHA-1 `D5:98:4A:5B:B2:B8:2C:5F:FC:C9:5E:EE:FE:A1:FE:89:F4:59:74:85`
   - SHA-256 `34:C5:69:3C:CB:B3:61:B3:F1:0D:7E:FD:A8:8D:E2:85:A7:35:10:32:0A:93:79:46:2E:78:43:49:C7:07:EC:43`
 - "Conteúdo do app" pendente: política de privacidade (URL pública), anúncios, acesso ao app (conta de teste para o revisor), classificação de conteúdo, público-alvo, segurança dos dados, ID de publicidade, apps governamentais, recursos financeiros, apps de saúde. Serviço em primeiro plano e exclusão de conta devem aparecer após o primeiro build.
-- Falta: cliente OAuth Android com o SHA-1 do Play; JSON da conta de serviço no RevenueCat, tópico Pub/Sub e notificação de teste.
+- Cliente OAuth "Paceless Android (Play)" criado com o SHA-1 do Play: `336845760115-22tqqcc1s4eitrk040vpifkrlh0qgpjf.apps.googleusercontent.com`. Supabase com os quatro Client IDs.
+- Falta: JSON da conta de serviço no RevenueCat, tópico Pub/Sub e notificação de teste.
