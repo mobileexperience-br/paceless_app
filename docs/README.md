@@ -20,6 +20,7 @@ Planejamento e acordos do projeto. O código diz *como* está; esta pasta diz
 | [design-system.md](./design-system.md) | Origem e uso dos tokens, e o que foi feito fora do mockup |
 | [pendencias-pedro.md](./pendencias-pedro.md) | O que o Pedro já respondeu e o que falta |
 | [pagamento-hotmart.md](./pagamento-hotmart.md) | Em discussão: cobrar pela Hotmart ou pelas lojas, com regras, custos e integração |
+| [../store/](../store/README.md) | Ícone, gráfico de recursos e capturas das lojas, e como gerar de novo |
 | [decisoes.md](./decisoes.md) | Registro de decisões (o que, por quê, quando) |
 
 Regras de código e arquitetura continuam no [CLAUDE.md](../CLAUDE.md) — ele é

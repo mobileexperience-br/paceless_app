@@ -147,9 +147,9 @@ Fonte: [Recursos de visualização](https://support.google.com/googleplay/androi
 | Nome | até 30 caracteres | "Paceless" |
 | Descrição curta | até 80 caracteres, PT-BR | a escrever |
 | Descrição completa | até 4000 caracteres, PT-BR | a escrever |
-| Ícone | 512x512 PNG, até 1 MB | a gerar de `assets/icon.png` |
-| Feature graphic | 1024x500 PNG/JPEG | a criar |
-| Capturas de celular | 2 a 8; lados entre 320 e 3840 px; proporção máx. 2:1 (ideal 9:16) | a criar com build real, sem mock data |
+| Ícone | 512x512 PNG, até 1 MB | `store/google-play/icon-512.png` (`npm run store:assets`) |
+| Feature graphic | 1024x500 PNG/JPEG | `store/google-play/feature-1024x500.png` (textos a aprovar) |
+| Capturas de celular | 2 a 8; lados entre 320 e 3840 px; proporção máx. 2:1 (ideal 9:16) | em `store/google-play/screenshots/`, tiradas no aparelho com dados reais |
 | Tablet 7"/10" | opcional | opcional |
 | Categoria | Saúde e fitness | |
 | Contato | e-mail público (`[E-MAIL DE CONTATO]`) | |
