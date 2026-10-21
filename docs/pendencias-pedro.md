@@ -68,4 +68,6 @@ Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações c
   - SHA-256 `34:C5:69:3C:CB:B3:61:B3:F1:0D:7E:FD:A8:8D:E2:85:A7:35:10:32:0A:93:79:46:2E:78:43:49:C7:07:EC:43`
 - "Conteúdo do app" pendente: política de privacidade (URL pública), anúncios, acesso ao app (conta de teste para o revisor), classificação de conteúdo, público-alvo, segurança dos dados, ID de publicidade, apps governamentais, recursos financeiros, apps de saúde. Serviço em primeiro plano e exclusão de conta devem aparecer após o primeiro build.
 - Cliente OAuth "Paceless Android (Play)" criado com o SHA-1 do Play: `336845760115-22tqqcc1s4eitrk040vpifkrlh0qgpjf.apps.googleusercontent.com`. Supabase com os quatro Client IDs.
-- Falta: JSON da conta de serviço no RevenueCat, tópico Pub/Sub e notificação de teste.
+- RevenueCat: JSON da conta de serviço salvo. A conta `paceless-play-publisher` recebeu o papel `roles/pubsub.admin` no projeto `paceless`.
+- Tópico `projects/paceless/topics/Play-Store-Notifications` criado pelo RevenueCat ("Connected to Google"). Configurado no Play Console com todas as notificações; o teste foi recebido em 21/10 às 10:48 UTC.
+- Validação do JSON com aviso: "package name was not found" nas compras de assinatura. Clicar em "Check again" depois do primeiro AAB numa faixa de teste.
