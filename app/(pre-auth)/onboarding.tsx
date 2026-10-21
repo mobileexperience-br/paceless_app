@@ -1,11 +1,12 @@
 import { type ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Button, Card, Screen, ScreenHeader, Text } from '@/components';
+import { Button, ProgressBar, Screen, ScreenHeader, Text } from '@/components';
+import { SelectableCard } from '@/components/paywall/SelectableCard';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { HEALTH_DISCLAIMER } from '@/lib/healthDisclaimer';
 import { onboardingSteps, optionsForStep } from '@/lib/onboardingSteps';
-import { createStyles, layout, radius, spacing } from '@/theme';
+import { createStyles, layout, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 export default function OnboardingScreen(): ReactElement {
@@ -33,6 +34,7 @@ export default function OnboardingScreen(): ReactElement {
   return (
     <Screen flush>
       <ScreenHeader showBack onBack={goBack} centerLabel={`${step + 1} / ${stepCount}`} />
+      <ProgressBar progress={(step + 1) / stepCount} style={styles.progress} />
 
       <View style={styles.body}>
         <View style={styles.intro}>
@@ -42,22 +44,16 @@ export default function OnboardingScreen(): ReactElement {
           </Text>
         </View>
 
-        <View style={styles.options}>
-          {(current ? optionsForStep(current, answers) : []).map((option) => {
-            const active = selected === option.id;
-            return (
-              <Pressable
-                key={option.id}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: active }}
-                onPress={() => { answer(option.id); }}
-              >
-                <Card style={active ? styles.optionActive : undefined}>
-                  <Text variant="bodyStrong">{option.label}</Text>
-                </Card>
-              </Pressable>
-            );
-          })}
+        <View accessibilityRole="radiogroup" style={styles.options}>
+          {(current ? optionsForStep(current, answers) : []).map((option) => (
+            <SelectableCard
+              key={option.id}
+              active={selected === option.id}
+              onPress={() => { answer(option.id); }}
+            >
+              <Text variant="bodyStrong">{option.label}</Text>
+            </SelectableCard>
+          ))}
         </View>
       </View>
 
@@ -67,18 +63,17 @@ export default function OnboardingScreen(): ReactElement {
             {HEALTH_DISCLAIMER}
           </Text>
         ) : null}
-        <Button
-          label={isLast ? 'Ver meu plano' : 'Continuar'}
-          disabled={!selected}
-          onPress={goNext}
-        />
+        <Button label="Continuar" disabled={!selected} onPress={goNext} />
       </View>
     </Screen>
   );
 }
 
-const makeStyles = createStyles((colors) =>
+const makeStyles = createStyles(() =>
   StyleSheet.create({
+    progress: {
+      marginHorizontal: layout.screenPadding,
+    },
     body: {
       flex: 1,
       paddingHorizontal: layout.screenPadding,
@@ -90,11 +85,6 @@ const makeStyles = createStyles((colors) =>
     },
     options: {
       gap: layout.cardGap,
-    },
-    optionActive: {
-      borderColor: colors.primary,
-      borderWidth: 2,
-      borderRadius: radius.lg,
     },
     footer: {
       paddingHorizontal: layout.screenPadding,

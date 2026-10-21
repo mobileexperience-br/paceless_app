@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Check } from 'lucide-react-native';
 import {
@@ -12,7 +12,9 @@ import {
 } from '@/components';
 import { PlanSelector } from '@/components/paywall/PlanSelector';
 import { useOfferings, type PlanId } from '@/hooks/useOfferings';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { usePremium, type PurchaseResult } from '@/hooks/usePremium';
+import { summarizeAnswers } from '@/lib/onboardingSteps';
 import { subscriptionsUnavailableMessage } from '@/lib/platform/subscriptionsUnavailableMessage';
 import { createStyles, layout, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
@@ -30,15 +32,17 @@ export default function PaywallScreen(): ReactElement {
   const router = useRouter();
   const { status, plans, reload } = useOfferings();
   const { busy, purchase, restore } = usePremium();
+  const { answers } = useOnboarding();
   const [selectedId, setSelectedId] = useState<PlanId>('annual');
   const [message, setMessage] = useState<string | null>(null);
   const selected = plans.find((plan) => plan.id === selectedId) ?? plans[0];
   const ready = status === 'ready' && selected !== undefined;
+  const summary = summarizeAnswers(answers);
 
   const finish = (result: PurchaseResult): void => {
     setMessage(result.error);
     if (result.success) {
-      router.push('/signup');
+      router.replace('/signup');
     }
   };
 
@@ -53,11 +57,20 @@ export default function PaywallScreen(): ReactElement {
   };
 
   return (
-    <Screen flush scroll>
+    <Screen flush>
       <ScreenHeader showBack />
 
-      <View style={styles.body}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.intro}>
+          {summary ? (
+            <Text variant="bodyStrong" color={colors.primaryDeep}>
+              {summary}
+            </Text>
+          ) : null}
           <Text variant="title1">Destrave o Paceless</Text>
           <Text variant="body" color={colors.textSecondary}>
             Seu plano completo, ajustado semana a semana.
@@ -79,7 +92,7 @@ export default function PaywallScreen(): ReactElement {
 
         {status === 'loading' ? (
           <View style={styles.status}>
-            <ActivityIndicator color={colors.primaryDeep} />
+            <ActivityIndicator accessibilityLabel="Carregando planos" color={colors.primaryDeep} />
           </View>
         ) : null}
 
@@ -103,18 +116,23 @@ export default function PaywallScreen(): ReactElement {
         ) : null}
 
         {ready ? <SubscriptionDisclosure plan={selected} /> : null}
-
-        {message ? (
-          <Text variant="caption" color={colors.danger}>
-            {message}
-          </Text>
-        ) : null}
-      </View>
+      </ScrollView>
 
       <View style={styles.footer}>
+        {message ? (
+          <View accessibilityRole="alert" accessibilityLiveRegion="polite">
+            <Text variant="caption" color={colors.danger} center>
+              {message}
+            </Text>
+          </View>
+        ) : null}
         {ready ? (
           <>
-            <Button label="Assinar" disabled={busy} onPress={handlePurchase} />
+            <Button
+              label={busy ? 'Processando...' : 'Assinar'}
+              disabled={busy}
+              onPress={handlePurchase}
+            />
             <Button
               label="Restaurar compras"
               variant="text"
@@ -124,10 +142,14 @@ export default function PaywallScreen(): ReactElement {
           </>
         ) : null}
         <Button
-          label="Continuar sem assinar"
+          label="Agora não"
           variant="text"
-          onPress={() => { router.push('/signup'); }}
+          disabled={busy}
+          onPress={() => { router.replace('/signup'); }}
         />
+        <Text variant="caption" color={colors.textSecondary} center>
+          Você pode assinar depois pelo perfil.
+        </Text>
       </View>
     </Screen>
   );
@@ -135,10 +157,13 @@ export default function PaywallScreen(): ReactElement {
 
 const makeStyles = createStyles(() =>
   StyleSheet.create({
-    body: {
+    scroll: {
       flex: 1,
+    },
+    body: {
       paddingHorizontal: layout.screenPadding,
       paddingTop: spacing.xxl,
+      paddingBottom: spacing.xxl,
       gap: spacing.xxl,
     },
     intro: {

@@ -87,6 +87,23 @@ export const onboardingSteps: readonly OnboardingStepConfig[] = [
   ),
 ];
 
+const goalSummaries: Record<OnboardingAnswers['goal'], string> = {
+  start_running: 'Plano para começar a correr',
+  run_5k: 'Plano para correr 5 km',
+  run_10k: 'Plano para correr 10 km',
+  fitness: 'Plano para ganhar condicionamento',
+};
+
+export function summarizeAnswers(answers: PartialOnboardingAnswers): string | null {
+  const goal = answers.goal ? goalSummaries[answers.goal] : null;
+  const combo = trainingDayCombos.find(({ id }) => id === answers.trainingDays);
+  const days = combo
+    ? `${combo.days.length} dias: ${combo.label.charAt(0).toLowerCase()}${combo.label.slice(1)}`
+    : null;
+  const parts = [goal, days].filter((part): part is string => part !== null);
+  return parts.length > 0 ? parts.join(' · ') : null;
+}
+
 export function optionsForStep(
   step: OnboardingStepConfig,
   answers: PartialOnboardingAnswers,
