@@ -8,7 +8,6 @@ import {
   ClipboardList,
   Dumbbell,
   Footprints,
-  User,
 } from 'lucide-react-native';
 import {
   Button,
@@ -50,15 +49,7 @@ export default function HomeScreen(): ReactElement {
     <Screen scroll flush>
       <View style={styles.body}>
         <View style={styles.topBar}>
-          <Avatar
-            uri={avatarUrl}
-            size={sizes.badgeSm}
-            fallback={
-              <IconBadge tone="primary" size={sizes.badgeSm}>
-                <User size={sizes.iconMd} color={colors.onPrimary} strokeWidth={sizes.iconStroke} />
-              </IconBadge>
-            }
-          />
+          <Avatar uri={avatarUrl} size={sizes.badgeSm} />
           <View style={styles.spacer} />
           <Pressable accessibilityRole="button" accessibilityLabel="Notificações" hitSlop={sizes.hitSlop}>
             <Bell size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />

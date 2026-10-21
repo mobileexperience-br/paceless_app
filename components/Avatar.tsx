@@ -1,15 +1,18 @@
-import { useState, type ReactElement, type ReactNode } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { createStyles, radius } from '@/theme';
-import { useThemedStyles } from '@/hooks/useTheme';
+import { User } from 'lucide-react-native';
+import { createStyles, radius, sizes } from '@/theme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
+
+const iconRatio = 0.5;
 
 interface AvatarProps {
-  uri: string | null;
+  uri?: string | null;
   size: number;
-  fallback: ReactNode;
 }
 
-export function Avatar({ uri, size, fallback }: AvatarProps): ReactElement {
+export function Avatar({ uri = null, size }: AvatarProps): ReactElement {
+  const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const [failedUri, setFailedUri] = useState<string | null>(null);
   const showImage = uri !== null && uri !== failedUri;
@@ -26,7 +29,7 @@ export function Avatar({ uri, size, fallback }: AvatarProps): ReactElement {
           style={styles.image}
         />
       ) : (
-        fallback
+        <User size={Math.round(size * iconRatio)} color={colors.onPrimary} strokeWidth={sizes.iconStroke} />
       )}
     </View>
   );
@@ -37,7 +40,9 @@ const makeStyles = createStyles((colors) =>
     frame: {
       borderRadius: radius.full,
       overflow: 'hidden',
-      backgroundColor: colors.track,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     image: {
       width: '100%',

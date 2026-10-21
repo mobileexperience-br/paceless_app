@@ -5,8 +5,8 @@ import { Settings } from 'lucide-react-native';
 import { useManageSubscription } from '@/hooks/useManageSubscription';
 import { useProfile } from '@/hooks/useProfile';
 import { useSession } from '@/hooks/useSession';
-import { Avatar, AssetPlaceholder, Card, ListRow, Screen, ScreenTitle, Text } from '@/components';
-import { layout, radius, sizes } from '@/theme';
+import { Avatar, Card, ListRow, Screen, ScreenTitle, Text } from '@/components';
+import { layout, sizes } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 
 interface MenuItem {
@@ -46,11 +46,7 @@ export default function ProfileScreen(): ReactElement {
             title={name ?? 'Sua conta'}
             subtitle="Ver perfil"
             leading={
-              <Avatar
-                uri={avatarUrl}
-                size={sizes.avatar}
-                fallback={<AssetPlaceholder iconSize={sizes.iconMd} style={styles.avatar} />}
-              />
+              <Avatar uri={avatarUrl} size={sizes.avatar} />
             }
             showChevron
             onPress={(): void => {
@@ -110,11 +106,5 @@ const styles = StyleSheet.create({
   body: {
     paddingHorizontal: layout.screenPadding,
     gap: layout.cardGap,
-  },
-  avatar: {
-    flex: 0,
-    width: sizes.avatar,
-    height: sizes.avatar,
-    borderRadius: radius.full,
   },
 });

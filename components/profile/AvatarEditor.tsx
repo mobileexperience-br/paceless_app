@@ -1,6 +1,5 @@
 import { useState, type ReactElement } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
-import { User } from 'lucide-react-native';
 import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/Text';
@@ -36,11 +35,6 @@ export function AvatarEditor(): ReactElement {
         <Avatar
           uri={avatarUrl}
           size={sizes.avatarXl}
-          fallback={
-            <View style={styles.fallback}>
-              <User size={sizes.iconXl} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
-            </View>
-          }
         />
         {uploading ? (
           <View style={styles.overlay}>
@@ -99,11 +93,6 @@ const makeStyles = createStyles((colors) =>
     avatarWrap: {
       width: sizes.avatarXl,
       height: sizes.avatarXl,
-    },
-    fallback: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
     },
     overlay: {
       position: 'absolute',
