@@ -68,4 +68,10 @@ Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações c
 - Cliente OAuth "Paceless Android (Play)" criado com o SHA-1 do Play: `336845760115-22tqqcc1s4eitrk040vpifkrlh0qgpjf.apps.googleusercontent.com`. Supabase com os quatro Client IDs.
 - RevenueCat: JSON da conta de serviço salvo. A conta `paceless-play-publisher` recebeu o papel `roles/pubsub.admin` no projeto `paceless`.
 - Tópico `projects/paceless/topics/Play-Store-Notifications` criado pelo RevenueCat ("Connected to Google"). Configurado no Play Console com todas as notificações; o teste foi recebido em 21/10 às 10:48 UTC.
-- Validação do JSON com aviso: "package name was not found" nas compras de assinatura. Clicar em "Check again" depois do primeiro AAB numa faixa de teste.
+- Validação do JSON com aviso: "package name was not found" nas compras de assinatura. Clicar em "Check again" (o AAB já está no teste interno).
+
+## Teste interno (21/10)
+
+- AAB 1.0.0 (versionCode 2) no teste interno, lista "Equipe Paceless". Link: https://play.google.com/apps/internaltest/4701520311255768220
+- Quem tem o APK de desenvolvimento precisa desinstalar antes (assinaturas diferentes).
+- Ainda com o Pedro: dados jurídicos, conta Apple (PF ou PJ), duração do freemium e Hotmart ([pagamento-hotmart.md](./pagamento-hotmart.md)).

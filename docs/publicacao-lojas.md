@@ -5,8 +5,9 @@ revisão) não dependem do código. Fase no [roadmap.md](./roadmap.md).
 
 Status: `[ ]` não começou · `[~]` em andamento · `[x]` pronto
 
-Situação em 21/10/2026: app criado no Play Console; primeiro AAB de produção em
-build no EAS, ainda não enviado; Apple sem conta.
+Situação em 21/10/2026: AAB 1.0.0 (versionCode 2) no teste interno do Play, com link
+de participação; atualizações seguem por OTA ([ota.md](./ota.md)). Ficha da loja
+ainda vazia; Apple sem conta.
 
 Detalhamento dos requisitos (pesquisa S1, 19/10/2026):
 
@@ -25,9 +26,9 @@ Detalhamento dos requisitos (pesquisa S1, 19/10/2026):
 | Exclusão de conta dentro do app | `[x]` | Edge Function `delete-account` v2 publicada |
 | Política de privacidade (link) | `[~]` | Texto dentro do app pronto; falta a URL pública (rascunho a revisar com advogado) |
 | Contato de suporte | `[~]` | Variável `EXPO_PUBLIC_SUPPORT_EMAIL`; falta definir o e-mail |
-| Ficha da loja (textos, ícone, capturas de tela) | `[ ]` | |
+| Ficha da loja (textos, ícone, capturas de tela) | `[~]` | Ícone e gráfico prontos em `store/`; textos definidos; falta preencher no Play e tirar as capturas |
 | Declarações de dados/segurança do app ("Conteúdo do app") | `[ ]` | Pendente; lista em [pendencias-pedro.md](./pendencias-pedro.md) |
-| Primeiro AAB enviado | `[~]` | Build de produção (versionCode 2) em andamento no EAS |
+| Primeiro AAB enviado | `[x]` | Teste interno: https://play.google.com/apps/internaltest/4701520311255768220 |
 
 ## Apple App Store
 

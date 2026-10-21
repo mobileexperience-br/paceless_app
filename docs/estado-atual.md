@@ -1,6 +1,6 @@
 # Estado atual
 
-Diagnóstico atualizado em 2026-10-21, commit `fe636c6`. A versão original é de
+Diagnóstico atualizado em 2026-10-21, commit `2e1f5ca` (OTA `315fb07c` em production). A versão original é de
 2026-10-19 (commit `6ddcd07`), quando o app era só a camada visual.
 
 ## Resumo
@@ -22,10 +22,12 @@ escuro estão implementados.
 | Corrida com GPS | Rastreio em segundo plano (serviço em primeiro plano), pausar, retomar, bloqueio de tela, resumo com parciais, tipos corrida e caminhada, fila offline |
 | Testes | Nenhum automatizado. `tsc` e `eslint --max-warnings 0` rodam no lefthook |
 | Assets reais | `hero-welcome.jpg`, ícones e splash prontos. Faltam a ilustração do plano e as fotos de Musculação e Nutrição (ver README → "Assets pendentes") |
-| Build e publicação | Organização Expo `paceless`, projeto `@paceless/paceless`, EAS Update e EAS Workflows configurados. Primeiro build de produção Android (AAB, versionCode 2) em andamento, ainda não enviado ao Play. Ver [pipeline.md](./pipeline.md) e [publicacao-lojas.md](./publicacao-lojas.md) |
+| Build e publicação | Organização Expo `paceless`, projeto `@paceless/paceless`, EAS Update e EAS Workflows configurados. Build de produção Android (AAB, versionCode 2) no teste interno do Play; correções seguem por OTA. Ver [pipeline.md](./pipeline.md) e [publicacao-lojas.md](./publicacao-lojas.md) |
 
-Em andamento por outros agentes, **ainda não é parte do estado atual**:
-combinações de dias de treino e retomada do treino após o app ser encerrado.
+Também já na `main`: combinações de dias de treino, retomada do treino após o app
+ser encerrado, ambiente web local ([ambiente-web.md](./ambiente-web.md)) e as
+correções da revisão de usabilidade (auth com "Esqueci a senha", perfil, início,
+histórico, onboarding, paywall, salvamento do treino, sinal de GPS e bloqueio).
 
 ## Tela por tela
 
@@ -34,7 +36,7 @@ combinações de dias de treino e retomada do treino após o app ser encerrado.
 | Tela | Situação | O que falta |
 |---|---|---|
 | `welcome` | Pronto, com `hero-welcome.jpg` | Login social (Google; Apple só no iOS) |
-| `onboarding` | Quatro passos (objetivo, nível, dias por semana, musculação) salvos no AsyncStorage a cada passo e retomados | Os dias por semana são só a quantidade; as combinações predefinidas estão em desenvolvimento |
+| `onboarding` | Cinco passos, incluindo combinações predefinidas de dias de treino (`profiles.training_days`), salvos no AsyncStorage e retomados | Escolha livre de dias (decisão pendente) |
 | `paywall` | Ofertas reais do RevenueCat, compra, restaurar, divulgação da assinatura e links de Termos e Privacidade | Validar a compra em sandbox no aparelho; o webhook ainda não está publicado |
 | `signup` / `login` | Formulário controlado com validação, Google e Apple, aviso de Termos | |
 | `verify-email` | Pronto | |
@@ -48,9 +50,9 @@ combinações de dias de treino e retomada do treino após o app ser encerrado.
 | `(tabs)/plan/week/[week]` | Estado vazio ("Semana sem treinos") | Treinos vindos do plano |
 | `(tabs)/activities` | Histórico real de `activities`, com filtros e pull to refresh | |
 | `(tabs)/nutrition` | Estado vazio | Tudo (por último no roadmap) |
-| `strength` (stack, fora das abas) | Estado vazio | "Novo treino", biblioteca de exercícios |
+| `strength` (stack, fora das abas) | Diálogo "Em breve" | "Novo treino", biblioteca de exercícios |
 | `(tabs)/profile` | Conta (nome, foto), preferências (unidade e tema), Termos, Privacidade, FAQ, ajuda, gerenciar assinatura, sair e excluir conta | Notificações e Dispositivos conectados são estados vazios |
-| `workout/[id]` | Rastreio por GPS em segundo plano, cronômetro sem contar a pausa, bloqueio, deslizar para finalizar | Retomar o treino após o app ser encerrado (em desenvolvimento) |
+| `workout/[id]` | Rastreio por GPS em segundo plano, cronômetro sem contar a pausa, bloqueio, deslizar para finalizar | Contagem inicial e haptics (decisão pendente) |
 | `workout/summary` | Resumo, parciais por km e tipo de atividade; salva em `activities` com fila offline | |
 
 ## Dívidas encontradas
@@ -75,6 +77,26 @@ Coisas que quebram as próprias regras do `CLAUDE.md`, ou pendências conhecidas
    `REVENUECAT_SECRET_KEY`. Sem ela, `public.subscriptions` não é alimentada.
 10. **`supportsTablet: true`** no `app.json` exige UI e capturas de iPad; o
     Pedro disse que iPad é secundário (celular é a prioridade).
+
+## Decisões pendentes (usuário)
+
+1. Botão central das abas: histórico ou iniciar treino?
+2. Plano, Nutrição e Musculação: tela "Em breve" ou manter estado vazio?
+3. Início do cronômetro: contagem de 3 s, primeiro fix do GPS ou botão "Iniciar"?
+4. Finalizar: só deslizar ou manter "Parar"?
+5. Instalar `expo-haptics` / `expo-speech` (exige build)?
+6. Google na tela de boas-vindas pula o onboarding: remover ou redirecionar?
+7. Escolha livre de dias de treino?
+
+Para o próximo build: token de 64 px para controles secundários, `android.backgroundColor`
+e o script `store:assets` (mudam o fingerprint).
+
+## Ações manuais pendentes
+
+- Preencher a ficha da loja no Play (texto pronto) e tirar as capturas (dá para usar a web).
+- RevenueCat: "Check again" na validação do JSON.
+- Supabase: adicionar `http://localhost:8081` e o redirect de redefinir senha nas URLs de redirecionamento.
+- Pedro: dados jurídicos ([RAZÃO SOCIAL], [CNPJ], [DATA]), conta Apple, duração do freemium e decisão sobre Hotmart.
 
 ## Verificação
 

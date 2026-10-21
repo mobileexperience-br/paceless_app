@@ -2,7 +2,7 @@
 
 Plano de corrida gerado por IA fica para outra implementação.
 
-**Status (21/10/2026):** F, K, J, L, P e R entraram na `main`. P (assinatura) depende
+**Status (21/10/2026):** F, K, J, L, P e R entraram na `main`, junto com dias de treino, retomada do treino e revisão de usabilidade. P (assinatura) depende
 do webhook, que está escrito mas não publicado.
 Cada trilha roda num worktree com um agente Sonnet; o agente principal revisa e integra.
 

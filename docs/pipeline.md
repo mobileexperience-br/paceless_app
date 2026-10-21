@@ -7,8 +7,8 @@ conectado ao projeto `@paceless/paceless` no painel da Expo.
 ## Situação em 21/10/2026
 
 - Organização Expo `paceless`, projeto `@paceless/paceless`.
-- Primeiro build Android de produção (AAB, versionCode 2) em andamento no EAS;
-  ainda não enviado ao Play. `submit.production.android` usa a trilha `internal`
+- Build Android de produção `ffce154b` (AAB, versionCode 2, fingerprint
+  `6e33b60c…`) no teste interno do Play. Última OTA em production: `315fb07c`. `submit.production.android` usa a trilha `internal`
   como rascunho.
 - Apple: conta ainda não criada (Pedro decidindo PF ou PJ), então todo o fluxo iOS
   abaixo segue bloqueado. `ascAppId` e `appleTeamId` seguem com placeholders.
