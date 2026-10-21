@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react';
-import { Image, Pressable, StyleSheet, type ImageSourcePropType, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet, type ImageSourcePropType, type ViewStyle } from 'react-native';
 import logoApple from '@/assets/logo-apple.png';
 import logoGoogle from '@/assets/logo-google.png';
 import { Text } from './Text';
 import { createStyles, layout, radius, spacing } from '@/theme';
-import { useThemedStyles } from '@/hooks/useTheme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 type SocialProvider = 'apple' | 'google';
 
@@ -12,6 +12,7 @@ interface SocialButtonProps {
   provider: SocialProvider;
   onPress?: () => void;
   disabled?: boolean;
+  pending?: boolean;
   style?: ViewStyle;
 }
 
@@ -25,17 +26,30 @@ const logos: Record<SocialProvider, ImageSourcePropType> = {
   google: logoGoogle,
 };
 
-export function SocialButton({ provider, onPress, disabled, style }: SocialButtonProps): ReactElement {
+export function SocialButton({ provider, onPress, disabled, pending, style }: SocialButtonProps): ReactElement {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const blocked = disabled === true || pending === true;
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      disabled={disabled}
-      style={({ pressed }) => [styles.button, pressed && styles.pressed, style]}
+      disabled={blocked}
+      accessibilityState={{ disabled: blocked, busy: pending === true }}
+      accessibilityLabel={pending ? 'Conectando' : labels[provider]}
+      style={({ pressed }) => [
+        styles.button,
+        pressed && styles.pressed,
+        disabled && !pending && styles.disabled,
+        style,
+      ]}
     >
-      <Image source={logos[provider]} style={styles.logo} resizeMode="contain" />
-      <Text variant="bodyStrong">{labels[provider]}</Text>
+      {pending ? (
+        <ActivityIndicator color={colors.primaryDeep} size="small" style={styles.logo} />
+      ) : (
+        <Image source={logos[provider]} style={styles.logo} resizeMode="contain" />
+      )}
+      <Text variant="bodyStrong">{pending ? 'Conectando...' : labels[provider]}</Text>
     </Pressable>
   );
 }
@@ -55,6 +69,9 @@ const makeStyles = createStyles((colors) =>
     },
     pressed: {
       backgroundColor: colors.track,
+    },
+    disabled: {
+      opacity: 0.4,
     },
     logo: {
       width: 20,

@@ -6,10 +6,11 @@ import {
 } from '@/hooks/socialSignInErrors';
 import { cancelled, failure, type SocialResult } from '@/lib/platform/socialResult';
 
-export async function googleSignIn(): Promise<SocialResult> {
+export async function googleSignIn(onToken: () => void): Promise<SocialResult> {
   if (!supabase) {
     return failure(unavailableMessage);
   }
+  onToken();
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.origin },
@@ -17,6 +18,6 @@ export async function googleSignIn(): Promise<SocialResult> {
   return error ? failure(translateSocialError(error)) : cancelled;
 }
 
-export function appleSignIn(): Promise<SocialResult> {
+export function appleSignIn(_onToken: () => void): Promise<SocialResult> {
   return Promise.resolve(failure(webMessage));
 }

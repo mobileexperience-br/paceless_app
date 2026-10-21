@@ -13,6 +13,7 @@ export { Screen } from './Screen';
 export { ScreenHeader } from './ScreenHeader';
 export { ScreenTitle } from './ScreenTitle';
 export { SegmentedTabs } from './SegmentedTabs';
+export { SignInOverlay } from './SignInOverlay';
 export { SocialButton } from './SocialButton';
 export { StatRow } from './StatRow';
 export { SubscriptionDisclosure } from './SubscriptionDisclosure';

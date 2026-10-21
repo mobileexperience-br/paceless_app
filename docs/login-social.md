@@ -95,3 +95,28 @@ Apple Developer paga e dispositivo registrado).
   Apple o nome é salvo em `user_metadata` (`name` e `full_name`). A Apple só
   envia o nome na primeira autorização.
 - Web: os botões mostram "Disponível no app.".
+
+## Feedback durante o login
+
+O fluxo tem duas fases, controladas por `useSocialSignIn` (`phase`):
+
+1. `picker`: do toque até o seletor de contas (ou a folha da Apple) devolver o
+   token. O botão tocado troca o ícone por um spinner e o rótulo vira
+   "Conectando..."; o `accessibilityState` fica com `busy`. Os outros botões da
+   tela (criar conta, entrar com e-mail, links de navegação) ficam desabilitados.
+2. `exchanging`: com o token em mãos, o app o troca no Supabase
+   (`signInWithIdToken`). Um overlay em tela cheia (`SignInOverlay`, logo da marca
+   + "Entrando na sua conta...") cobre a tela e permanece até a navegação para
+   `/(app)`, então a tela de boas-vindas nunca aparece parada. O leitor de tela
+   recebe o anúncio "Entrando na sua conta".
+
+Regras:
+
+- Toques duplos são ignorados (guarda por `useRef`), o que também evita o erro
+  `IN_PROGRESS` do SDK do Google.
+- Cancelamento (usuário fecha o seletor) volta ao estado normal, sem alerta.
+- Erros (rede, Play Services, token inválido) aparecem num diálogo
+  (`useDialog().alert`) com mensagem em português; a tela volta ao normal.
+- O overlay usa `Modal`, então bloqueia toques e o botão voltar do Android
+  durante a troca do token.
+- Haptics não foram adicionados: `expo-haptics` não está instalado.

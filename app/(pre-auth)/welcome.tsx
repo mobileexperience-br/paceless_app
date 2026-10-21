@@ -1,10 +1,10 @@
-import { useState, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, SocialButton, Text } from '@/components';
-import { useSocialSignIn, type SocialResult } from '@/hooks/useSocialSignIn';
+import { Button, SignInOverlay, SocialButton, Text } from '@/components';
+import { useSocialSignIn } from '@/hooks/useSocialSignIn';
 import { createStyles, layout, palettes, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 import heroWelcome from '@/assets/hero-welcome.jpg';
@@ -15,19 +15,6 @@ export default function WelcomeScreen(): ReactElement {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const social = useSocialSignIn();
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSocial = async (action: () => Promise<SocialResult>): Promise<void> => {
-    setError(null);
-    const result = await action();
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-    if (result.signedIn) {
-      router.replace('/(app)');
-    }
-  };
 
   return (
     <View style={styles.root}>
@@ -49,27 +36,25 @@ export default function WelcomeScreen(): ReactElement {
         </View>
 
         <View style={styles.actions}>
-          <Button label="Criar conta" onPress={() => { router.push('/onboarding'); }} />
+          <Button label="Criar conta" disabled={social.busy} onPress={() => { router.push('/onboarding'); }} />
           {social.appleSupported ? (
             <SocialButton
               provider="apple"
-              disabled={social.loading !== null}
-              onPress={() => { void handleSocial(social.signInWithApple); }}
+              disabled={social.busy}
+              pending={social.provider === 'apple'}
+              onPress={() => { void social.signInWithApple(); }}
             />
           ) : null}
           <SocialButton
             provider="google"
-            disabled={social.loading !== null}
-            onPress={() => { void handleSocial(social.signInWithGoogle); }}
+            disabled={social.busy}
+            pending={social.provider === 'google'}
+            onPress={() => { void social.signInWithGoogle(); }}
           />
-          {error ? (
-            <Text variant="caption" center color={colors.danger}>
-              {error}
-            </Text>
-          ) : null}
 
           <Pressable
             accessibilityRole="button"
+            disabled={social.busy}
             onPress={() => { router.push('/login'); }}
             style={styles.footer}
           >
@@ -82,6 +67,7 @@ export default function WelcomeScreen(): ReactElement {
           </Pressable>
         </View>
       </SafeAreaView>
+      <SignInOverlay visible={social.phase === 'exchanging'} />
     </View>
   );
 }

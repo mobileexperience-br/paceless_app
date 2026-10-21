@@ -7,11 +7,12 @@ import {
   Input,
   Screen,
   ScreenHeader,
+  SignInOverlay,
   SocialButton,
   Text,
 } from '@/components';
 import { useSession } from '@/hooks/useSession';
-import { useSocialSignIn, type SocialResult } from '@/hooks/useSocialSignIn';
+import { useSocialSignIn } from '@/hooks/useSocialSignIn';
 import { validateCredentials } from '@/hooks/validateAuth';
 import { createStyles, layout, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
@@ -26,18 +27,6 @@ export default function LoginScreen(): ReactElement {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const social = useSocialSignIn();
-
-  const handleSocial = async (action: () => Promise<SocialResult>): Promise<void> => {
-    setError(null);
-    const result = await action();
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-    if (result.signedIn) {
-      router.replace('/(app)');
-    }
-  };
 
   const submit = async (): Promise<void> => {
     const invalid = validateCredentials(email, password);
@@ -97,7 +86,7 @@ export default function LoginScreen(): ReactElement {
 
         <Button
           label={submitting ? 'Entrando...' : 'Entrar'}
-          disabled={submitting}
+          disabled={submitting || social.busy}
           onPress={() => { void submit(); }}
         />
 
@@ -113,19 +102,22 @@ export default function LoginScreen(): ReactElement {
           {social.appleSupported ? (
             <SocialButton
               provider="apple"
-              disabled={social.loading !== null}
-              onPress={() => { void handleSocial(social.signInWithApple); }}
+              disabled={social.busy}
+              pending={social.provider === 'apple'}
+              onPress={() => { void social.signInWithApple(); }}
             />
           ) : null}
           <SocialButton
             provider="google"
-            disabled={social.loading !== null}
-            onPress={() => { void handleSocial(social.signInWithGoogle); }}
+            disabled={social.busy}
+            pending={social.provider === 'google'}
+            onPress={() => { void social.signInWithGoogle(); }}
           />
         </View>
 
         <Pressable
           accessibilityRole="button"
+          disabled={social.busy}
           onPress={() => { router.push('/signup'); }}
           style={styles.footer}
         >
@@ -137,6 +129,7 @@ export default function LoginScreen(): ReactElement {
           </Text>
         </Pressable>
       </View>
+      <SignInOverlay visible={social.phase === 'exchanging'} />
     </Screen>
   );
 }

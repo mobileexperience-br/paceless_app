@@ -7,7 +7,7 @@ import {
 } from '@/hooks/socialSignInErrors';
 import { cancelled, done, failure, type SocialResult } from '@/lib/platform/socialResult';
 
-export async function googleSignIn(): Promise<SocialResult> {
+export async function googleSignIn(onToken: () => void): Promise<SocialResult> {
   const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
   const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
   if (!supabase || !webClientId) {
@@ -27,6 +27,7 @@ export async function googleSignIn(): Promise<SocialResult> {
     if (!token) {
       return failure(genericMessage);
     }
+    onToken();
     const { error } = await supabase.auth.signInWithIdToken({ provider: 'google', token });
     return error ? failure(translateSocialError(error)) : done;
   } catch (error) {
@@ -40,7 +41,7 @@ export async function googleSignIn(): Promise<SocialResult> {
   }
 }
 
-export async function appleSignIn(): Promise<SocialResult> {
+export async function appleSignIn(onToken: () => void): Promise<SocialResult> {
   if (!supabase) {
     return failure(unavailableMessage);
   }
@@ -65,6 +66,7 @@ export async function appleSignIn(): Promise<SocialResult> {
     if (!credential.identityToken) {
       return failure(genericMessage);
     }
+    onToken();
     const { error } = await supabase.auth.signInWithIdToken({
       provider: 'apple',
       token: credential.identityToken,
