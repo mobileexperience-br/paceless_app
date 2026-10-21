@@ -15,6 +15,14 @@ function optionOrNull<T extends string>(options: readonly T[], value: unknown): 
   return found ?? null;
 }
 
+function weekdaysOrEmpty(value: unknown): number[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (item): item is number =>
+      typeof item === 'number' && Number.isInteger(item) && item >= 1 && item <= 7,
+  );
+}
+
 export function parseProfileRow(raw: unknown): ProfileRow | null {
   if (!isRecord(raw)) return null;
   const { id, created_at: createdAt, updated_at: updatedAt } = raw;
@@ -28,6 +36,7 @@ export function parseProfileRow(raw: unknown): ProfileRow | null {
     goal: optionOrNull(onboardingOptions.goal, raw['goal']),
     level: optionOrNull(onboardingOptions.level, raw['level']),
     days_per_week: optionOrNull(onboardingOptions.daysPerWeek, raw['days_per_week']),
+    training_days: weekdaysOrEmpty(raw['training_days']),
     strength: optionOrNull(onboardingOptions.strength, raw['strength']),
     onboarding_completed_at: textOrNull(raw['onboarding_completed_at']),
     distance_unit:

@@ -1,4 +1,11 @@
-import type { OnboardingAnswers, OnboardingLabels, OnboardingStepKey } from '@/types/onboarding';
+import { combosForGroup, trainingDayCombos } from '@/lib/trainingDayCombos';
+import type {
+  LabeledStepKey,
+  OnboardingAnswers,
+  OnboardingLabels,
+  OnboardingStepKey,
+  PartialOnboardingAnswers,
+} from '@/types/onboarding';
 
 export const onboardingLabels: OnboardingLabels = {
   goal: {
@@ -37,7 +44,7 @@ export interface OnboardingStepConfig {
   options: OnboardingOption[];
 }
 
-function buildStep<K extends OnboardingStepKey>(
+function buildStep<K extends LabeledStepKey>(
   key: K,
   title: string,
   subtitle: string,
@@ -66,6 +73,12 @@ export const onboardingSteps: readonly OnboardingStepConfig[] = [
     'Você pode ajustar isso depois.',
     onboardingLabels.daysPerWeek,
   ),
+  {
+    key: 'trainingDays',
+    title: 'Quais dias?',
+    subtitle: 'Escolha a combinação que cabe na sua semana.',
+    options: trainingDayCombos.map(({ id, label }) => ({ id, label })),
+  },
   buildStep(
     'strength',
     'Quer incluir musculação?',
@@ -73,3 +86,11 @@ export const onboardingSteps: readonly OnboardingStepConfig[] = [
     onboardingLabels.strength,
   ),
 ];
+
+export function optionsForStep(
+  step: OnboardingStepConfig,
+  answers: PartialOnboardingAnswers,
+): OnboardingOption[] {
+  if (step.key !== 'trainingDays') return step.options;
+  return combosForGroup(answers.daysPerWeek).map(({ id, label }) => ({ id, label }));
+}

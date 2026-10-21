@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useSession } from '@/hooks/useSession';
 import { clearOnboardingState, readOnboardingAnswers } from '@/lib/onboardingStorage';
 import { parseProfileRow } from '@/lib/profileRow';
+import { trainingDaysFor } from '@/lib/trainingDayCombos';
 import { supabase } from '@/lib/supabase';
 
 async function syncOnboarding(userId: string): Promise<void> {
@@ -21,6 +22,7 @@ async function syncOnboarding(userId: string): Promise<void> {
       goal: answers.goal,
       level: answers.level,
       days_per_week: answers.daysPerWeek,
+      training_days: [...trainingDaysFor(answers.trainingDays)],
       strength: answers.strength,
       onboarding_completed_at: new Date().toISOString(),
     },

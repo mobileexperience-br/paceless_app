@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { comboGroup } from '@/lib/trainingDayCombos';
 import {
   onboardingOptions,
   onboardingStepKeys,
@@ -28,6 +29,15 @@ function isOption<K extends OnboardingStepKey>(
   return options.includes(value);
 }
 
+function withDaysPerWeek(
+  answers: PartialOnboardingAnswers,
+  daysPerWeek: OnboardingAnswers['daysPerWeek'],
+): PartialOnboardingAnswers {
+  const { trainingDays, ...rest } = answers;
+  const keepTrainingDays = trainingDays && comboGroup(trainingDays) === daysPerWeek;
+  return keepTrainingDays ? { ...rest, daysPerWeek, trainingDays } : { ...rest, daysPerWeek };
+}
+
 export function withAnswer(
   answers: PartialOnboardingAnswers,
   key: OnboardingStepKey,
@@ -39,7 +49,11 @@ export function withAnswer(
     case 'level':
       return isOption('level', value) ? { ...answers, level: value } : answers;
     case 'daysPerWeek':
-      return isOption('daysPerWeek', value) ? { ...answers, daysPerWeek: value } : answers;
+      return isOption('daysPerWeek', value) ? withDaysPerWeek(answers, value) : answers;
+    case 'trainingDays':
+      return isOption('trainingDays', value) && comboGroup(value) === answers.daysPerWeek
+        ? { ...answers, trainingDays: value }
+        : answers;
     case 'strength':
       return isOption('strength', value) ? { ...answers, strength: value } : answers;
   }
@@ -92,7 +106,7 @@ export async function clearOnboardingState(): Promise<void> {
 
 export async function readOnboardingAnswers(): Promise<OnboardingAnswers | null> {
   const { answers } = await loadOnboardingState();
-  const { goal, level, daysPerWeek, strength } = answers;
-  if (!goal || !level || !daysPerWeek || !strength) return null;
-  return { goal, level, daysPerWeek, strength };
+  const { goal, level, daysPerWeek, trainingDays, strength } = answers;
+  if (!goal || !level || !daysPerWeek || !trainingDays || !strength) return null;
+  return { goal, level, daysPerWeek, trainingDays, strength };
 }

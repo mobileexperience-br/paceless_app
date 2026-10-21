@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Button, Card, Screen, ScreenHeader, Text } from '@/components';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { HEALTH_DISCLAIMER } from '@/lib/healthDisclaimer';
-import { onboardingSteps } from '@/lib/onboardingSteps';
+import { onboardingSteps, optionsForStep } from '@/lib/onboardingSteps';
 import { createStyles, layout, radius, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
@@ -43,7 +43,7 @@ export default function OnboardingScreen(): ReactElement {
         </View>
 
         <View style={styles.options}>
-          {current?.options.map((option) => {
+          {(current ? optionsForStep(current, answers) : []).map((option) => {
             const active = selected === option.id;
             return (
               <Pressable

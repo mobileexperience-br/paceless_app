@@ -159,6 +159,7 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 12. `20261019230100_avatars_storage.sql`
 13. `20261019230200_activities_walk_type.sql` (tipo `walk` e `splits`)
 14. `20261020000000_restrict_core_table_grants.sql` (revoga `anon` e privilégios excessivos em `activities` e `profiles`)
+15. `20261021000000_profiles_training_days.sql` (coluna `profiles.training_days`, `smallint[]` de 1 a 7, escolhida no onboarding entre combinações predefinidas em `lib/trainingDayCombos.ts`)
 
 As trilhas paralelas (colunas novas em `profiles`, tipo `walk` e splits em `activities`)
 não conflitam com estas migrations; só precisam vir antes se alguma passar a depender delas.

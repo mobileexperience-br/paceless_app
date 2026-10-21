@@ -8,6 +8,7 @@ export interface ProfileRow {
   goal: OnboardingAnswers['goal'] | null;
   level: OnboardingAnswers['level'] | null;
   days_per_week: OnboardingAnswers['daysPerWeek'] | null;
+  training_days: number[];
   strength: OnboardingAnswers['strength'] | null;
   onboarding_completed_at: string | null;
   distance_unit: DistanceUnit;
