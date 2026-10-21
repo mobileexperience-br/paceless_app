@@ -39,7 +39,7 @@ Strava e similares dão experiência genérica; o Paceless se diferencia pela
 |---|---|---|
 | Onboarding | Perguntas iniciais ao usuário, salvas no aparelho e migradas para o perfil após o cadastro | Hoje |
 | Login | E-mail e senha, Google e Apple | Hoje |
-| Paywall e assinatura | Assinatura via RevenueCat. Preço definido: R$ 267/ano e R$ 37/mês. Freemium de 15 ou 30 dias (duração a definir). Forma de pagamento (lojas × Hotmart) em discussão: [pagamento-hotmart.md](./pagamento-hotmart.md), fora desta branch | Hoje (ofertas reais; webhook ainda não publicado) |
+| Paywall e assinatura | Assinatura via RevenueCat. Preço definido: R$ 267/ano e R$ 37/mês. Freemium de 15 ou 30 dias (duração a definir). Forma de pagamento (lojas × Hotmart) em discussão: [pagamento-hotmart.md](./pagamento-hotmart.md) | Hoje (ofertas reais; webhook ainda não publicado) |
 | Corrida com GPS | Rastreio em segundo plano, resumo, parciais, histórico em Atividades | Hoje |
 | Plano, semana e treino | Telas do plano de corrida | Hoje (estado vazio, sem plano real) |
 | Dias de treino | Quantidade de dias com combinações predefinidas (ex.: ter/qui/sáb ou qua/sex/dom) | Em desenvolvimento |

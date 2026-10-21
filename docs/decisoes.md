@@ -51,7 +51,7 @@ sequência, conquistas de 1, 3, 5, 7 e 10 km); Stories importante, mas não bloq
 primeira versão; iPad secundário; concorrente Zyla.
 **Troca de plano:** feita pelo usuário no app, com a cobrança gerida pela loja;
 intervenção manual só em suporte.
-**Pagamento:** pela Hotmart está **em discussão**, sem decisão ([pagamento-hotmart.md](./pagamento-hotmart.md), fora desta branch).
+**Pagamento:** pela Hotmart está **em discussão**, sem decisão ([pagamento-hotmart.md](./pagamento-hotmart.md)).
 **Em andamento:** combinações de dias de treino e retomada do treino após o app ser
 encerrado.
 
