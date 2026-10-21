@@ -6,8 +6,10 @@ critério de pronto verificado (+ `tsc` e `eslint` limpos).
 Status: `[ ]` não começou · `[~]` em andamento · `[x]` pronta
 
 > A ordem segue a dependência técnica: não dá pra migrar dado pré-cadastro
-> sem auth, nem limitar free/premium sem assinatura. Ordem a validar com o
-> Pedro antes de começar a Fase 1.
+> sem auth, nem limitar free/premium sem assinatura.
+>
+> Situação em 21/10/2026: Fases 1, 2, 3 e 6 prontas; Fase 4 em andamento;
+> Fase 5 não começou. Detalhes em [estado-atual.md](./estado-atual.md).
 
 ---
 
@@ -15,87 +17,103 @@ Status: `[ ]` não começou · `[~]` em andamento · `[x]` pronta
 
 Resolver as dívidas do [estado-atual.md](./estado-atual.md) antes de construir.
 
-- [~] Tirar mock data das telas → estado vazio (Início e Plano feitos; falta Treino)
-- [~] Tamanhos hardcoded → tokens (feito, exceto `workout/[id]` e `profile`)
+- [x] Tirar mock data das telas → estado vazio
+- [x] Tamanhos hardcoded → tokens
 - [x] Unificar `AGENTS.md` / `CLAUDE.md`
-- Decidir destino do `public/GG Simulator.html`
-- Criar `.env.example`
+- [ ] Decidir destino do `public/GG Simulator.html`
+- [x] Criar `.env.example`
 - [x] Remover todos os comentários de JS/TS (contexto em `docs/design-system.md`)
 - [x] Lint e TS no máximo de rigor (ver `decisoes.md`)
 
 **Pronto quando:** `grep` por "Alex", "New To Running", "Corrida leve" em
 `app/` não acha nada; `tsc` e `eslint` limpos.
 
-## Fase 1 — Onboarding persistido `[ ]`
+## Fase 1 — Onboarding persistido `[x]`
 
-- Tipar as respostas do onboarding (hoje são strings soltas)
-- Salvar no AsyncStorage a cada passo
-- `hooks/` com o primeiro hook de acesso a dados
+- [x] Tipar as respostas do onboarding
+- [x] Salvar no AsyncStorage a cada passo
+- [x] `hooks/` com o primeiro hook de acesso a dados
 
 **Pronto quando:** responder o onboarding, matar o app e reabrir mantém as
 respostas.
 
-## Fase 2 — Supabase + Auth `[ ]`
+## Fase 2 — Supabase + Auth `[x]`
 
-- `lib/supabase.ts` (precisa aprovar instalação de `@supabase/supabase-js`)
-- Signup / login por e-mail com formulário controlado e validação
-- Sessão persistida; guard de rota (`app/index.tsx` decide welcome × app)
-- "Sair" desloga de verdade
-- Apple / Google: decidir se entra aqui ou depois
+- [x] `lib/supabase.ts`
+- [x] Signup / login por e-mail com formulário controlado e validação
+- [x] Sessão persistida; guard de rota (`app/index.tsx` decide welcome × app)
+- [x] "Sair" desloga de verdade
+- [x] Apple / Google nativos (`signInWithIdToken`). Clientes OAuth criados e
+  Supabase com os 4 Client IDs; tela OAuth do Google ainda em modo de teste
 
 **Pronto quando:** criar conta, fechar o app, reabrir e cair logado no
 Início; sair volta pro welcome.
 
-## Fase 3 — Migração pré-cadastro → banco `[ ]`
+## Fase 3 — Migração pré-cadastro → banco `[x]`
 
-- Schema inicial (perfil + respostas do onboarding) com RLS
-- Após signup, subir o que está no AsyncStorage e limpar o local
-- Início e Perfil mostram nome real
+- [x] Schema inicial (perfil + respostas do onboarding) com RLS
+- [x] Após signup, subir o que está no AsyncStorage e limpar o local
+- [x] Início e Perfil mostram nome real
 
 **Pronto quando:** dado do onboarding aparece no banco ligado ao usuário
 e o "Olá, {nome}" é real.
 
-## Fase 4 — Assinatura (RevenueCat) `[ ]`
+## Fase 4 — Assinatura (RevenueCat) `[~]`
 
-- `lib/revenuecat.ts` (aprovar instalação de `react-native-purchases`;
-  exige dev build, não roda no Expo Go)
-- Paywall com ofertas reais
-- Webhook RevenueCat → Edge Function → status premium no banco
-- Edge Function de verificação de limite free × premium
-- Discutir com o Pedro: cobrar pela Hotmart ou pelas lojas (ver
-  [pagamento-hotmart.md](./pagamento-hotmart.md))
+- [x] `lib/purchases.ts` com `react-native-purchases` (exige dev build, não
+  roda no Expo Go)
+- [x] Paywall com ofertas reais
+- [x] RevenueCat ligado ao Google Play (conta de serviço, Pub/Sub, notificação
+  de teste recebida)
+- [~] Webhook RevenueCat → Edge Function → status premium no banco: função
+  escrita, **não publicada** (faltam os segredos)
+- [ ] Edge Function de verificação de limite free × premium
+- [ ] Conferir produtos e offering `default` no RevenueCat e no Play (as
+  credenciais mostram "package name not found" até o primeiro AAB)
+- [ ] Definir a duração do freemium (15 ou 30 dias). Discutir com o Pedro:
+  cobrar pela Hotmart ou pelas lojas ([pagamento-hotmart.md](./pagamento-hotmart.md))
 
 **Pronto quando:** compra em sandbox libera premium e o servidor (não o
 client) confirma.
 
 ## Fase 5 — Plano de corrida `[ ]`
 
-- Modelo de plano / semana / treino no banco
+- [x] Modelo de plano / semana / treino no banco (migrations aplicadas; as
+  telas ainda mostram estado vazio)
+- [x] Dias de treino: quantidade + combinações predefinidas (`lib/trainingDayCombos.ts`, coluna `profiles.training_days`)
 - Geração do plano a partir do onboarding (regra a definir — fixa por
   objetivo ou via IA em Edge Function)
 - Plano, Semana e Próximo treino com dados reais
 
-## Fase 6 — Treino em andamento `[ ]`
+## Fase 6 — Treino em andamento `[x]`
 
-- Cronômetro, pausar, parar, slider de finalizar
-- Distância e ritmo (GPS — biblioteca a aprovar)
-- Salvar atividade; tela Atividades com histórico e filtros
+- [x] Cronômetro, pausar, parar, slider de finalizar
+- [x] Distância e ritmo (GPS com `expo-location`, rastreio em segundo plano)
+- [x] Salvar atividade; tela Atividades com histórico e filtros
+- Retomar o treino após o app ser encerrado: em andamento (não é parte da fase pronta)
 
 ## Publicação nas lojas `[ ]` (paralela, começar cedo)
 
 Corre em paralelo às fases de feature; teste fechado e revisão têm prazo
 próprio. Checklist em [publicacao-lojas.md](./publicacao-lojas.md).
 
-- Contas Google Play e Apple; teste fechado (12 testers)
-- Exclusão de conta no app (trilha H); termos, privacidade e suporte (trilha I)
-- Sign in with Apple se houver login Google
-- Build e envio via EAS
+- [x] Conta Google Play (organização MXPBR, verificada) e app criado
+- [ ] Conta Apple (Pedro decidindo PF ou PJ)
+- Teste fechado de 12 testers por 14 dias: não se aplica (conta de organização)
+- [x] Exclusão de conta no app
+- [~] Termos, privacidade e suporte: telas no app prontas; faltam as URLs públicas
+- [x] Sign in with Apple no código
+- [~] Build e envio via EAS: primeiro AAB de produção (versionCode 2) em
+  andamento, ainda não enviado ao Play
 
 ## Depois (sem ordem ainda)
 
-- Musculação (treinos e exercícios)
+- Musculação (educador físico com apoio de IA; Pedro busca um parceiro)
 - Notificações
-- Dispositivos conectados (FC média)
+- Dispositivos conectados (Garmin, Apple Watch, Samsung, Coros e Polar)
+- Gamificação (aprovada: meta semanal sem sequência, conquistas de 1, 3, 5, 7 e 10 km)
+- Compartilhar corrida / Stories (importante, mas não bloqueia a primeira versão)
+- Área admin web separada, em outro domínio (fora do app)
 - Assets reais
 - Testes
 

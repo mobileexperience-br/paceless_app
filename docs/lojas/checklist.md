@@ -25,16 +25,16 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 
 | Item | Loja | Onde | Status |
 |---|---|---|---|
-| Paywall: texto de renovação automática, duração/preço do plano, como cancelar | Ambas | código | `[ ]` |
-| Paywall: links de Termos e Privacidade (reusar `LegalNotice`) | Ambas | código | `[ ]` |
-| `ITSAppUsesNonExemptEncryption: false` em `ios.infoPlist` | Apple | código | `[ ]` |
-| `ios.privacyManifests` (required reason APIs de RN/AsyncStorage/RevenueCat etc.) | Apple | código | `[ ]` |
-| Tela de exclusão: avisar que a assinatura da loja não é cancelada junto | Apple / Play | código | `[?]` |
+| Paywall: texto de renovação automática, duração/preço do plano, como cancelar | Ambas | código | `[x]` |
+| Paywall: links de Termos e Privacidade (reusar `LegalNotice`) | Ambas | código | `[x]` |
+| `ITSAppUsesNonExemptEncryption: false` em `ios.infoPlist` | Apple | código | `[x]` |
+| `ios.privacyManifests` (required reason APIs de RN/AsyncStorage/RevenueCat etc.) | Apple | código | `[x]` |
+| Tela de exclusão: avisar que a assinatura da loja não é cancelada junto | Apple / Play | código | `[x]` |
 | Revogar token Sign in with Apple na exclusão | Apple | código | `[?]` |
 | Conferir manifesto Android: sem `ACCESS_BACKGROUND_LOCATION`, com `FOREGROUND_SERVICE_LOCATION` e `POST_NOTIFICATIONS` apenas, sem `AD_ID` indevido; `targetSdk` >= 36 | Play | código | `[?]` |
-| Decidir `supportsTablet` (hoje `true` exige capturas e UI de iPad) | Apple | código / Pedro | `[ ]` |
-| Aviso "não substitui orientação médica" no app | Ambas | código + documento | `[ ]` |
-| Perfis `production` do EAS com as variáveis (`EXPO_PUBLIC_*`) cadastradas | Ambas | painel (EAS) | `[ ]` |
+| Decidir `supportsTablet` (hoje `true` exige capturas e UI de iPad; Pedro: iPad é secundário) | Apple | código / Pedro | `[ ]` |
+| Aviso "não substitui orientação médica" no app | Ambas | código + documento | `[x]` |
+| Perfis `production` do EAS com as variáveis (`EXPO_PUBLIC_*`) cadastradas (chave `goog_` e Google Client IDs feitos; conferir o restante) | Ambas | painel (EAS) | `[~]` |
 | Reavaliar Data safety/App Privacy se entrar analytics, push, relógio ou compartilhamento | Ambas | documento | `[ ]` |
 
 ## Documentos e páginas web
@@ -52,13 +52,13 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 
 | Item | Loja | Onde | Status |
 |---|---|---|---|
-| Decidir tipo de conta (organização evita 12 testers x 14 dias) | Play | Pedro | `[ ]` |
-| Criar conta Google Play Console (US$ 25) e verificar identidade | Play | Pedro | `[ ]` |
+| Decidir tipo de conta (organização evita 12 testers x 14 dias): organização | Play | Pedro | `[x]` |
+| Criar conta Google Play Console (US$ 25) e verificar identidade (organização MXPBR, verificada) | Play | Pedro | `[x]` |
 | Criar conta Apple Developer (US$ 99/ano) | Apple | Pedro | `[ ]` |
-| Teste fechado: 12 testers, 14 dias contínuos (se conta pessoal) | Play | Pedro | `[ ]` |
-| Criar apps nas lojas com `com.paceless.app` | Ambas | painel | `[ ]` |
-| Criar assinaturas (grupo, anual e mensal) e ligar ao RevenueCat | Ambas | painel | `[ ]` |
-| Capability Sign in with Apple no App ID; provider Apple/Google no Supabase | Apple / ambas | painel | `[ ]` |
+| Teste fechado: 12 testers, 14 dias contínuos (se conta pessoal) | Play | Pedro | n/a (conta de organização) |
+| Criar apps nas lojas com `com.paceless.app` (Play: criado em 21/10; Apple: sem conta) | Ambas | painel | `[~]` |
+| Criar assinaturas (grupo, anual e mensal) e ligar ao RevenueCat (RevenueCat já ligado ao Play; produtos pendentes até o primeiro AAB) | Ambas | painel | `[~]` |
+| Capability Sign in with Apple no App ID; provider Apple/Google no Supabase (Google feito com 4 Client IDs; Apple depende da conta) | Apple / ambas | painel | `[~]` |
 | Data safety: preencher conforme [seção 3](./google-play.md#3-formulário-data-safety-segurança-dos-dados) | Play | painel | `[ ]` |
 | URL de exclusão de dados no Play Console | Play | painel | `[ ]` |
 | Declaração de serviço em primeiro plano (tipo Localização) com vídeo do treino com tela bloqueada | Play | painel + Pedro | `[ ]` |
@@ -68,9 +68,9 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 | App Privacy (rótulos) conforme [seção 4](./app-store.md#4-app-privacy-rótulos-de-nutrição) | Apple | painel | `[ ]` |
 | Questionário de classificação etária (incluindo as novas perguntas) | Apple | painel | `[ ]` |
 | Conta de revisão (usuário com premium) e notas para o revisor | Ambas | painel + Pedro | `[ ]` |
-| `eas build` production + `eas submit` (credenciais ficam no EAS) | Ambas | painel / Pedro | `[ ]` |
-| Webhook do RevenueCat e secrets das Edge Functions em produção | Ambas | painel | `[ ]` |
+| `eas build` production + `eas submit` (credenciais ficam no EAS). Android: AAB versionCode 2 em build, não enviado | Ambas | painel / Pedro | `[~]` |
+| Webhook do RevenueCat e secrets das Edge Functions em produção (função escrita, não publicada; faltam os segredos) | Ambas | painel | `[~]` |
 | Encarregado (DPO) e contato LGPD definidos | LGPD | Pedro | `[ ]` |
 | Revisão jurídica dos textos legais | Ambas | Pedro (advogado) | `[ ]` |
 
-> Nota: o app agora tem Termos, Privacidade e FAQ dentro dele (conteúdo em `content/legal/` e `content/faq.ts`, sem o aviso de rascunho). As lojas continuam exigindo **URLs públicas** de Termos/Privacidade (e de exclusão de dados no Play), que ainda precisam ser hospedadas e configuradas nas envs. Os textos seguem como rascunho e precisam de revisão jurídica; os placeholders (`[RAZÃO SOCIAL]`, `[DATA]` etc.) ainda não foram preenchidos.
+> Nota: os itens `[x]` acima refletem o estado de 21/10/2026. O app tem Termos, Privacidade e FAQ dentro dele (conteúdo em `content/legal/` e `content/faq.ts`, sem o aviso de rascunho). As lojas continuam exigindo **URLs públicas** de Termos/Privacidade (e de exclusão de dados no Play), que ainda precisam ser hospedadas e configuradas nas envs. Os textos seguem como rascunho e precisam de revisão jurídica; os placeholders (`[RAZÃO SOCIAL]`, `[DATA]` etc.) ainda não foram preenchidos.

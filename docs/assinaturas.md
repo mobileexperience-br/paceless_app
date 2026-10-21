@@ -1,8 +1,22 @@
 # Assinaturas (RevenueCat)
 
-Como as assinaturas funcionam e o que o Pedro precisa configurar. Nada abaixo
-foi aplicado ou publicado: migration, Edge Function e segredos ainda precisam
-ser executados manualmente.
+Como as assinaturas funcionam e o que falta configurar.
+
+Situação em 21/10/2026:
+
+- Migration `create_subscriptions` aplicada no Supabase remoto.
+- SDK instalado no app. Chave de teste em `development` e `preview`, chave
+  `goog_` em `production` (variáveis do EAS).
+- RevenueCat ligado ao Google Play: JSON da conta de serviço salvo, tópico
+  Pub/Sub `projects/paceless/topics/Play-Store-Notifications` e notificação de
+  teste recebida. As credenciais mostram o aviso "package name not found" até o
+  primeiro AAB ser enviado ao Play.
+- Edge Function `revenuecat-webhook` escrita, **não publicada**: faltam os
+  segredos `REVENUECAT_WEBHOOK_AUTH` e `REVENUECAT_SECRET_KEY` (passos abaixo).
+- App Store: sem conta Apple ainda, então nada de iOS foi configurado.
+- Preço definido pelo Pedro: R$ 267/ano e R$ 37/mês; freemium de 15 ou 30
+  dias (duração a definir). Pagamento pela Hotmart está em discussão e não
+  altera o que está aqui.
 
 ## Como funciona
 
@@ -48,8 +62,8 @@ loja (sandbox da App Store, testers de licença do Google Play).
 
 ## Banco e webhook (Supabase)
 
-1. Aplicar a migration `supabase/migrations/*_create_subscriptions.sql`
-   (`supabase db push`).
+1. A migration `supabase/migrations/*_create_subscriptions.sql` já está
+   aplicada no remoto.
 2. Definir os segredos da função:
    - `REVENUECAT_WEBHOOK_AUTH`: valor secreto escolhido por você, por exemplo
      `Bearer <string-aleatoria-longa>`. Deve ser idêntico ao header que o

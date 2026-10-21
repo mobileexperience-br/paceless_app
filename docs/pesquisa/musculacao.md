@@ -87,3 +87,5 @@ Mockup usa fotos de pessoas nos cards. Regra do projeto: sem mock; usar mídia r
 4. Precisa de vídeo/animação no MVP?
 5. "Novo treino" personalizado entra agora ou depois?
 6. Os 3 programas do mockup (A/B/C) ficam como estão ou viram foco em corrida?
+
+**Resposta do Pedro (20/10/2026):** o conteúdo vem de um educador físico com apoio de IA; ele vai buscar um parceiro. As demais perguntas seguem abertas.

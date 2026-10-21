@@ -5,7 +5,12 @@ banco, então **a RLS é a única barreira**: toda tabela tem RLS ativa, `anon` 
 tem acesso a nada e cada política usa `(select auth.uid())`.
 Contexto: [decisoes.md](./decisoes.md).
 
-Tabelas já existentes e fora desta trilha: `profiles`, `subscriptions`, `activities`.
+Todas as 15 migrations de `supabase/migrations/` estão aplicadas no projeto remoto
+`twfqvvfpnspbdaytrerm` (confirmado em 21/10/2026). O app só usa hoje `profiles`,
+`subscriptions`, `activities` e o Storage `avatars`; as demais tabelas existem no
+banco, mas ainda não têm tela.
+
+Tabelas das primeiras migrations: `profiles`, `subscriptions`, `activities`.
 O perfil nasce por trigger: `on_auth_user_created` (`after insert on auth.users`) chama
 `public.handle_new_user()` (`security definer`, `search_path = ''`, execute revogado de
 `public`/`anon`/`authenticated`), que insere `profiles (id, name)` com o `name` de
@@ -159,13 +164,13 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 12. `20261019230100_avatars_storage.sql`
 13. `20261019230200_activities_walk_type.sql` (tipo `walk` e `splits`)
 14. `20261020000000_restrict_core_table_grants.sql` (revoga `anon` e privilégios excessivos em `activities` e `profiles`)
-15. `20261021000000_profiles_training_days.sql` (coluna `profiles.training_days`, `smallint[]` de 1 a 7, escolhida no onboarding entre combinações predefinidas em `lib/trainingDayCombos.ts`)
+15. `20261020010000_handle_new_user.sql` (trigger de perfil no signup e backfill)
+16. `20261021000000_profiles_training_days.sql` (coluna `profiles.training_days`, `smallint[]` de 1 a 7, escolhida no onboarding entre combinações predefinidas em `lib/trainingDayCombos.ts`)
 
-As trilhas paralelas (colunas novas em `profiles`, tipo `walk` e splits em `activities`)
-não conflitam com estas migrations; só precisam vir antes se alguma passar a depender delas.
+A ordem acima segue a ordem dos timestamps dos arquivos.
 
 ## Tipos TypeScript
 
 Escritos à mão em `types/training.ts` e `types/wellbeing.ts`, reexportados por
-`types/database.ts`. Depois de aplicar as migrations, dá para trocar por
+`types/database.ts`. As migrations já estão aplicadas, então dá para trocar por
 `supabase gen types typescript` (MCP: `generate_typescript_types`).

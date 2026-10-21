@@ -14,10 +14,10 @@ Fontes: [Guidelines 3.1](https://developer.apple.com/app-store/review/guidelines
 | Exigência | Onde | Situação no Paceless |
 |---|---|---|
 | Compra digital via In-App Purchase (RevenueCat usa StoreKit) | App | OK |
-| Título do plano, duração, preço (do `StoreKit`, não fixo no código) | Paywall | Parcial: título e preço vêm da loja; **duração** não aparece explicitamente |
-| Texto de **renovação automática** e como cancelar (ex.: "Renova automaticamente até ser cancelada em Ajustes > Apple ID > Assinaturas") | Paywall | **Falta** |
+| Título do plano, duração, preço (do `StoreKit`, não fixo no código) | Paywall | Feito: `SubscriptionDisclosure` mostra título, preço da loja e período |
+| Texto de **renovação automática** e como cancelar (ex.: "Renova automaticamente até ser cancelada em Ajustes > Apple ID > Assinaturas") | Paywall | Feito (`SubscriptionDisclosure`: renovação automática, 24h para cancelar, onde cancelar) |
 | Preço mais destacado que o de qualquer valor "equivalente" (ex.: não destacar o mensal do anual de forma enganosa) | Paywall | Conferir design |
-| Links funcionais para **Termos de Uso (EULA)** e **Política de Privacidade** | Paywall **e** metadados do App Store Connect | **Falta no paywall** (só no cadastro). Links lidos de `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_PRIVACY_URL` (precisam estar definidos nos builds) |
+| Links funcionais para **Termos de Uso (EULA)** e **Política de Privacidade** | Paywall **e** metadados do App Store Connect | Feito no paywall e no cadastro. Links lidos de `EXPO_PUBLIC_TERMS_URL` / `EXPO_PUBLIC_PRIVACY_URL` (precisam estar definidos nos builds) |
 | Botão **Restaurar compras** | Paywall | Feito (`handleRestore`) |
 | Política de privacidade no campo de URL do App Store Connect | Painel | Falta (precisa da URL) |
 | EULA: usar o padrão da Apple ou o próprio em "License Agreement" / na descrição | Painel | Usar [termos de uso](../legal/termos-de-uso.md) próprios |
@@ -56,7 +56,7 @@ Fontes: [Guideline 5.1.1](https://developer.apple.com/app-store/review/guideline
 - Se a Apple exigir confirmação adicional, tudo bem, desde que seja curta.
 - Assinatura: deixar claro que excluir a conta **não cancela** a assinatura na
   Apple; orientar a cancelar em Ajustes (texto na tela de exclusão e nos
-  termos). Conferir se a tela atual fala disso (a verificar).
+  termos). O alerta da tela de exclusão já avisa isso (feito).
 
 ## 4. App Privacy (rótulos de nutrição)
 
@@ -105,7 +105,7 @@ Fontes: [Privacy manifest files](https://developer.apple.com/documentation/bundl
   após o upload, e preencher os códigos pedidos. O `react-native-purchases` e o
   `@react-native-async-storage/async-storage` costumam exigir UserDefaults/
   timestamps (a verificar nas versões usadas).
-- **Hoje o repositório não tem `ios.privacyManifests`.** Trabalho de código.
+- O `app.json` já tem `ios.privacyManifests` (APIs de motivo obrigatório e dados coletados, sem rastreamento). Conferir o relatório após o primeiro upload.
 
 ## 6. Textos de permissão (purpose strings)
 
@@ -155,7 +155,7 @@ Fonte: [Especificações de capturas de tela](https://developer.apple.com/help/a
 | Item | Especificação |
 |---|---|
 | iPhone 6.9" (principal) | 1320x2868 (ou 1290x2796) px, retrato; 1 a 10 imagens, PNG/JPEG. As demais telas escalam a partir desta |
-| iPad 13" (necessário, pois `supportsTablet: true`) | 2064x2752 (ou 2048x2732) px. **Dica:** se não for entregar boa UI de tablet, setar `ios.supportsTablet: false` e evitar essas capturas |
+| iPad 13" (necessário enquanto `supportsTablet: true`; o Pedro disse que iPad é secundário) | 2064x2752 (ou 2048x2732) px. **Dica:** se não for entregar boa UI de tablet, setar `ios.supportsTablet: false` e evitar essas capturas |
 | Nome (30), subtítulo (30), texto promocional (170), descrição (4000), palavras-chave (100) | PT-BR |
 | Categoria | Saúde e fitness (principal) |
 | URL de suporte | obrigatória |
@@ -169,7 +169,7 @@ Fonte: [Complying with Encryption Export Regulations](https://developer.apple.co
 
 - O app usa só HTTPS/TLS padrão do sistema (isento). Declarar no `app.json`
   `expo.ios.infoPlist.ITSAppUsesNonExemptEncryption: false` para pular o
-  questionário a cada build. **Hoje não está no `app.json`.** Se algum SDK
+  questionário a cada build. **Já está no `app.json`.** Se algum SDK
   trouxer criptografia própria não isenta, rever (a verificar).
 - Para distribuição no Brasil e outros países, a isenção padrão cobre uso de
   criptografia só para autenticação/HTTPS.

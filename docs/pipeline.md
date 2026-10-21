@@ -4,6 +4,17 @@ CI/CD com **EAS Workflows** (arquivos em `.eas/workflows/`). Tudo roda na
 nuvem da Expo; não há GitHub Actions. Pré-requisito: o repositório GitHub
 conectado ao projeto `@paceless/paceless` no painel da Expo.
 
+## Situação em 21/10/2026
+
+- Organização Expo `paceless`, projeto `@paceless/paceless`.
+- Primeiro build Android de produção (AAB, versionCode 2) em andamento no EAS;
+  ainda não enviado ao Play. `submit.production.android` usa a trilha `internal`
+  como rascunho.
+- Apple: conta ainda não criada (Pedro decidindo PF ou PJ), então todo o fluxo iOS
+  abaixo segue bloqueado. `ascAppId` e `appleTeamId` seguem com placeholders.
+- Variáveis do EAS: chaves do RevenueCat (teste em development e preview, `goog_`
+  em production) e Client IDs do Google.
+
 ## Perfis do `eas.json`
 
 | Perfil | Android | iOS | Canal | Precisa de conta Apple? |

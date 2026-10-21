@@ -93,3 +93,5 @@ RLS por `user_id` em todas, com `ON DELETE CASCADE` (regra de [decisoes.md](../d
 3. Aceitamos Android primeiro?
 4. O plano adaptativo vai usar IA com esses dados? Isso impede o uso da API Strava.
 5. Existe contato na Garmin para o programa de desenvolvedores?
+
+**Resposta do Pedro (20/10/2026):** os relógios a suportar são Garmin, Apple Watch, Samsung, Coros e Polar. As demais perguntas seguem abertas.

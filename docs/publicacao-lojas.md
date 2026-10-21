@@ -5,6 +5,9 @@ revisão) não dependem do código. Fase no [roadmap.md](./roadmap.md).
 
 Status: `[ ]` não começou · `[~]` em andamento · `[x]` pronto
 
+Situação em 21/10/2026: app criado no Play Console; primeiro AAB de produção em
+build no EAS, ainda não enviado; Apple sem conta.
+
 Detalhamento dos requisitos (pesquisa S1, 19/10/2026):
 
 - [lojas/google-play.md](./lojas/google-play.md): conta, teste fechado, API alvo, Data safety, exclusão de conta, permissões, assinaturas, ficha.
@@ -16,38 +19,40 @@ Detalhamento dos requisitos (pesquisa S1, 19/10/2026):
 
 | Item | Status | Observação |
 |---|---|---|
-| Conta de desenvolvedor | `[ ]` | |
-| Teste fechado com 12 testers | `[ ]` | Obrigatório para contas pessoais novas. Pedro tem amigos corredores para isso |
-| Exclusão de conta dentro do app | `[ ]` em andamento (trilha H) | Obrigatório |
-| Política de privacidade (link) | `[ ]` em andamento (trilha I) | Obrigatório |
-| Contato de suporte | `[ ]` em andamento (trilha I) | Obrigatório |
+| Conta de desenvolvedor | `[x]` | Organização MXPBR, verificada. Play App Signing ativo |
+| App criado no Play Console | `[x]` | ID `4972516548397125859`, `com.paceless.app`, pt-BR, gratuito |
+| Teste fechado com 12 testers | n/a | Só vale para conta pessoal; a conta é de organização |
+| Exclusão de conta dentro do app | `[x]` | Edge Function `delete-account` v2 publicada |
+| Política de privacidade (link) | `[~]` | Texto dentro do app pronto; falta a URL pública (rascunho a revisar com advogado) |
+| Contato de suporte | `[~]` | Variável `EXPO_PUBLIC_SUPPORT_EMAIL`; falta definir o e-mail |
 | Ficha da loja (textos, ícone, capturas de tela) | `[ ]` | |
-| Declarações de dados/segurança do app | `[ ]` | |
+| Declarações de dados/segurança do app ("Conteúdo do app") | `[ ]` | Pendente; lista em [pendencias-pedro.md](./pendencias-pedro.md) |
+| Primeiro AAB enviado | `[~]` | Build de produção (versionCode 2) em andamento no EAS |
 
 ## Apple App Store
 
 | Item | Status | Observação |
 |---|---|---|
-| Apple Developer Program (taxa anual) | `[ ]` | |
-| Exclusão de conta dentro do app | `[ ]` em andamento (trilha H) | Obrigatório |
-| Política de privacidade (link) | `[ ]` em andamento (trilha I) | Obrigatório |
-| URL de suporte | `[ ]` em andamento (trilha I) | Obrigatório |
-| Sign in with Apple | `[ ]` | Obrigatório se houver outro login social (Google) |
+| Apple Developer Program (taxa anual) | `[ ]` | Conta não criada; Pedro decidindo PF ou PJ |
+| Exclusão de conta dentro do app | `[x]` | Obrigatório |
+| Política de privacidade (link) | `[~]` | Falta a URL pública |
+| URL de suporte | `[ ]` | Obrigatório |
+| Sign in with Apple | `[~]` | Código pronto; falta a capability no App ID (depende da conta) |
 | Ficha da loja (textos, ícone, capturas de tela) | `[ ]` | |
 | Privacidade do app (App Privacy) | `[ ]` | |
 
 ## Termos, privacidade e suporte
 
-Exigidos pelas duas lojas. Em andamento na trilha I.
+Exigidos pelas duas lojas. Os textos já estão dentro do app (`content/legal/`); faltam a revisão jurídica, os placeholders e as URLs públicas.
 
 ## EAS (Expo Application Services)
 
 Publicação via EAS. Passos em alto nível:
 
-1. Criar/entrar na conta Expo e instalar o `eas-cli` (ferramenta nova: aprovar antes).
-2. `eas build:configure` para gerar o `eas.json`.
-3. Definir perfis de build no `eas.json`: `development` (dev build; necessário
-   para RevenueCat), `preview` (distribuição interna/testers) e `production`.
+1. Conta Expo: organização `paceless`, projeto `@paceless/paceless` (feito).
+2. `eas.json` configurado (feito).
+3. Perfis de build no `eas.json`: `development` (dev build; necessário
+   para RevenueCat), `preview` (distribuição interna/testers) e `production` (feito).
 4. Cadastrar no EAS as variáveis de ambiente de cada perfil (as do `.env`,
    ver CLAUDE.md). Nunca versionar chaves.
 5. Build: `eas build --platform android|ios --profile <perfil>`.
@@ -55,8 +60,7 @@ Publicação via EAS. Passos em alto nível:
    (service account do Play, conta Apple) ficam com quem é dono das contas e
    são guardadas no EAS, nunca no repositório.
 
-Já definido no `app.json`: `ios.bundleIdentifier = com.paceless.app`.
-Identificadores já no `app.json`: `com.paceless.app` (Android e iOS). Versionamento: a confirmar.
+Identificadores no `app.json`: `com.paceless.app` (Android e iOS). Versionamento: ver "O que foi implementado".
 
 ## O que foi implementado (trilha S2)
 

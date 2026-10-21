@@ -2,7 +2,22 @@
 
 Login nativo via `signInWithIdToken` do Supabase. O app pega o token no
 aparelho (Google Sign-In / Sign in with Apple) e entrega ao Supabase, sem
-navegador. Sem as variáveis abaixo o app continua funcionando: o botão do Google
+navegador.
+
+## Situação em 21/10/2026
+
+- Google Cloud (projeto `paceless`): clientes OAuth Web, Android de
+  desenvolvimento, iOS e Android (Play, com o SHA-1 da chave de assinatura do
+  Google Play `D5:98:4A:5B:B2:B8:2C:5F:FC:C9:5E:EE:FE:A1:FE:89:F4:59:74:85`) criados.
+  A tela OAuth segue em **modo de teste**; publicar antes do lançamento.
+- Supabase: provider Google ativo com os 4 Client IDs.
+- Variáveis `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` e `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
+  no `.env` e no EAS.
+- Apple: sem conta Apple Developer ainda (Pedro decidindo PF ou PJ). O código e o
+  `usesAppleSignIn` estão prontos; a capability no App ID e o provider no Supabase
+  dependem da conta.
+
+Sem as variáveis abaixo o app continua funcionando: o botão do Google
 mostra "Login social indisponível no momento." e o da Apple só aparece no iOS.
 
 ## 1. Google Cloud Console
@@ -12,7 +27,7 @@ mostra "Login social indisponível no momento." e o da Apple só aparece no iOS.
    e-mail de suporte, escopos `email`, `profile`, `openid`). Publique para
    produção quando for lançar.
 3. APIs e serviços > Credenciais > Criar credenciais > ID do cliente OAuth. Crie
-   três clientes:
+   os clientes (Web, iOS e um Android por certificado):
    - **Web application**: sem URIs. Guarde o Client ID e o Client Secret.
    - **iOS**: Bundle ID `com.paceless.app`. Guarde o Client ID.
    - **Android**: Package name `com.paceless.app` e o SHA-1 do certificado

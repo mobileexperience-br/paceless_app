@@ -13,10 +13,10 @@ o que não deu para confirmar está como **a verificar**. Visão geral e status 
 | Teste fechado (contas pessoais criadas após 13/11/2023) | Mínimo de **12 testers com opt-in contínuo por 14 dias** antes de pedir acesso à produção. Contas de organização não precisam. Nenhuma mudança em 2026 encontrada | [Requisitos de teste](https://support.google.com/googleplay/android-developer/answer/14151465) |
 | Verificação de identidade | Obrigatória (documento; organização: D-U-N-S) | [Ajuda](https://support.google.com/googleplay/android-developer/answer/10841920) (a verificar) |
 
-Decisão para o Pedro: conta de **organização** (se houver CNPJ + D-U-N-S) evita
-os 12 testers x 14 dias e é mais adequada para app com assinatura. Se for
-pessoal, comece o teste fechado cedo e mantenha os 12 testers ativos (cair
-abaixo disso pode reiniciar a contagem, segundo fontes secundárias).
+Decisão tomada: conta de **organização** (MXPBR, verificada em 21/10/2026),
+que dispensa os 12 testers x 14 dias. Se fosse conta pessoal, o teste fechado
+teria de começar cedo e manter os 12 testers ativos (cair abaixo disso pode
+reiniciar a contagem, segundo fontes secundárias).
 
 ## 2. Nível de API alvo (target API)
 
@@ -25,7 +25,7 @@ abaixo disso pode reiniciar a contagem, segundo fontes secundárias).
   Console. A API 37 é a próxima.
   [Fonte](https://developer.android.com/google/play/requirements/target-sdk).
 - Expo SDK 58: conferir no manifesto gerado que `targetSdkVersion` >= 36; se
-  não, fixar via `expo-build-properties` (a verificar no primeiro build).
+  não, fixar via `expo-build-properties` (a verificar no primeiro build, em andamento).
 - Android App Bundle (`.aab`) é obrigatório para apps novos. O perfil
   `production` do `eas.json` gera AAB por padrão (`development` e `preview`
   geram APK, só para teste).
@@ -112,10 +112,9 @@ Fonte: [Política de pagamentos do Play](https://support.google.com/googleplay/a
 - Cancelamento: Play Store > Pagamentos e assinaturas > Assinaturas. Citar no
   paywall ou nos termos.
 
-Paywall hoje: mostra título, preço (vindo da loja) e "Restaurar compras", mas
-**sem texto de renovação automática nem links de Termos/Privacidade** (o
-`LegalNotice` só aparece no cadastro). Pendência de código no
-[checklist](./checklist.md).
+Paywall hoje: mostra título, preço (vindo da loja), "Restaurar compras", o
+bloco `SubscriptionDisclosure` (renovação automática, como cancelar) e links
+de Termos e Privacidade. Feito.
 
 ## 7. Declarações do App content
 

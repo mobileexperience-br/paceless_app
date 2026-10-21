@@ -7,9 +7,10 @@ e do ESLint type-aware do app; zero comentário e limite de 200 linhas valem.
 
 | Função | O que faz |
 | --- | --- |
-| `delete-account` | Valida o JWT de quem chamou e apaga a conta com a service role. |
+| `delete-account` | Valida o JWT de quem chamou, apaga a pasta de avatar no Storage e apaga a conta com a service role. **Publicada (v2)** em 21/10/2026. |
+| `revenuecat-webhook` | Recebe eventos do RevenueCat e grava `public.subscriptions`. Sem verificação de JWT. **Escrita, não publicada** (faltam `REVENUECAT_WEBHOOK_AUTH` e `REVENUECAT_SECRET_KEY`). Ver [assinaturas.md](./assinaturas.md). |
 
-## Deploy (Pedro)
+## Deploy
 
 Precisa da [Supabase CLI](https://supabase.com/docs/guides/cli) instalada.
 
@@ -17,6 +18,7 @@ Precisa da [Supabase CLI](https://supabase.com/docs/guides/cli) instalada.
 supabase login
 supabase link --project-ref <ref-do-projeto>
 supabase functions deploy delete-account
+supabase functions deploy revenuecat-webhook --no-verify-jwt
 ```
 
 O `<ref-do-projeto>` aparece em Project Settings > General no dashboard do

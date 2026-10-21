@@ -1,6 +1,9 @@
 # Sprint 02 — funcionalidades restantes (exceto plano com IA)
 
 Plano de corrida gerado por IA fica para outra implementação.
+
+**Status (21/10/2026):** F, K, J, L, P e R entraram na `main`. P (assinatura) depende
+do webhook, que está escrito mas não publicado.
 Cada trilha roda num worktree com um agente Sonnet; o agente principal revisa e integra.
 
 | Trilha | Escopo | Libs novas |
@@ -12,5 +15,5 @@ Cada trilha roda num worktree com um agente Sonnet; o agente principal revisa e 
 | P — Assinatura | RevenueCat: ofertas reais no paywall, compra, restaurar, status premium | `react-native-purchases` |
 | R — Pesquisa | Propostas para relógios, notificações, compartilhar corrida, gamificação e musculação | — |
 
-Migrations ficam em `supabase/migrations/` e só são aplicadas no projeto remoto
-depois de revisadas. Libs nativas novas exigem gerar um novo APK de desenvolvimento.
+Migrations ficam em `supabase/migrations/` (todas já aplicadas no projeto remoto em 21/10/2026).
+Libs nativas novas exigem gerar um novo APK de desenvolvimento.

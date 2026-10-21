@@ -86,3 +86,5 @@ Cálculo no **servidor** (view ou Edge Function ao salvar atividade), pois o app
 3. Haverá algum elemento social (opt-in) ou fica 100% individual?
 4. Medalhas entram no MVP ou só a meta semanal?
 5. Quem escreve e revisa o tom das mensagens?
+
+**Resposta do Pedro (20/10/2026):** gamificação aprovada, com meta semanal sem sequência e conquistas de 1, 3, 5, 7 e 10 km. Elemento social, medalhas no MVP e o tom das mensagens seguem abertos. O schema já existe (`weekly_goals`, `achievements`, `user_achievements`), mas ainda não há tela.

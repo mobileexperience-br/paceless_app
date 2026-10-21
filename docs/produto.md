@@ -1,10 +1,11 @@
 # Produto
 
-Visão do produto, a partir da reunião de 19/10/2026 (Jonatas + Pedro).
+Visão do produto, a partir da reunião de 19/10/2026 (Jonatas + Pedro) e das
+respostas do Pedro de 20/10/2026 ([pendencias-pedro.md](./pendencias-pedro.md)).
 Onde a nota não confirma, está marcado **a confirmar**.
 
 Legenda de status: **Hoje** (existe no app) · **Planejado** · **Por último**.
-"Hoje" aqui significa só a camada visual; ver [estado-atual.md](./estado-atual.md).
+Detalhes do que existe em [estado-atual.md](./estado-atual.md).
 
 ## Visão
 
@@ -36,16 +37,20 @@ Strava e similares dão experiência genérica; o Paceless se diferencia pela
 
 | Funcionalidade | Descrição | Status |
 |---|---|---|
-| Onboarding | Perguntas iniciais ao usuário | Hoje (só visual; respostas não persistem) |
-| Paywall e assinatura | Assinatura via RevenueCat | Hoje (só visual) |
-| Plano, semana e treino | Telas do plano de corrida | Hoje (só visual, sem dados) |
-| Atividades | Histórico de corridas | Hoje (estado vazio) |
+| Onboarding | Perguntas iniciais ao usuário, salvas no aparelho e migradas para o perfil após o cadastro | Hoje |
+| Login | E-mail e senha, Google e Apple | Hoje |
+| Paywall e assinatura | Assinatura via RevenueCat. Preço definido: R$ 267/ano e R$ 37/mês. Freemium de 15 ou 30 dias (duração a definir). Forma de pagamento (lojas × Hotmart) em discussão: [pagamento-hotmart.md](./pagamento-hotmart.md), fora desta branch | Hoje (ofertas reais; webhook ainda não publicado) |
+| Corrida com GPS | Rastreio em segundo plano, resumo, parciais, histórico em Atividades | Hoje |
+| Plano, semana e treino | Telas do plano de corrida | Hoje (estado vazio, sem plano real) |
+| Dias de treino | Quantidade de dias com combinações predefinidas (ex.: ter/qui/sáb ou qua/sex/dom) | Em desenvolvimento |
 | Jornada 5 → 7 → 10 km | Progressão segura, sem lesão | Planejado |
 | Plano adaptativo | Todo domingo à noite a IA gera o plano da semana seguinte, com base nas métricas e resultados enviados pelo corredor (a partir de relógio). Agenda respeita os dias disponíveis (ex.: 2 dias/semana → quarta e sábado) | Planejado |
 | Trilha para avançados | Manter recorrência (assinatura) | Planejado |
-| Gamificação e motivação | Escopo a definir | Planejado (a confirmar) |
-| Compartilhamento | Compartilhar métricas da corrida nas redes, com opções de layout (estilo Strava): com foto de fundo, sem foto, transparente; escolha de quais métricas exibir | Planejado |
-| Integração com relógio | Origem das métricas do plano adaptativo. Quais relógios/plataformas: a confirmar | Planejado |
+| Gamificação e motivação | Aprovada pelo Pedro: meta semanal sem sequência e conquistas de 1, 3, 5, 7 e 10 km ([pesquisa](./pesquisa/gamificacao.md)) | Planejado |
+| Compartilhamento | Compartilhar métricas da corrida nas redes, com opções de layout (estilo Strava): com foto de fundo, sem foto, transparente; escolha de quais métricas exibir | Planejado (Stories: muito importante, mas não pode travar a primeira versão) |
+| Integração com relógio | Origem das métricas do plano adaptativo. Relógios: Garmin, Apple Watch, Samsung, Coros e Polar | Planejado |
+| Musculação | Conteúdo de educador físico com apoio de IA; o Pedro vai buscar um parceiro | Planejado |
+| Área admin | Web separada, em outro domínio (não no app), por segurança e LGPD | Planejado |
 | Nutrição com IA | Anamnese (diabetes, intolerância à lactose etc.) e proposta de dieta voltada à corrida. Existe aba visual, vazia | **Por último** |
 
 ## Concorrentes
@@ -54,7 +59,7 @@ Strava e similares dão experiência genérica; o Paceless se diferencia pela
 |---|---|
 | Strava | Experiência genérica |
 | Runna (Garmin) | Experiência genérica |
-| "Vila" | Nome transcrito, **a confirmar** |
+| Zyla | Concorrente indicado pelo Pedro em 20/10 (provavelmente o "Vila" transcrito nas notas da reunião; a confirmar) |
 
 ## Sinais de mercado
 
@@ -68,14 +73,20 @@ Strava e similares dão experiência genérica; o Paceless se diferencia pela
 - Revisão crítica externa com especialista (Igor): a agendar.
 - Estudo de mercado: pendente.
 
+## Plataformas
+
+Celular é a prioridade. iPad pode ter, mas é secundário. Troca de plano é
+feita pelo usuário no app, com a cobrança gerida pela loja; intervenção manual
+só pelo suporte.
+
 ## Perguntas em aberto
 
 | Pergunta | Status |
 |---|---|
-| Nome do terceiro concorrente ("Vila") | a confirmar |
-| Stack: as notas do Gemini dizem "adoção de Flutter", mas a transcrição não sustenta. O time segue com Expo | a confirmar |
-| Escopo da gamificação | a confirmar |
-| Relógios/plataformas suportados | a confirmar |
+| Stack: as notas do Gemini dizem "adoção de Flutter", mas a transcrição não sustenta. O Pedro não respondeu explicitamente; o time segue com Expo | a confirmar |
+| Duração do freemium (15 ou 30 dias) | a definir |
+| Pagamento: lojas (RevenueCat) × Hotmart | em discussão |
+| Apple Developer: conta pessoa física ou jurídica | Pedro decidindo |
 | Documento de requisitos detalhado | Pendente com o Pedro |
 | Notas de desenvolvimento do Pedro | Pendente com o Pedro |
 | Estudo de mercado e revisão com o Igor | Pendente |

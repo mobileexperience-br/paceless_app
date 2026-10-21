@@ -102,3 +102,5 @@ Quase nenhum. Nada precisa ir ao servidor.
 3. Mostrar rota? Com início/fim ocultos por padrão?
 4. A marca "Paceless" aparece sempre (viralidade) ou o usuário pode tirar?
 5. Corrida sem foto: usar um fundo de marca (verde `primary`) como quarta opção?
+
+**Resposta do Pedro (20/10/2026):** Stories do Instagram é muito importante, mas não pode travar a primeira versão. As demais perguntas seguem abertas.

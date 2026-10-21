@@ -34,13 +34,14 @@ As regras estão no [CLAUDE.md](../CLAUDE.md). As que mais pegam em review:
 ## Onde as coisas moram
 
 - Tela → `app/`. Tela não fala com Supabase direto: usa um hook de `hooks/`.
-- Config de cliente (Supabase, RevenueCat) → `lib/`.
+- Config de cliente (Supabase, RevenueCat) → `lib/`. Estado global (sessão, tema, preferências, diálogos) → `providers/`.
 - Componente reaproveitável → `components/` (e exporta em `components/index.ts`).
 
 ## Pontos para alinhar com o Pedro
 
 - Ele concorda com a ordem do [roadmap](./roadmap.md)?
-- Quem pega qual fase? Dá pra paralelizar Fase 0 com Fase 1.
-- Onde fica o projeto Supabase e quem tem acesso?
-- Conta RevenueCat / App Store / Play já existe?
 - `public/GG Simulator.html` — para que serve?
+
+Já resolvidos: o projeto Supabase é `twfqvvfpnspbdaytrerm` e os convites do
+Supabase, Google Cloud, Play Console, RevenueCat e Expo foram aceitos; as contas
+RevenueCat e Play existem (a Apple ainda não). Ver [pendencias-pedro.md](./pendencias-pedro.md).

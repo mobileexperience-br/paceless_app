@@ -38,7 +38,7 @@ Os valores escuros de `background`, `surface`, `border` e `textSecondary` são o
 
 `ThemeProvider` resolve o esquema: `system` segue `useColorScheme()`; `light` e `dark` forçam e também chamam `Appearance.setColorScheme` para que componentes nativos acompanhem. `ThemeScope scheme="dark"` força o escuro numa subárvore: as telas de treino e resumo são sempre escuras, e `Dialog` com `tone="dark"` também. Sem `tone`, o diálogo segue o tema.
 
-`app.json` usa `userInterfaceStyle: "automatic"`. No Android, aplicar a mudança nativa pode exigir `expo-system-ui`.
+`app.json` usa `userInterfaceStyle: "automatic"`. O dev build inclui `expo-system-ui`, que o Android precisa para aplicar a mudança nativa.
 ## Raio (`theme/radius.ts`)
 
 `md` botões, inputs, tiles de acesso rápido · `lg` cards · `xl` card hero do plano.
@@ -60,7 +60,7 @@ discreta. `fab` **não vem do mockup** — só no botão de Atividades da tab ba
 - **Musculação:** é empurrada a partir do Acesso rápido e mantém a tab bar,
   sem virar aba.
 - **Onboarding e Paywall:** sem referência visual; montados a partir dos
-  tokens. Os planos do paywall virão do RevenueCat.
+  tokens. Os planos do paywall vêm do RevenueCat.
 - **Login:** mesma anatomia do cadastro, sem campo de nome e sem indicador
   de passo.
 

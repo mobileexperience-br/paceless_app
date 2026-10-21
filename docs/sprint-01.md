@@ -1,5 +1,9 @@
 # Sprint 01 — telas e funcionalidades sem regra de negócio
 
+**Status:** concluída. As trilhas A a E entraram na `main` (sessão e guard, telas do
+Perfil, faxina, treino local e onboarding persistido). O texto abaixo é o plano
+original, mantido como registro.
+
 Objetivo: destravar o que **não depende** de discussão de produto (plano de
 corrida, nutrição, limites free/premium ficam para depois). Cada trilha roda em
 paralelo, num **git worktree** próprio, com um agente Sonnet, e entra na `main`

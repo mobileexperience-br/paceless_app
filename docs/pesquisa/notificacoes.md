@@ -85,3 +85,5 @@ Lembrete local não precisa de tabela, mas guardar a preferência no banco permi
 2. Qual horário padrão? Lembrar também na véspera?
 3. Treino perdido: silêncio ou uma mensagem acolhedora uma única vez?
 4. O push "plano da semana pronto" entra junto do plano adaptativo?
+
+**Resposta do Pedro (20/10/2026):** os dias de treino serão por quantidade de dias com combinações predefinidas (ex.: ter/qui/sáb ou qua/sex/dom). A implementação está em andamento. As demais perguntas seguem abertas.
