@@ -13,6 +13,7 @@ import {
 import { PlanSelector } from '@/components/paywall/PlanSelector';
 import { useOfferings, type PlanId } from '@/hooks/useOfferings';
 import { usePremium, type PurchaseResult } from '@/hooks/usePremium';
+import { subscriptionsUnavailableMessage } from '@/lib/platform/subscriptionsUnavailableMessage';
 import { createStyles, layout, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
@@ -84,7 +85,7 @@ export default function PaywallScreen(): ReactElement {
 
         {status === 'unavailable' ? (
           <Text variant="body" color={colors.textSecondary}>
-            Assinaturas indisponíveis no momento.
+            {subscriptionsUnavailableMessage}
           </Text>
         ) : null}
 

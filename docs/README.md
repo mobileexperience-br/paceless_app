@@ -16,6 +16,7 @@ Planejamento e acordos do projeto. O código diz *como* está; esta pasta diz
 | [lojas/](./lojas/checklist.md) | Requisitos de publicação: [Google Play](./lojas/google-play.md), [App Store](./lojas/app-store.md) e [checklist consolidado](./lojas/checklist.md) |
 | [legal/](./legal/politica-de-privacidade.md) | Rascunhos (revisar com advogado): [política de privacidade](./legal/politica-de-privacidade.md) e [termos de uso](./legal/termos-de-uso.md) |
 | [pesquisa/](./pesquisa/README.md) | Propostas da Trilha R: relógios e saúde, notificações, compartilhar corrida, gamificação e musculação |
+| [ambiente-web.md](./ambiente-web.md) | Rodar o app no navegador para desenvolvimento: o que funciona e o que não |
 | [colaboracao.md](./colaboracao.md) | Como a gente trabalha junto: branches, PR, review, padrões de código |
 | [design-system.md](./design-system.md) | Origem e uso dos tokens, e o que foi feito fora do mockup |
 | [pendencias-pedro.md](./pendencias-pedro.md) | O que o Pedro já respondeu e o que falta |

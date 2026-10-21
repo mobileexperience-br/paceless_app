@@ -1,6 +1,7 @@
 import { createContext, useEffect, useMemo, type ReactElement, type ReactNode } from 'react';
-import { Appearance, useColorScheme } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { usePreferences } from '@/hooks/usePreferences';
+import { setAppColorScheme } from '@/lib/platform/appColorScheme';
 import { palettes, type ColorScheme, type Palette } from '@/theme';
 
 export interface ThemeValue {
@@ -35,7 +36,7 @@ export function ThemeProvider({ children }: { children: ReactNode }): ReactEleme
   const system = useColorScheme();
 
   useEffect(() => {
-    Appearance.setColorScheme(theme === 'system' ? 'unspecified' : theme);
+    setAppColorScheme(theme);
   }, [theme]);
 
   const scheme: ColorScheme =
