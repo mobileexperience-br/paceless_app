@@ -120,3 +120,20 @@ Regras:
 - O overlay usa `Modal`, então bloqueia toques e o botão voltar do Android
   durante a troca do token.
 - Haptics não foram adicionados: `expo-haptics` não está instalado.
+
+## Recuperação de senha (e-mail e senha)
+
+A tela `forgot-password` (aberta por "Esqueci minha senha" no login) chama
+`supabase.auth.resetPasswordForEmail` via `useSession().resetPassword` e mostra
+"Enviamos um link para ...". O Supabase responde com sucesso mesmo para e-mails
+não cadastrados, então a tela não revela se a conta existe.
+
+Pendência de configuração no Supabase (não feita pelo código):
+
+- Em Authentication > URL Configuration, definir o Site URL e adicionar em
+  Redirect URLs o destino do link de recuperação (por exemplo o esquema do app,
+  `paceless://reset-password`).
+- Hoje o app não tem a tela que recebe o link e define a nova senha, e a chamada
+  não envia `redirectTo`. Sem a Redirect URL cadastrada, o link abre o Site URL
+  padrão do projeto. A tela de nova senha (`updateUser({ password })`) fica para
+  uma próxima fase.

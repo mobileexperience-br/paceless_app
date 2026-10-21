@@ -1,20 +1,23 @@
 import { useCallback, useEffect, useState, type ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CircleAlert, MailCheck } from 'lucide-react-native';
+import { MailCheck } from 'lucide-react-native';
 import { Button, IconBadge, Screen, ScreenHeader, Text } from '@/components';
+import { InlineError } from '@/components/InlineError';
 import { supabase } from '@/lib/supabase';
 import { layout, spacing } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 
 const COOLDOWN_SECONDS = 60;
 const RESEND_ERROR = 'Não foi possível reenviar o e-mail. Tente novamente.';
+const RESEND_ANNOUNCEMENT = `E-mail reenviado. Você poderá reenviar novamente em ${COOLDOWN_SECONDS} segundos.`;
 
 export default function VerifyEmailScreen(): ReactElement {
   const { colors } = useTheme();
   const router = useRouter();
-  const params = useLocalSearchParams<{ email?: string }>();
+  const params = useLocalSearchParams<{ email?: string; name?: string }>();
   const email = params.email ?? '';
+  const name = params.name ?? '';
   const [cooldown, setCooldown] = useState(COOLDOWN_SECONDS);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +44,7 @@ export default function VerifyEmailScreen(): ReactElement {
       return;
     }
     setCooldown(COOLDOWN_SECONDS);
+    AccessibilityInfo.announceForAccessibility(RESEND_ANNOUNCEMENT);
   }, [email]);
 
   const label = cooldown > 0 ? `Reenviar e-mail (${cooldown}s)` : 'Reenviar e-mail';
@@ -61,20 +65,18 @@ export default function VerifyEmailScreen(): ReactElement {
           </Text>
         </View>
 
-        {error ? (
-          <View style={styles.error}>
-            <CircleAlert size={16} color={colors.danger} strokeWidth={1.75} />
-            <Text variant="caption" color={colors.danger} style={styles.errorText}>
-              {error}
-            </Text>
-          </View>
-        ) : null}
+        <InlineError message={error} />
 
         <View style={styles.actions}>
           <Button
             label={label}
             disabled={cooldown > 0 || sending}
             onPress={() => { void resend(); }}
+          />
+          <Button
+            label="Trocar e-mail"
+            variant="text"
+            onPress={() => { router.replace({ pathname: '/signup', params: { name, email } }); }}
           />
           <Button
             label="Voltar para o login"
@@ -95,14 +97,6 @@ const styles = StyleSheet.create({
   },
   intro: {
     gap: spacing.md,
-  },
-  error: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  errorText: {
-    flex: 1,
   },
   actions: {
     gap: spacing.md,

@@ -1,7 +1,6 @@
-import { useState, type ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { CircleAlert } from 'lucide-react-native';
+import { useRef, useState, type ReactElement } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Button,
   Input,
@@ -11,6 +10,9 @@ import {
   SocialButton,
   Text,
 } from '@/components';
+import { FooterLink } from '@/components/FooterLink';
+import { InlineError } from '@/components/InlineError';
+import type { InputRef } from '@/components/Input';
 import { LegalNotice } from '@/components/LegalNotice';
 import { useSession } from '@/hooks/useSession';
 import { useSocialSignIn } from '@/hooks/useSocialSignIn';
@@ -22,9 +24,12 @@ export default function SignUpScreen(): ReactElement {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
+  const params = useLocalSearchParams<{ name?: string; email?: string }>();
   const { signUp } = useSession();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const emailRef = useRef<InputRef>(null);
+  const passwordRef = useRef<InputRef>(null);
+  const [name, setName] = useState(params.name ?? '');
+  const [email, setEmail] = useState(params.email ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -45,7 +50,10 @@ export default function SignUpScreen(): ReactElement {
       return;
     }
     if (result.needsConfirmation) {
-      router.replace({ pathname: '/verify-email', params: { email: email.trim() } });
+      router.replace({
+        pathname: '/verify-email',
+        params: { email: email.trim(), name: name.trim() },
+      });
       return;
     }
     router.replace('/(app)');
@@ -53,48 +61,57 @@ export default function SignUpScreen(): ReactElement {
 
   return (
     <Screen flush scroll>
-      <ScreenHeader showBack centerLabel="1 / 4" />
+      <ScreenHeader showBack />
 
       <View style={styles.body}>
         <View style={styles.intro}>
           <Text variant="title1">Vamos criar sua conta</Text>
           <Text variant="caption" color={colors.textSecondary}>
-            É rápido e fácil.
+            Leva menos de um minuto.
           </Text>
         </View>
 
         <View style={styles.form}>
           <Input
-            placeholder="Nome completo"
+            label="Nome completo"
             autoComplete="name"
+            textContentType="name"
+            autoCapitalize="words"
+            returnKeyType="next"
+            submitBehavior="submit"
             value={name}
             onChangeText={setName}
+            onSubmitEditing={() => { emailRef.current?.focus(); }}
           />
           <Input
-            placeholder="E-mail"
+            label="E-mail"
+            inputRef={emailRef}
             autoCapitalize="none"
             autoComplete="email"
+            textContentType="emailAddress"
             keyboardType="email-address"
+            returnKeyType="next"
+            submitBehavior="submit"
             value={email}
             onChangeText={setEmail}
+            onSubmitEditing={() => { passwordRef.current?.focus(); }}
           />
           <Input
-            placeholder="Senha"
+            label="Senha"
+            helper="Mínimo de 6 caracteres"
+            inputRef={passwordRef}
+            autoCapitalize="none"
             autoComplete="new-password"
+            textContentType="newPassword"
+            returnKeyType="go"
             secure
             value={password}
             onChangeText={setPassword}
+            onSubmitEditing={() => { void submit(); }}
           />
         </View>
 
-        {error ? (
-          <View style={styles.error}>
-            <CircleAlert size={16} color={colors.danger} strokeWidth={1.75} />
-            <Text variant="caption" color={colors.danger} style={styles.errorText}>
-              {error}
-            </Text>
-          </View>
-        ) : null}
+        <InlineError message={error} />
 
         <Button
           label={submitting ? 'Criando conta...' : 'Criar conta'}
@@ -129,19 +146,12 @@ export default function SignUpScreen(): ReactElement {
           />
         </View>
 
-        <Pressable
-          accessibilityRole="button"
+        <FooterLink
+          prompt="Já tem uma conta?"
+          action="Entrar"
           disabled={social.busy}
           onPress={() => { router.push('/login'); }}
-          style={styles.footer}
-        >
-          <Text variant="caption" color={colors.textSecondary}>
-            Já tem uma conta?{' '}
-          </Text>
-          <Text variant="captionStrong" color={colors.primaryDeep}>
-            Entrar
-          </Text>
-        </Pressable>
+        />
       </View>
       <SignInOverlay visible={social.phase === 'exchanging'} />
     </Screen>
@@ -161,14 +171,6 @@ const makeStyles = createStyles((colors) =>
     form: {
       gap: spacing.md,
     },
-    error: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.sm,
-    },
-    errorText: {
-      flex: 1,
-    },
     divider: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -181,11 +183,6 @@ const makeStyles = createStyles((colors) =>
     },
     social: {
       gap: spacing.md,
-    },
-    footer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
     },
   }),
 );

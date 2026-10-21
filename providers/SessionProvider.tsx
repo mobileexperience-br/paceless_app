@@ -25,6 +25,7 @@ export interface SessionValue {
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (name: string, email: string, password: string) => Promise<SignUpResult>;
   signOut: () => Promise<AuthResult>;
+  resetPassword: (email: string) => Promise<AuthResult>;
 }
 
 const notConfigured: AuthResult = {
@@ -44,6 +45,15 @@ function translateError(message: string): string {
   }
   if (text.includes('network') || text.includes('fetch')) {
     return 'Sem conexão. Tente novamente.';
+  }
+  if (text.includes('rate limit') || text.includes('too many') || text.includes('security purposes')) {
+    return 'Muitas tentativas. Aguarde um instante e tente novamente.';
+  }
+  if (text.includes('password should be')) {
+    return 'A senha deve ter pelo menos 6 caracteres.';
+  }
+  if (text.includes('invalid email') || text.includes('unable to validate email')) {
+    return 'Informe um e-mail válido.';
   }
   return 'Não foi possível concluir. Tente novamente.';
 }
@@ -116,9 +126,25 @@ export function SessionProvider({ children }: { children: ReactNode }): ReactEle
     return toResult(error);
   }, []);
 
+  const resetPassword = useCallback(async (email: string): Promise<AuthResult> => {
+    if (!supabase) {
+      return notConfigured;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    return toResult(error);
+  }, []);
+
   const value = useMemo<SessionValue>(
-    () => ({ session, user: session?.user ?? null, loading, signIn, signUp, signOut }),
-    [session, loading, signIn, signUp, signOut],
+    () => ({
+      session,
+      user: session?.user ?? null,
+      loading,
+      signIn,
+      signUp,
+      signOut,
+      resetPassword,
+    }),
+    [session, loading, signIn, signUp, signOut, resetPassword],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

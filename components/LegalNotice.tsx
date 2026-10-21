@@ -1,28 +1,10 @@
 import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { LegalLink } from './LegalLink';
 import { Text } from './Text';
 import { useOpenLink } from '@/hooks/useOpenLink';
 import { spacing } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
-
-interface LinkNameProps {
-  label: string;
-  onPress: () => void;
-}
-
-function LinkName({ label, onPress }: LinkNameProps): ReactElement {
-  const { colors } = useTheme();
-  return (
-    <Text
-      variant="captionStrong"
-      color={colors.primaryDeep}
-      accessibilityRole="link"
-      onPress={onPress}
-    >
-      {label}
-    </Text>
-  );
-}
 
 export function LegalNotice(): ReactElement {
   const { colors } = useTheme();
@@ -31,10 +13,15 @@ export function LegalNotice(): ReactElement {
   return (
     <View style={styles.container}>
       <Text variant="caption" color={colors.textSecondary} center>
-        Ao criar conta, você aceita os{' '}
-        <LinkName label="Termos de uso" onPress={() => { openLegal('terms'); }} /> e a{' '}
-        <LinkName label="Política de privacidade" onPress={() => { openLegal('privacy'); }} />
+        Ao criar conta, você aceita os
       </Text>
+      <View style={styles.links}>
+        <LegalLink label="Termos de uso" onPress={() => { openLegal('terms'); }} />
+        <Text variant="caption" color={colors.textSecondary}>
+          e a
+        </Text>
+        <LegalLink label="Política de privacidade" onPress={() => { openLegal('privacy'); }} />
+      </View>
       {error ? (
         <Text variant="caption" color={colors.danger} center>
           {error}
@@ -46,6 +33,13 @@ export function LegalNotice(): ReactElement {
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.xs,
+    alignItems: 'center',
+  },
+  links: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    columnGap: spacing.xs,
   },
 });

@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+import { LegalLink } from './LegalLink';
 import { Text } from './Text';
 import type { Plan } from '@/hooks/useOfferings';
 import { useOpenLink } from '@/hooks/useOpenLink';
@@ -25,25 +26,6 @@ function cancelSteps(): string {
     : 'Google Play > Perfil > Pagamentos e assinaturas > Assinaturas';
 }
 
-interface LegalLinkProps {
-  label: string;
-  onPress: () => void;
-}
-
-function LegalLink({ label, onPress }: LegalLinkProps): ReactElement {
-  const { colors } = useTheme();
-  return (
-    <Text
-      variant="captionStrong"
-      color={colors.primaryDeep}
-      accessibilityRole="link"
-      onPress={onPress}
-    >
-      {label}
-    </Text>
-  );
-}
-
 export function SubscriptionDisclosure({ plan }: SubscriptionDisclosureProps): ReactElement {
   const { colors } = useTheme();
   const { error, openLegal } = useOpenLink();
@@ -59,11 +41,13 @@ export function SubscriptionDisclosure({ plan }: SubscriptionDisclosureProps): R
         automaticamente, a menos que seja cancelada pelo menos 24 horas antes do fim do período
         atual. Você pode gerenciar e cancelar a qualquer momento em {cancelSteps()}.
       </Text>
-      <Text variant="caption" color={colors.textSecondary}>
+      <View style={styles.links}>
         <LegalLink label="Termos de uso" onPress={() => { openLegal('terms'); }} />
-        {' e '}
+        <Text variant="caption" color={colors.textSecondary}>
+          e
+        </Text>
         <LegalLink label="Política de privacidade" onPress={() => { openLegal('privacy'); }} />
-      </Text>
+      </View>
       {error ? (
         <Text variant="caption" color={colors.danger}>
           {error}
@@ -76,5 +60,11 @@ export function SubscriptionDisclosure({ plan }: SubscriptionDisclosureProps): R
 const styles = StyleSheet.create({
   container: {
     gap: spacing.xs,
+  },
+  links: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    columnGap: spacing.xs,
   },
 });

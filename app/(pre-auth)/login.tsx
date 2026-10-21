@@ -1,7 +1,6 @@
-import { useState, type ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useRef, useState, type ReactElement } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { CircleAlert } from 'lucide-react-native';
 import {
   Button,
   Input,
@@ -11,6 +10,9 @@ import {
   SocialButton,
   Text,
 } from '@/components';
+import { FooterLink } from '@/components/FooterLink';
+import { InlineError } from '@/components/InlineError';
+import type { InputRef } from '@/components/Input';
 import { useSession } from '@/hooks/useSession';
 import { useSocialSignIn } from '@/hooks/useSocialSignIn';
 import { validateCredentials } from '@/hooks/validateAuth';
@@ -22,6 +24,7 @@ export default function LoginScreen(): ReactElement {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { signIn } = useSession();
+  const passwordRef = useRef<InputRef>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -59,30 +62,39 @@ export default function LoginScreen(): ReactElement {
 
         <View style={styles.form}>
           <Input
-            placeholder="E-mail"
+            label="E-mail"
             autoCapitalize="none"
             autoComplete="email"
+            textContentType="emailAddress"
             keyboardType="email-address"
+            returnKeyType="next"
+            submitBehavior="submit"
+            error={error !== null}
             value={email}
             onChangeText={setEmail}
+            onSubmitEditing={() => { passwordRef.current?.focus(); }}
           />
           <Input
-            placeholder="Senha"
+            label="Senha"
+            inputRef={passwordRef}
+            autoCapitalize="none"
             autoComplete="current-password"
+            textContentType="password"
+            returnKeyType="go"
             secure
+            error={error !== null}
             value={password}
             onChangeText={setPassword}
+            onSubmitEditing={() => { void submit(); }}
+          />
+          <FooterLink
+            action="Esqueci minha senha"
+            disabled={social.busy}
+            onPress={() => { router.push({ pathname: '/forgot-password', params: { email } }); }}
           />
         </View>
 
-        {error ? (
-          <View style={styles.error}>
-            <CircleAlert size={16} color={colors.danger} strokeWidth={1.75} />
-            <Text variant="caption" color={colors.danger} style={styles.errorText}>
-              {error}
-            </Text>
-          </View>
-        ) : null}
+        <InlineError message={error} />
 
         <Button
           label={submitting ? 'Entrando...' : 'Entrar'}
@@ -115,19 +127,12 @@ export default function LoginScreen(): ReactElement {
           />
         </View>
 
-        <Pressable
-          accessibilityRole="button"
+        <FooterLink
+          prompt="Não tem conta?"
+          action="Criar conta"
           disabled={social.busy}
           onPress={() => { router.push('/signup'); }}
-          style={styles.footer}
-        >
-          <Text variant="caption" color={colors.textSecondary}>
-            Não tem conta?{' '}
-          </Text>
-          <Text variant="captionStrong" color={colors.primaryDeep}>
-            Criar conta
-          </Text>
-        </Pressable>
+        />
       </View>
       <SignInOverlay visible={social.phase === 'exchanging'} />
     </Screen>
@@ -147,14 +152,6 @@ const makeStyles = createStyles((colors) =>
     form: {
       gap: spacing.md,
     },
-    error: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.sm,
-    },
-    errorText: {
-      flex: 1,
-    },
     divider: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -167,11 +164,6 @@ const makeStyles = createStyles((colors) =>
     },
     social: {
       gap: spacing.md,
-    },
-    footer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
     },
   }),
 );

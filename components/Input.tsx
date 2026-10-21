@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from 'react';
+import { useState, type ComponentRef, type ReactElement, type Ref } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -8,41 +8,70 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
-import { createStyles, layout, radius, typography } from '@/theme';
+import { Text } from './Text';
+import { createStyles, layout, radius, spacing, typography } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
+export type InputRef = ComponentRef<typeof TextInput>;
+
 type InputProps = Omit<TextInputProps, 'style'> & {
+  label?: string;
+  helper?: string;
+  error?: boolean;
   secure?: boolean;
+  inputRef?: Ref<InputRef>;
   style?: ViewStyle;
 };
 
-export function Input({ secure, style, ...rest }: InputProps): ReactElement {
+export function Input({
+  label,
+  helper,
+  error,
+  secure,
+  inputRef,
+  style,
+  ...rest
+}: InputProps): ReactElement {
   const { colors, isDark } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const [hidden, setHidden] = useState(true);
 
   return (
-    <View style={[styles.container, style]}>
-      <TextInput
-        placeholderTextColor={colors.textSecondary}
-        keyboardAppearance={isDark ? 'dark' : 'light'}
-        secureTextEntry={secure && hidden}
-        style={styles.input}
-        {...rest}
-      />
-      {secure ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={hidden ? 'Mostrar senha' : 'Ocultar senha'}
-          hitSlop={12}
-          onPress={() => { setHidden((value) => !value); }}
-        >
-          {hidden ? (
-            <EyeOff size={20} color={colors.textSecondary} strokeWidth={1.75} />
-          ) : (
-            <Eye size={20} color={colors.textSecondary} strokeWidth={1.75} />
-          )}
-        </Pressable>
+    <View style={[styles.wrapper, style]}>
+      {label ? (
+        <Text variant="captionStrong" color={colors.textSecondary}>
+          {label}
+        </Text>
+      ) : null}
+      <View style={[styles.container, error && { borderColor: colors.danger }]}>
+        <TextInput
+          ref={inputRef}
+          accessibilityLabel={label ?? rest.placeholder}
+          placeholderTextColor={colors.textSecondary}
+          keyboardAppearance={isDark ? 'dark' : 'light'}
+          secureTextEntry={secure && hidden}
+          style={styles.input}
+          {...rest}
+        />
+        {secure ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={hidden ? 'Mostrar senha' : 'Ocultar senha'}
+            hitSlop={12}
+            onPress={() => { setHidden((value) => !value); }}
+          >
+            {hidden ? (
+              <EyeOff size={20} color={colors.textSecondary} strokeWidth={1.75} />
+            ) : (
+              <Eye size={20} color={colors.textSecondary} strokeWidth={1.75} />
+            )}
+          </Pressable>
+        ) : null}
+      </View>
+      {helper ? (
+        <Text variant="caption" color={colors.textSecondary}>
+          {helper}
+        </Text>
       ) : null}
     </View>
   );
@@ -50,11 +79,14 @@ export function Input({ secure, style, ...rest }: InputProps): ReactElement {
 
 const makeStyles = createStyles((colors) =>
   StyleSheet.create({
+    wrapper: {
+      gap: spacing.xs,
+    },
     container: {
       height: layout.controlHeight,
       borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: colors.borderStrong,
       backgroundColor: colors.surface,
       flexDirection: 'row',
       alignItems: 'center',

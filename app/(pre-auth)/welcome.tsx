@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, SignInOverlay, SocialButton, Text } from '@/components';
+import { MIN_TOUCH_TARGET } from '@/components/touch';
 import { useSocialSignIn } from '@/hooks/useSocialSignIn';
 import { createStyles, layout, palettes, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
@@ -36,7 +37,7 @@ export default function WelcomeScreen(): ReactElement {
         </View>
 
         <View style={styles.actions}>
-          <Button label="Criar conta" disabled={social.busy} onPress={() => { router.push('/onboarding'); }} />
+          <Button label="Começar" disabled={social.busy} onPress={() => { router.push('/onboarding'); }} />
           {social.appleSupported ? (
             <SocialButton
               provider="apple"
@@ -109,6 +110,7 @@ const makeStyles = createStyles((colors) =>
       justifyContent: 'center',
       alignItems: 'center',
       marginTop: spacing.sm,
+      minHeight: MIN_TOUCH_TARGET,
     },
   }),
 );
