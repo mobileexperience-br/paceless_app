@@ -58,3 +58,13 @@ Em 20/10 de manhã ele avisou por áudio que ia juntar "todas as informações c
 ## Atualização 20/10, 16h
 
 - Pedro avisou que validou o telefone e a documentação do Play Console. Falta o agente do navegador confirmar e criar o app.
+
+## Play Console: app criado (21/10)
+
+- App Paceless criado na conta MXPBR (ID `4972516548397125859`), `com.paceless.app`, pt-BR, gratuito, com proteção automática ligada. As três declarações foram aceitas.
+- A conta de serviço `paceless-play-publisher` tem permissões na conta inteira, o que já cobre o app.
+- Chave de assinatura do Google Play (conferida no `deployment_cert.der`):
+  - SHA-1 `D5:98:4A:5B:B2:B8:2C:5F:FC:C9:5E:EE:FE:A1:FE:89:F4:59:74:85`
+  - SHA-256 `34:C5:69:3C:CB:B3:61:B3:F1:0D:7E:FD:A8:8D:E2:85:A7:35:10:32:0A:93:79:46:2E:78:43:49:C7:07:EC:43`
+- "Conteúdo do app" pendente: política de privacidade (URL pública), anúncios, acesso ao app (conta de teste para o revisor), classificação de conteúdo, público-alvo, segurança dos dados, ID de publicidade, apps governamentais, recursos financeiros, apps de saúde. Serviço em primeiro plano e exclusão de conta devem aparecer após o primeiro build.
+- Falta: cliente OAuth Android com o SHA-1 do Play; JSON da conta de serviço no RevenueCat, tópico Pub/Sub e notificação de teste.
