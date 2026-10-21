@@ -1,6 +1,6 @@
-import type { ReactElement } from 'react';
+import { useCallback, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import {
   Apple,
   Bell,
@@ -15,10 +15,12 @@ import {
   Card,
   Avatar,
   IconBadge,
-  ProgressBar,
   Screen,
   Text,
 } from '@/components';
+import { LastWorkoutCard } from '@/components/home/LastWorkoutCard';
+import { WeekProgressCard } from '@/components/home/WeekProgressCard';
+import { useActivities } from '@/hooks/useActivities';
 import { useProfile } from '@/hooks/useProfile';
 import { createStyles, layout, radius, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
@@ -35,6 +37,14 @@ export default function HomeScreen(): ReactElement {
   const router = useRouter();
   const { name, avatarUrl } = useProfile();
   const firstName = name?.split(/\s+/)[0];
+  const { activities, load } = useActivities();
+  const lastActivity = activities[0];
+
+  useFocusEffect(
+    useCallback((): void => {
+      void load();
+    }, [load]),
+  );
 
   return (
     <Screen scroll flush>
@@ -82,13 +92,7 @@ export default function HomeScreen(): ReactElement {
           </Card>
         </Pressable>
 
-        <Card>
-          <Text variant="captionStrong">Progresso da semana</Text>
-          <Text variant="caption" color={colors.textSecondary} style={styles.progressLabel}>
-            0 / 0 treinos concluídos
-          </Text>
-          <ProgressBar progress={0} style={styles.progressBar} />
-        </Card>
+        <WeekProgressCard activities={activities} />
 
         <Card>
           <Text variant="captionStrong">Próximo treino</Text>
@@ -105,6 +109,8 @@ export default function HomeScreen(): ReactElement {
             <ChevronRight size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
           </View>
         </Card>
+
+        {lastActivity ? <LastWorkoutCard activity={lastActivity} /> : null}
 
         <Button label="Iniciar treino" onPress={() => { router.push('/workout/atual'); }} />
 
@@ -164,12 +170,6 @@ const makeStyles = createStyles((colors) =>
       alignItems: 'center',
       gap: spacing.sm,
       marginTop: spacing.sm,
-    },
-    progressLabel: {
-      marginTop: spacing.xs,
-    },
-    progressBar: {
-      marginTop: spacing.md,
     },
     nextWorkout: {
       marginTop: spacing.md,

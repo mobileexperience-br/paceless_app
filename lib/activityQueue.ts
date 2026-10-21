@@ -4,6 +4,23 @@ import { supabase } from '@/lib/supabase';
 
 export const PENDING_ACTIVITIES_KEY = 'paceless:pending-activities';
 
+type ActivityListener = () => void;
+
+const listeners = new Set<ActivityListener>();
+
+export function subscribeActivityChanges(listener: ActivityListener): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+export function notifyActivitiesChanged(): void {
+  listeners.forEach((listener) => {
+    listener();
+  });
+}
+
 let flushing = false;
 let queueLock: Promise<unknown> = Promise.resolve();
 
@@ -26,7 +43,7 @@ function isDraft(value: unknown): value is ActivityDraft {
   );
 }
 
-async function readQueue(): Promise<ActivityDraft[]> {
+export async function readQueue(): Promise<ActivityDraft[]> {
   try {
     const stored = await AsyncStorage.getItem(PENDING_ACTIVITIES_KEY);
     if (stored === null) return [];
@@ -74,7 +91,7 @@ export function enqueueActivity(draft: ActivityDraft): Promise<void> {
   return withQueueLock(async () => {
     const queue = await readQueue();
     await writeQueue([...queue, draft]);
-  });
+  }).then(notifyActivitiesChanged);
 }
 
 export async function flushPendingActivities(): Promise<number> {
@@ -94,6 +111,7 @@ export async function flushPendingActivities(): Promise<number> {
       const latest = await readQueue();
       await writeQueue(latest.filter((draft) => !sentIds.has(draft.id)));
     });
+    notifyActivitiesChanged();
     return sentIds.size;
   } finally {
     flushing = false;

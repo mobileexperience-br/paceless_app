@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { randomUUID } from 'expo-crypto';
 import type { ActivityDraft } from '@/lib/activities';
-import { enqueueActivity, insertActivity } from '@/lib/activityQueue';
+import { enqueueActivity, insertActivity, notifyActivitiesChanged } from '@/lib/activityQueue';
 import { useSession } from '@/hooks/useSession';
 
 export type SaveResult = 'saved' | 'queued' | 'failed';
@@ -25,7 +25,10 @@ export function useSaveActivity(): UseSaveActivity {
       const userId = userIdRef.current;
       if (userId === null) return 'failed';
       const draft: ActivityDraft = { ...activity, id: randomUUID(), user_id: userId };
-      if (await insertActivity(draft)) return 'saved';
+      if (await insertActivity(draft)) {
+        notifyActivitiesChanged();
+        return 'saved';
+      }
       await enqueueActivity(draft);
       return 'queued';
     },

@@ -32,6 +32,7 @@ export interface Activity {
   startedAt: Date;
   durationSeconds: number;
   distanceMeters: number;
+  pending?: boolean;
 }
 
 export const activitySelect = 'id,type,started_at,duration_seconds,distance_meters';
@@ -64,6 +65,17 @@ export function parseActivity(row: unknown): Activity | null {
   const date = new Date(startedAt);
   if (Number.isNaN(date.getTime()) || duration === null || distance === null) return null;
   return { id, type, startedAt: date, durationSeconds: duration, distanceMeters: distance };
+}
+
+export function draftToActivity(draft: ActivityDraft): Activity {
+  return {
+    id: draft.id,
+    type: draft.type,
+    startedAt: new Date(draft.started_at),
+    durationSeconds: draft.duration_seconds,
+    distanceMeters: draft.distance_meters,
+    pending: true,
+  };
 }
 
 export function parseActivities(rows: unknown): Activity[] {

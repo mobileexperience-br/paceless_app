@@ -27,7 +27,8 @@ export function ActivityRow({ activity, now }: ActivityRowProps): ReactElement {
   const { distanceUnit } = usePreferences();
   const hasDistance = activity.type !== 'strength';
   const Icon = activityIcons[activity.type];
-  const subtitle = `${dayLabel(activity.startedAt, now)} • ${formatDuration(activity.durationSeconds)}`;
+  const base = `${dayLabel(activity.startedAt, now)} • ${formatDuration(activity.durationSeconds)}`;
+  const subtitle = activity.pending ? `${base} • Sincronizando` : base;
   const distance =
     hasDistance && activity.distanceMeters > 0
       ? `${formatDistance(activity.distanceMeters, distanceUnit, 2)} ${distanceLabel(distanceUnit)}`
