@@ -2,12 +2,14 @@ import { useRef, useState, type RefObject } from 'react';
 import { useRouter } from 'expo-router';
 import type { RunTracker } from '@/hooks/useRunTracker';
 import { paceSecondsPerKm } from '@/lib/geo';
-import { useSaveActivity, type NewActivity } from '@/hooks/useSaveActivity';
+import { useSaveActivity, type NewActivity, type SaveResult } from '@/hooks/useSaveActivity';
 import type { WorkoutType } from '@/lib/activities';
 import { setWorkoutSummary } from '@/lib/workoutSummary';
 import type { DistanceUnit } from '@/types/preferences';
 
 const MIN_SAVE_SECONDS = 10;
+
+export type FinishOutcome = SaveResult | 'tooShort';
 
 interface FinishWorkoutOptions {
   type: WorkoutType;
@@ -21,7 +23,8 @@ interface FinishWorkoutOptions {
 
 interface FinishWorkout {
   finishing: boolean;
-  finish: () => Promise<void>;
+  saving: boolean;
+  finish: () => Promise<FinishOutcome>;
 }
 
 export function useFinishWorkout({
@@ -34,20 +37,21 @@ export function useFinishWorkout({
   clearSession,
 }: FinishWorkoutOptions): FinishWorkout {
   const router = useRouter();
-  const { save } = useSaveActivity();
+  const { save, saving } = useSaveActivity();
   const [finishing, setFinishing] = useState<boolean>(false);
   const finishingRef = useRef<boolean>(false);
 
-  const finish = async (): Promise<void> => {
-    if (finishingRef.current) return;
+  const finish = async (): Promise<FinishOutcome> => {
+    if (finishingRef.current) return 'failed';
     finishingRef.current = true;
     setFinishing(true);
     pause();
     const snapshot = await tracker.stop();
     if (elapsedSeconds < MIN_SAVE_SECONDS) {
       await clearSession();
-      router.back();
-      return;
+      finishingRef.current = false;
+      setFinishing(false);
+      return 'tooShort';
     }
     const distanceMeters = Math.round(snapshot.distanceMeters);
     const averagePace =
@@ -63,18 +67,22 @@ export function useFinishWorkout({
       splits: snapshot.splits.length > 0 ? snapshot.splits : null,
     };
     const status = await save(draft);
-    await clearSession();
+    if (status !== 'failed') await clearSession();
     setWorkoutSummary({
       type,
+      startedAt: draft.started_at,
       durationSeconds: elapsedSeconds,
       distanceMeters,
       averagePaceSecondsPerKm: averagePace,
       splits: snapshot.splits,
       status,
       distanceUnit,
+      draft,
+      discardSession: clearSession,
     });
     router.replace('/workout/summary');
+    return status;
   };
 
-  return { finishing, finish };
+  return { finishing, saving, finish };
 }
