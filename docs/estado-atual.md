@@ -48,7 +48,7 @@ combinações de dias de treino e retomada do treino após o app ser encerrado.
 | `(tabs)/plan/week/[week]` | Estado vazio ("Semana sem treinos") | Treinos vindos do plano |
 | `(tabs)/activities` | Histórico real de `activities`, com filtros e pull to refresh | |
 | `(tabs)/nutrition` | Estado vazio | Tudo (por último no roadmap) |
-| `(tabs)/strength` | Estado vazio | "Novo treino", biblioteca de exercícios |
+| `strength` (stack, fora das abas) | Estado vazio | "Novo treino", biblioteca de exercícios |
 | `(tabs)/profile` | Conta (nome, foto), preferências (unidade e tema), Termos, Privacidade, FAQ, ajuda, gerenciar assinatura, sair e excluir conta | Notificações e Dispositivos conectados são estados vazios |
 | `workout/[id]` | Rastreio por GPS em segundo plano, cronômetro sem contar a pausa, bloqueio, deslizar para finalizar | Retomar o treino após o app ser encerrado (em desenvolvimento) |
 | `workout/summary` | Resumo, parciais por km e tipo de atividade; salva em `activities` com fila offline | |

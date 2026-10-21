@@ -122,8 +122,6 @@ export default function TabsLayout(): ReactElement {
           ),
         }}
       />
-
-      <Tabs.Screen name="strength" options={{ href: null }} />
     </Tabs>
   );
 }
