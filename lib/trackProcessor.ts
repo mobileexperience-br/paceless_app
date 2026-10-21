@@ -25,7 +25,7 @@ export interface TrackState {
   splitMeters: number;
 }
 
-const MAX_ACCURACY_METERS = 25;
+export const MAX_ACCURACY_METERS = 25;
 const MAX_SPEED_METERS_PER_SECOND = 12;
 const MAX_CONSECUTIVE_JUMPS = 3;
 const MS_PER_SECOND = 1000;
@@ -38,6 +38,20 @@ const MIN_WINDOW_METERS = 10;
 const STALE_MS = 15000;
 const PACE_MIN_METERS = 100;
 const PACE_MIN_SECONDS = 30;
+
+export type GpsSignal = 'searching' | 'weak' | 'good';
+
+export interface LastFix {
+  timestamp: number;
+  accuracy: number | null;
+}
+
+export function signalFor(lastFix: LastFix | null, nowMs: number): GpsSignal {
+  if (!lastFix) return 'searching';
+  const poorAccuracy = lastFix.accuracy === null || lastFix.accuracy > MAX_ACCURACY_METERS;
+  if (nowMs - lastFix.timestamp > STALE_MS || poorAccuracy) return 'weak';
+  return 'good';
+}
 
 export function createTrack(splitMeters: number): TrackState {
   return {

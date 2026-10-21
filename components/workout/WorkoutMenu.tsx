@@ -1,6 +1,6 @@
-import { useState, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
-import { Check, ChevronRight, CircleHelp, Footprints, Trash2, type LucideIcon } from 'lucide-react-native';
+import { ArrowLeft, Check, ChevronRight, CircleHelp, Footprints, Trash2, type LucideIcon } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ModalSafeArea } from '@/components/ModalSafeArea';
 import { Text } from '@/components/Text';
@@ -10,6 +10,8 @@ import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface WorkoutMenuProps {
   visible: boolean;
+  view: 'menu' | 'types';
+  onViewChange: (view: 'menu' | 'types') => void;
   type: WorkoutType;
   onClose: () => void;
   onSelectType: (type: WorkoutType) => void;
@@ -44,6 +46,8 @@ function MenuRow({ Icon, label, value, color = palettes.dark.ink, onPress }: Row
 
 export function WorkoutMenu({
   visible,
+  view,
+  onViewChange,
   type,
   onClose,
   onSelectType,
@@ -53,16 +57,10 @@ export function WorkoutMenu({
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const insets = useSafeAreaInsets();
-  const [choosing, setChoosing] = useState<boolean>(false);
-
-  const close = (): void => {
-    setChoosing(false);
-    onClose();
-  };
 
   const pickType = (next: WorkoutType): void => {
     onSelectType(next);
-    close();
+    onClose();
   };
 
   return (
@@ -72,10 +70,10 @@ export function WorkoutMenu({
       animationType="fade"
       statusBarTranslucent
       navigationBarTranslucent
-      onRequestClose={close}
+      onRequestClose={onClose}
     >
       <ModalSafeArea>
-      <Pressable accessibilityLabel="Fechar menu" style={styles.backdrop} onPress={close} />
+      <Pressable accessibilityLabel="Fechar menu" style={styles.backdrop} onPress={onClose} />
       <View
         style={[
           styles.sheet,
@@ -86,18 +84,27 @@ export function WorkoutMenu({
           },
         ]}
       >
-        {choosing ? (
-          workoutTypes.map((option) => (
+        {view === 'types' ? (
+          <>
             <MenuRow
-              key={option}
-              Icon={option === type ? Check : ChevronRight}
-              label={activityLabels[option]}
-              color={option === type ? colors.primary : palettes.dark.ink}
+              Icon={ArrowLeft}
+              label="Tipo de atividade"
               onPress={() => {
-                pickType(option);
+                onViewChange('menu');
               }}
             />
-          ))
+            {workoutTypes.map((option) => (
+              <MenuRow
+                key={option}
+                Icon={option === type ? Check : ChevronRight}
+                label={activityLabels[option]}
+                color={option === type ? colors.primary : palettes.dark.ink}
+                onPress={() => {
+                  pickType(option);
+                }}
+              />
+            ))}
+          </>
         ) : (
           <>
             <MenuRow
@@ -105,14 +112,14 @@ export function WorkoutMenu({
               label="Tipo de atividade"
               value={activityLabels[type]}
               onPress={() => {
-                setChoosing(true);
+                onViewChange('types');
               }}
             />
             <MenuRow
               Icon={CircleHelp}
               label="Ajuda com GPS"
               onPress={() => {
-                close();
+                onClose();
                 onHelp();
               }}
             />
@@ -121,7 +128,7 @@ export function WorkoutMenu({
               label="Descartar treino"
               color={colors.danger}
               onPress={() => {
-                close();
+                onClose();
                 onDiscard();
               }}
             />

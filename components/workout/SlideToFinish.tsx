@@ -96,13 +96,18 @@ export function SlideToFinish({ disabled, onFinish }: SlideToFinishProps): React
   return (
     <View
       onLayout={handleLayout}
+      {...panResponder.panHandlers}
       style={[styles.track, disabled && styles.disabled]}
+      accessible
+      accessibilityRole="button"
       accessibilityLabel="Deslize para finalizar"
+      accessibilityState={{ disabled }}
+      accessibilityActions={[{ name: 'activate', label: 'Finalizar treino' }]}
+      onAccessibilityAction={(event) => {
+        if (event.nativeEvent.actionName === 'activate' && !disabled) onFinish();
+      }}
     >
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[styles.thumb, { transform: [{ translateX: x }] }]}
-      >
+      <Animated.View style={[styles.thumb, { transform: [{ translateX: x }] }]}>
         <ArrowRight size={workout.thumbIconSize} color={colors.onPrimary} strokeWidth={2.5} />
       </Animated.View>
       <Animated.View style={[styles.label, { opacity: labelOpacity }]}>

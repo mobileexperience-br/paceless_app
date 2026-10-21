@@ -1,19 +1,32 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import { paceSecondsPerKm, type RoutePoint } from '@/lib/geo';
 import type { Split } from '@/lib/splits';
 import { drainFixes, subscribeFixes } from '@/lib/trackBuffer';
-import { applyFix, currentPace, createTrack, trackSplits, type TrackState } from '@/lib/trackProcessor';
 import {
+  applyFix,
+  createTrack,
+  currentPace,
+  signalFor,
+  trackSplits,
+  type GpsSignal,
+  type LastFix,
+  type TrackState,
+} from '@/lib/trackProcessor';
+import {
+  isForegroundPermissionGranted,
   openTrackingSession,
   startTracking,
   stopTracking,
   type LocationState,
+  type TrackingMode,
 } from '@/lib/trackingSession';
 
-export type { LocationState } from '@/lib/trackingSession';
+export type { LocationState, TrackingMode } from '@/lib/trackingSession';
+export type { GpsSignal } from '@/lib/trackProcessor';
 
 const CLOCK_INTERVAL_MS = 1000;
+const SIGNAL_INTERVAL_MS = 2000;
 
 interface RunTrackerOptions {
   active: boolean;
@@ -30,6 +43,10 @@ export interface TrackSnapshot {
 
 export interface RunTracker {
   permission: LocationState;
+  canAskAgain: boolean;
+  signal: GpsSignal;
+  mode: TrackingMode;
+  retryTracking: () => void;
   track: TrackState;
   distanceMeters: number;
   currentPaceSecondsPerKm: number | null;
@@ -48,6 +65,10 @@ export function useRunTracker({
   const [permission, setPermission] = useState<LocationState>(
     Platform.OS === 'web' ? 'unavailable' : 'checking',
   );
+  const [canAskAgain, setCanAskAgain] = useState<boolean>(true);
+  const [mode, setMode] = useState<TrackingMode>('background');
+  const [lastFix, setLastFix] = useState<LastFix | null>(null);
+  const [signalNowMs, setSignalNowMs] = useState<number>(() => Date.now());
   const [track, setTrack] = useState<TrackState>(
     () => restored ?? createTrack(splitMeters),
   );
@@ -58,6 +79,22 @@ export function useRunTracker({
   const mountedRef = useRef<boolean>(true);
   const sessionRef = useRef<number>(0);
   const resumeRef = useRef<boolean>(restored !== null);
+  const permissionRef = useRef<LocationState>(permission);
+  const retryRef = useRef<() => void>(() => undefined);
+
+  useEffect(() => {
+    permissionRef.current = permission;
+  }, [permission]);
+
+  useEffect(() => {
+    if (permission !== 'granted') return undefined;
+    const id = setInterval((): void => {
+      setSignalNowMs(Date.now());
+    }, SIGNAL_INTERVAL_MS);
+    return (): void => {
+      clearInterval(id);
+    };
+  }, [permission]);
 
   useEffect(() => {
     activeRef.current = active;
@@ -77,6 +114,8 @@ export function useRunTracker({
   const consume = useCallback(async (): Promise<void> => {
     const fixes = await drainFixes();
     if (!mountedRef.current || fixes.length === 0) return;
+    const newest = fixes[fixes.length - 1];
+    if (newest) setLastFix({ timestamp: newest.timestamp, accuracy: newest.accuracy });
     const rebase = rebaseRef.current;
     rebaseRef.current = false;
     const prev = trackRef.current;
@@ -102,14 +141,26 @@ export function useRunTracker({
         await stopTracking(session);
         return;
       }
-      setPermission(result);
+      setPermission(result.state);
+      setCanAskAgain(result.canAskAgain);
+      setMode(result.mode);
       if (resumeRef.current) void consume();
     };
 
+    retryRef.current = (): void => {
+      void begin();
+    };
     void begin();
+    const appStateSubscription = AppState.addEventListener('change', (next): void => {
+      if (next !== 'active' || permissionRef.current !== 'denied') return;
+      void isForegroundPermissionGranted().then((granted) => {
+        if (granted && mountedRef.current) void begin();
+      });
+    });
     return (): void => {
       mountedRef.current = false;
       unsubscribe();
+      appStateSubscription.remove();
       void stopTracking(session);
     };
   }, [consume]);
@@ -125,9 +176,17 @@ export function useRunTracker({
     };
   }, [consume]);
 
+  const retryTracking = useCallback((): void => {
+    retryRef.current();
+  }, []);
+
   const hasSignal = permission === 'granted' && track.distanceMeters > 0;
   return {
     permission,
+    canAskAgain,
+    signal: signalFor(lastFix, signalNowMs),
+    mode,
+    retryTracking,
     track,
     distanceMeters: track.distanceMeters,
     currentPaceSecondsPerKm: active && hasSignal ? currentPace(track, elapsedSeconds, nowMs) : null,

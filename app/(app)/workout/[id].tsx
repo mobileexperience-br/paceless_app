@@ -1,26 +1,28 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
-import { BackHandler, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StatRow, type Stat } from '@/components';
+import { StatRow } from '@/components';
 import { GpsNotice } from '@/components/workout/GpsNotice';
 import { SlideToFinish } from '@/components/workout/SlideToFinish';
 import { WorkoutControls } from '@/components/workout/WorkoutControls';
 import { WorkoutMenu } from '@/components/workout/WorkoutMenu';
 import { WorkoutHeading } from '@/components/workout/WorkoutHeading';
 import { WorkoutTopBar } from '@/components/workout/WorkoutTopBar';
+import { buildWorkoutStats } from '@/components/workout/workoutStats';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
 import { useActiveSessionSync } from '@/hooks/useActiveSessionSync';
+import { useHardwareBack } from '@/hooks/useHardwareBack';
 import { useRunTracker } from '@/hooks/useRunTracker';
-import { useFinishWorkout } from '@/hooks/useFinishWorkout';
+import { SavingOverlay } from '@/components/workout/SavingOverlay';
+import { useWorkoutFinish } from '@/hooks/useWorkoutFinish';
 import { useStopwatch } from '@/hooks/useStopwatch';
 import { usePreferences } from '@/hooks/usePreferences';
 import { loadResumableSession, type ResumableSession } from '@/lib/activeSession';
 import type { WorkoutType } from '@/lib/activities';
 import { splitMetersFor } from '@/lib/splits';
-import { distanceLabel, formatDistanceStat, formatPaceForUnit, paceLabel } from '@/lib/units';
 import { layout, palettes, spacing, workout } from '@/theme';
 import { ThemeScope } from '@/providers/ThemeProvider';
 import type { DistanceUnit } from '@/types/preferences';
@@ -36,7 +38,7 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
   const insets = useSafeAreaInsets();
   const { state, elapsedMs, formatted, running, start, pause, resume } = useStopwatch(resumed?.stopwatch);
   const [locked, setLocked] = useState<boolean>(false);
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [menuView, setMenuView] = useState<'closed' | 'menu' | 'types'>('closed');
   const [type, setType] = useState<WorkoutType>(resumed?.session.type ?? 'run');
   const startedAtRef = useRef<Date>(resumed ? new Date(resumed.session.startedAt) : new Date());
   const elapsedSeconds = Math.floor(elapsedMs / MS_PER_SECOND);
@@ -52,7 +54,7 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
     stopwatch: state,
     track: tracker.track,
   });
-  const { finishing, finish } = useFinishWorkout({
+  const { finishing, saving, finishWorkout } = useWorkoutFinish({
     type,
     startedAtRef,
     elapsedSeconds,
@@ -61,7 +63,6 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
     pause,
     clearSession: clear,
   });
-  const tracking = tracker.permission === 'granted';
 
   useEffect(() => {
     if (resumed) return;
@@ -69,17 +70,7 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
     start();
   }, [start, resumed]);
 
-  const stats: Stat[] = [
-    {
-      value: formatDistanceStat(tracking ? tracker.distanceMeters : null, distanceUnit),
-      label: `Distância (${distanceLabel(distanceUnit)})`,
-    },
-    {
-      value: formatPaceForUnit(tracker.currentPaceSecondsPerKm, distanceUnit),
-      label: `Ritmo (${paceLabel(distanceUnit)})`,
-    },
-    { value: '—', label: 'FC média (bpm)' },
-  ];
+  const stats = buildWorkoutStats(tracker, distanceUnit);
 
   const leave = (): void => {
     void clear();
@@ -87,14 +78,8 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
     router.back();
   };
 
-  useEffect(() => {
-    const subscription = BackHandler.addEventListener('hardwareBackPress', (): boolean => {
-      if (!finishing) confirmDiscard(leave);
-      return true;
-    });
-    return (): void => {
-      subscription.remove();
-    };
+  useHardwareBack((): void => {
+    if (!locked && !finishing) confirmDiscard(leave);
   });
 
   const togglePause = (): void => {
@@ -107,19 +92,28 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
       <StatusBar style="light" />
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
         <WorkoutTopBar
+          disabled={locked}
           onBack={() => {
             confirmDiscard(leave);
           }}
           onMore={() => {
-            setMenuOpen(true);
+            setMenuView('menu');
           }}
         />
 
-        <WorkoutHeading type={type} formatted={formatted} />
+        <WorkoutHeading
+          type={type}
+          formatted={formatted}
+          paused={!running}
+          typeDisabled={locked}
+          onPressType={() => {
+            setMenuView('types');
+          }}
+        />
 
         <View style={styles.stats}>
           <StatRow stats={stats} dark />
-          <GpsNotice state={tracker.permission} />
+          <GpsNotice tracker={tracker} />
         </View>
 
         <View style={styles.controls}>
@@ -129,7 +123,7 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
             onTogglePause={togglePause}
             onStop={() => {
               confirmStop(() => {
-                void finish();
+                finishWorkout();
               });
             }}
             onToggleLock={() => {
@@ -142,17 +136,21 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
           <SlideToFinish
             disabled={locked || finishing}
             onFinish={() => {
-              void finish();
+              finishWorkout();
             }}
           />
         </View>
       </SafeAreaView>
 
+      <SavingOverlay visible={saving} />
+
       <WorkoutMenu
-        visible={menuOpen}
+        visible={menuView !== 'closed'}
+        view={menuView === 'types' ? 'types' : 'menu'}
+        onViewChange={setMenuView}
         type={type}
         onClose={() => {
-          setMenuOpen(false);
+          setMenuView('closed');
         }}
         onSelectType={setType}
         onDiscard={() => {
