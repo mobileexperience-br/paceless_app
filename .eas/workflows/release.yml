@@ -1,0 +1,79 @@
+name: Release on main
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: release-main
+  cancel_in_progress: false
+
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: production
+  find_android_build:
+    needs: [fingerprint]
+    type: get-build
+    params:
+      platform: android
+      profile: production
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+  find_ios_build:
+    needs: [fingerprint]
+    type: get-build
+    params:
+      platform: ios
+      profile: production
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+  build_android:
+    name: Android production build
+    needs: [find_android_build]
+    if: ${{ !needs.find_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: iOS production build
+    needs: [find_ios_build]
+    if: ${{ !needs.find_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: production
+  submit_android:
+    name: Play internal testing
+    needs: [build_android]
+    type: submit
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+      profile: production
+  submit_ios:
+    name: TestFlight
+    needs: [build_ios]
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production
+  update_android:
+    name: Android OTA update
+    needs: [find_android_build]
+    if: ${{ needs.find_android_build.outputs.build_id }}
+    type: update
+    environment: production
+    params:
+      channel: production
+      platform: android
+      message: Release from main ${{ github.sha }}
+  update_ios:
+    name: iOS OTA update
+    needs: [find_ios_build]
+    if: ${{ needs.find_ios_build.outputs.build_id }}
+    type: update
+    environment: production
+    params:
+      channel: production
+      platform: ios
+      message: Release from main ${{ github.sha }}

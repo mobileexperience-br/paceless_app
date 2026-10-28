@@ -4,16 +4,17 @@ CI/CD com **EAS Workflows** (arquivos em `.eas/workflows/`). Tudo roda na
 nuvem da Expo; não há GitHub Actions. Pré-requisito: o repositório GitHub
 conectado ao projeto `@paceless/paceless` no painel da Expo.
 
-## Situação em 21/10/2026
+## Situação em 28/10/2026
 
 - Organização Expo `paceless`, projeto `@paceless/paceless`.
-- Build Android de produção `ffce154b` (AAB, versionCode 2, fingerprint
-  `6e33b60c…`) no teste interno do Play. Última OTA em production: `315fb07c`. `submit.production.android` usa a trilha `internal`
-  como rascunho.
-- Apple: conta ainda não criada (Pedro decidindo PF ou PJ), então todo o fluxo iOS
-  abaixo segue bloqueado. `ascAppId` e `appleTeamId` seguem com placeholders.
+- Android: teste interno do Play ativo. `submit.production.android` usa a trilha
+  `internal` com `releaseStatus: completed` (vai direto para os testers).
+- Apple: conta pessoa física, Team ID `DVRNT6D9B2`, app `6828008435` no App Store
+  Connect. Credenciais iOS (certificado e perfil de distribuição) guardadas no EAS.
+  Chave de API do App Store Connect cadastrada na organização. Primeiro build iOS
+  enviado ao TestFlight em 28/10.
 - Variáveis do EAS: chaves do RevenueCat (teste em development e preview, `goog_`
-  em production) e Client IDs do Google.
+  em production) e Client IDs do Google. Falta `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
 
 ## Perfis do `eas.json`
 
@@ -32,11 +33,13 @@ O build de simulador só roda em Mac (Simulador do Xcode); não instala em iPhon
 Pull request para main
   └─ pull-request.yml: checkout → npm install → tsc --noEmit → eslint --max-warnings 0
 
-Push na main
-  └─ preview.yml: fingerprint (ambiente preview)
-       └─ get-build: existe build Android preview com esse fingerprint?
-            ├─ não (nativo mudou) → build Android preview (APK)
-            └─ sim               → EAS Update no canal preview (Android)
+Push na main (release.yml)
+  └─ fingerprint (ambiente production)
+       └─ get-build: existe build production com esse fingerprint? (Android e iOS, cada um)
+            ├─ não (nativo mudou) → build production → submit
+            │                        Android: Play, trilha interna, liberado
+            │                        iOS: TestFlight
+            └─ sim (só JS)        → EAS Update no canal production
 
 Manual: iOS (ios-manual.yml)
   └─ escolhe perfil (preview | development | production)
@@ -44,7 +47,7 @@ Manual: iOS (ios-manual.yml)
 
 Manual: produção (production.yml)
   └─ build Android + build iOS (production, em paralelo)
-       └─ aprovação manual → submit Android (Play, rascunho) + submit iOS
+       └─ aprovação manual → submit Android (Play, trilha interna) + submit iOS
 ```
 
 Como disparar os manuais: `npx eas-cli workflow:run .eas/workflows/ios-manual.yml`
@@ -52,16 +55,20 @@ Como disparar os manuais: `npx eas-cli workflow:run .eas/workflows/ios-manual.ym
 
 ## Decisões
 
-- A `main` só gera build iOS manualmente: sem conta Apple, um job iOS
-  automático falharia a cada push. Por isso o iOS fica no `ios-manual.yml`.
-- O update do `preview` na `main` é só Android enquanto não houver build iOS
-  preview rastreado pelo workflow. Quando o iOS estiver ativo, dá para
-  espelhar os jobs `get-build`/`build` para `platform: ios` (a verificar o
-  desenho final com a conta ativa).
+- A `main` publica sozinha: mudança nativa vira build e vai para o teste
+  interno do Play e para o TestFlight; mudança só de JS vira OTA no canal
+  `production`. Isso substitui o antigo `preview.yml`, que gerava build de
+  preview a cada push e duplicava o gasto de build.
+- A **produção** do Play (e o envio para revisão da App Store) continua
+  manual: promover no Play Console / App Store Connect depois de testar.
 - `production.yml` pede aprovação manual entre build e submit, para dar
   tempo de testar o binário antes de enviar às lojas.
-- `submit.production.ios` em `eas.json` tem placeholders
-  (`REPLACE_WITH_...`); nenhum segredo vai para o repositório.
+- `eas.json` guarda só IDs públicos (`appleTeamId`, `ascAppId`); a chave de
+  API (`.p8`) fica no EAS, nunca no repositório.
+- Para o submit iOS rodar na nuvem, a chave de API precisa estar ligada ao
+  app para EAS Submit: `npx eas-cli credentials -p ios` → App Store Connect:
+  Manage your API Key → usar a chave existente para EAS Submit (uma vez,
+  em terminal interativo).
 
 ## O que está bloqueado até a conta Apple Developer existir
 
@@ -131,7 +138,7 @@ Valores mudam; conferir em expo.dev/pricing antes de depender deles.
   (a verificar).
 - EAS Update: limite de usuários ativos mensais (MAU) e de armazenamento
   (a verificar).
-- Para economizar: o `preview.yml` só builda quando o fingerprint nativo
+- Para economizar: o `release.yml` só builda quando o fingerprint nativo
   muda; mudança só de JS vira Update, que não gasta minuto de build.
 - `development-simulator` e `development` só precisam ser refeitos quando
   o código nativo muda.
