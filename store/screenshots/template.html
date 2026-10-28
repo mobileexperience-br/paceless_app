@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Inter; font-weight: 800; src: url('../../node_modules/@expo-google-fonts/inter/800ExtraBold/Inter_800ExtraBold.ttf'); }
+  @font-face { font-family: Inter; font-weight: 500; src: url('../../node_modules/@expo-google-fonts/inter/500Medium/Inter_500Medium.ttf'); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100vw; height: 100vh; overflow: hidden; }
+  body {
+    font-family: Inter, sans-serif;
+    background: var(--background);
+    position: relative;
+  }
+  .glow {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(60vw 60vw at 85% 8%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 70%),
+      radial-gradient(70vw 70vw at 0% 100%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
+  }
+  .lines {
+    position: absolute; inset: 0; opacity: 0.06;
+    background-image: repeating-linear-gradient(115deg, var(--accent) 0 2px, transparent 2px 6vw);
+  }
+  .text { position: absolute; top: 9vw; left: 8vw; right: 8vw; }
+  .brand {
+    display: inline-block; padding: 1.4vw 3vw; border-radius: 99vw;
+    border: 0.25vw solid var(--accent); color: var(--accent);
+    font-weight: 800; font-size: 3.1vw; letter-spacing: 0.5vw; margin-bottom: 4.5vw;
+  }
+  h1 {
+    color: var(--title); font-weight: 800; font-size: 9.6vw;
+    line-height: 1.04; letter-spacing: -0.3vw;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  p { color: var(--subtitle); font-weight: 500; font-size: 4.3vw; line-height: 1.35; margin-top: 3.4vw; }
+  .phone {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    aspect-ratio: 430 / 932;
+    background: var(--frame); border-radius: calc(13 * var(--u)); padding: calc(2.6 * var(--u));
+    box-shadow:
+      0 0 0 calc(0.35 * var(--u)) #3A3A3C,
+      0 0 0 calc(0.6 * var(--u)) #0A0A0A,
+      0 calc(6 * var(--u)) calc(14 * var(--u)) rgba(0, 0, 0, 0.65),
+      0 0 calc(18 * var(--u)) color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .screen { width: 100%; height: 100%; border-radius: calc(10.6 * var(--u)); overflow: hidden; position: relative; background: #000; }
+  .screen { display: flex; flex-direction: column; }
+  .status {
+    height: calc(11 * var(--u)); flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: calc(1.6 * var(--u)) calc(7 * var(--u)) 0; color: #FFFFFF; font-weight: 800; font-size: calc(3.4 * var(--u)); background: var(--screenTop);
+  }
+  .status .icons { display: flex; gap: calc(1.4 * var(--u)); align-items: center; }
+  .bars { display: flex; gap: calc(0.4 * var(--u)); align-items: flex-end; height: calc(2.4 * var(--u)); }
+  .bars i { width: calc(0.7 * var(--u)); background: #FFFFFF; border-radius: calc(0.2 * var(--u)); }
+  .battery { width: calc(6 * var(--u)); height: calc(2.8 * var(--u)); border: calc(0.3 * var(--u)) solid rgba(255,255,255,0.5); border-radius: calc(0.8 * var(--u)); padding: calc(0.3 * var(--u)); }
+  .battery i { display: block; width: 80%; height: 100%; background: #FFFFFF; border-radius: calc(0.3 * var(--u)); }
+  .screen img { width: 100%; flex: 1; min-height: 0; object-fit: cover; object-position: top; display: block; }
+  .island {
+    position: absolute; top: calc(2.3 * var(--u)); left: 50%; transform: translateX(-50%);
+    width: calc(22 * var(--u)); height: calc(6.4 * var(--u)); border-radius: calc(99 * var(--u)); background: #000;
+  }
+  .button { position: absolute; width: calc(0.9 * var(--u)); background: #2A2A2C; border-radius: calc(0.5 * var(--u)); }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="lines"></div>
+  <div class="text">
+    <div class="brand">PACELESS</div>
+    <h1 id="title"></h1>
+    <p id="subtitle"></p>
+  </div>
+  <div class="phone" id="phone">
+    <div class="button" style="left:calc(-0.9 * var(--u)); top:calc(22 * var(--u)); height:calc(8 * var(--u))"></div>
+    <div class="button" style="left:calc(-0.9 * var(--u)); top:calc(34 * var(--u)); height:calc(14 * var(--u))"></div>
+    <div class="button" style="right:calc(-0.9 * var(--u)); top:calc(30 * var(--u)); height:calc(20 * var(--u))"></div>
+    <div class="screen">
+      <div class="status"><span>9:41</span><span class="icons"><span class="bars"><i style="height:35%"></i><i style="height:55%"></i><i style="height:75%"></i><i style="height:100%"></i></span><span class="battery"><i></i></span></span></div>
+      <img id="shot" alt="">
+      <div class="island"></div>
+    </div>
+  </div>
+<script src="config.js"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const config = window.STORE_SCREENSHOTS;
+  const slide = config.slides[Number(params.get('slide') || 0)];
+  const root = document.documentElement.style;
+  Object.entries(config.colors).forEach(([key, value]) => root.setProperty('--' + key, value));
+  const escape = (text) => text.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+  document.getElementById('title').innerHTML = escape(slide.title).replace(/\*(.+?)\*/g, '<em>$1</em>');
+  document.getElementById('subtitle').textContent = slide.subtitle;
+  document.getElementById('shot').src = slide.raw;
+  root.setProperty('--screenTop', slide.screenTop || config.colors.background);
+  const textBottom = document.querySelector('.text').getBoundingClientRect().bottom;
+  const phone = document.getElementById('phone');
+  const phoneTop = textBottom + window.innerWidth * 0.07;
+  const visibleShare = 0.86;
+  const maxWidth = ((window.innerHeight - phoneTop) / visibleShare) * (430 / 932);
+  const phoneWidth = Math.min(window.innerWidth * 0.78, maxWidth);
+  phone.style.width = phoneWidth + 'px';
+  phone.style.setProperty('--u', (phoneWidth / 78) + 'px');
+  phone.style.top = phoneTop + 'px';
+</script>
+</body>
+</html>
