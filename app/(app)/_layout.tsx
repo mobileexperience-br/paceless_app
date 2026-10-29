@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { Redirect, Stack } from 'expo-router';
+import { useHealthAutoSync } from '@/hooks/useHealthAutoSync';
 import { useOnboardingSync } from '@/hooks/useOnboardingSync';
 import { usePushTokenSync } from '@/hooks/usePushTokenSync';
 import { useReminderSync } from '@/hooks/useReminderSync';
@@ -13,6 +14,7 @@ export default function AppLayout(): ReactElement | null {
   useOnboardingSync();
   useReminderSync();
   usePushTokenSync();
+  useHealthAutoSync();
   useResumeWorkout(!loading && session !== null);
 
   if (loading) {

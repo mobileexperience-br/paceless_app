@@ -184,7 +184,7 @@ Use **só** o plugin upstream (ble-plx 3.5.1 publica `app.plugin.js`; ver o [pac
 - **LGPD:** ver a seção de cadastro (consentimento do art. 11 I, encarregado, região, exclusão). `on delete cascade` cobre a exclusão da conta.
 - **Lojas:** declaração de FGS com vídeo (Play), Data Safety, apps de saúde e justificativa do `bluetooth-central` (Apple).
 
-## Arquitetura no Paceless
+## Arquitetura proposta (pesquisa)
 
 ```
 [Cinta / relógio BLE 0x180D]
@@ -562,3 +562,69 @@ export function startHrSession(manager: BleManager, saved: { id: string; name: s
 - https://github.com/wmcorless/myhealth
 - https://github.com/Balvorn/heart-monitor
 - Repositório: `app.json`, `lib/trackingSession.ts`, `node_modules/expo-location/android/src/main/AndroidManifest.xml`
+
+## Implementação no Paceless
+
+Esta seção descreve o que foi construído na fase 2. Onde ela diverge da proposta acima, vale o código.
+
+### Diagrama real
+
+```
+[Cinta / relógio BLE 0x180D]
+        │ notificações 0x2A37
+        ▼
+lib/platform/ble/            (único lugar que importa react-native-ble-plx)
+  ├─ bleManager.ts           BleManager singleton, waitForState
+  ├─ blePermissions.ts       BLUETOOTH_SCAN/CONNECT (API 31+) ou localização (API < 31)
+  ├─ prepareBluetooth.ts     estado do Bluetooth após permissão
+  ├─ scan.ts                 scan filtrado por 0x180D, 20 s, dedupe por id
+  ├─ fallbackScan.ts         reencontra a cinta por nome quando o id muda (iOS)
+  └─ hrSession.ts            máquina de estados: conectar, monitorar, reconectar
+        ▲
+lib/platform/heartRateBle.ts     API pública (App só importa daqui)
+lib/platform/heartRateBle.web.ts no-ops para web (ble-plx nunca é empacotado)
+        ▲
+lib/heartRate/               funções puras, sem dependência de React Native
+  ├─ base64.ts, parseHeartRate.ts (0x2A37), heartRateFilter.ts
+  ├─ heartRateZones.ts, heartRateStats.ts (addSample, summarize)
+        ▲
+hooks/useWorkoutHeartRate.ts     treino: status, bpm, zona, finish, discard
+hooks/useStrapPairing.ts         tela de pareamento
+hooks/useHeartRateStrap.ts       cinta salva (Supabase + cache local)
+lib/strapDevice.ts               connected_devices (provider ble_hr) + cache
+lib/activeHeartRate.ts           amostras do treino em andamento (retomada)
+lib/activitySamples.ts           insert em activity_samples e fila pendente
+```
+
+### Fluxo
+
+1. Pareamento: `prepareBluetooth` pede a permissão e espera o estado `PoweredOn`. O scan usa só o serviço 0x180D. Escolher uma cinta mostra a prévia de bpm (`previewDevice`) e só salva ao tocar em **Usar esta cinta**.
+2. Treino: `useWorkoutHeartRate` lê a cinta do cache local (funciona offline) e atualiza do servidor em segundo plano. Sem cinta, nenhum `BleManager` é criado.
+3. Sessão: conecta, descobre serviços, assina 0x2A37. Em desconexão ou falha, espera 1 s, 2 s, 5 s e depois 10 s. Após 2 falhas seguidas, procura a cinta por 10 s (o id do iOS pode mudar) e, se achar, salva o novo id.
+4. Leituras com `contact === 'lost'`, fora de 30 a 230 bpm, ou sem valor são descartadas. Leituras `unsupported` (relógios) são aceitas.
+5. Amostras: uma por segundo, `t_offset_s = floor((recebido − início)/1000)`. Duas leituras no mesmo segundo ficam com a última. Pausado: o bpm aparece, mas não é gravado.
+6. Retomada: a cada 30 s e ao ir para o segundo plano, as amostras vão para `paceless:active-hr-samples` (com o id da sessão). Ao reabrir um treino, elas são recarregadas.
+7. Fim: `finish()` para a sessão e gera `avg`/`max` e `secondsInZone` (se houver FC máxima). A atividade é salva com `avg_heart_rate` e `max_heart_rate`, e as amostras vão para `activity_samples`. Se a atividade estiver na fila offline, as amostras vão para `paceless:pending-hr-samples` e são enviadas depois do flush das atividades.
+
+### Schema real (migration `20261029140000_ble_heart_rate.sql`)
+
+- `connected_devices`: provider `ble_hr` aceito, colunas `device_id` e `device_name`, check que exige `device_id` para `ble_hr`, policies de insert e update ampliadas, `grant update (device_id, device_name)`.
+- `profiles.max_heart_rate smallint` (100 a 230).
+- `activity_samples (activity_id, user_id, t_offset_s, hr_bpm)`, chave primária `(activity_id, t_offset_s)`, RLS por dono e insert só em atividade própria.
+
+**Diferenças em relação à proposta:**
+
+- Não existe `activity_rr` e os intervalos RR não são gravados. Os RR são decodificados (`rrMs`), mas não são persistidos nesta fase.
+- Não existem `consent_hr_at`/`consent_hr_version` nem `hr_artifacts_count`. O consentimento de saúde continua no fluxo já existente.
+- Não há `lat`/`lng` em `activity_samples`, porque a rota já fica em `activities.route`.
+- Não há data de nascimento. A zona usa só a FC máxima informada em Preferências.
+
+### Limitações conhecidas
+
+- Android em segundo plano depende de teste em aparelho (ver `docs/relogios.md`).
+- `restoreStateIdentifier` não é usado (crash #1277 no iOS).
+- O aviso de uso de dados (FC vinculada à conta e armazenada no servidor) aparece na tela de pareamento. Tocar em "Procurar cinta" é o aceite explícito. Não há flag de consentimento salva no banco.
+- No sair da conta e na exclusão da conta, `clearHeartRateLocalData()` apaga o cache local da cinta (`paceless:ble-hr-device`) e as amostras do treino ativo (`paceless:active-hr-samples`). Amostras pendentes (`paceless:pending-hr-samples`) não são apagadas, porque são filtradas por usuário.
+- Amostras pendentes de treinos salvos sem conexão são reenviadas em todo flush da fila de atividades (início do app, volta ao primeiro plano e após salvar).
+- Só dispositivos com o serviço 0x180D aparecem no pareamento. Relógios que só transmitem FC por outro canal não aparecem.
+

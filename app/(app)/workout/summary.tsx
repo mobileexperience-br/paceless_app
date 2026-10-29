@@ -4,6 +4,7 @@ import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AlertTriangle, CalendarCheck, Check, CloudOff } from 'lucide-react-native';
 import { Button, Screen, StatRow, Text, type Stat } from '@/components';
+import { HeartRateSummaryCard } from '@/components/workout/HeartRateSummaryCard';
 import { SplitsTable } from '@/components/workout/SplitsTable';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
 import { useSaveActivity } from '@/hooks/useSaveActivity';
@@ -49,7 +50,7 @@ function WorkoutSummaryContent(): ReactElement {
   ];
 
   const retry = async (): Promise<void> => {
-    const result = await save(summary.draft);
+    const result = await save(summary.draft, summary.heartRate?.samples ?? []);
     if (result === 'failed') return;
     await summary.discardSession();
     setWorkoutSummary({ ...summary, status: result });
@@ -96,6 +97,7 @@ function WorkoutSummaryContent(): ReactElement {
       ) : null}
 
       <StatRow stats={stats} dark style={styles.stats} />
+      {summary.heartRate ? <HeartRateSummaryCard summary={summary.heartRate} /> : null}
 
       {summary.distanceMeters === 0 ? (
         <View style={styles.noGps}>

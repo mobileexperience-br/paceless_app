@@ -5,6 +5,7 @@ import { Card } from '@/components/Card';
 import { IconBadge } from '@/components/IconBadge';
 import { ListRow } from '@/components/ListRow';
 import { activityLabels, type Activity } from '@/lib/activities';
+import { sourceLabel } from '@/lib/healthHubLabels';
 import { dayLabel, formatDuration } from '@/lib/activityStats';
 import { usePreferences } from '@/hooks/usePreferences';
 import { distanceLabel, formatDistance } from '@/lib/units';
@@ -33,6 +34,7 @@ export function ActivityRow({ activity, now }: ActivityRowProps): ReactElement {
     hasDistance && activity.distanceMeters > 0
       ? `${formatDistance(activity.distanceMeters, distanceUnit, 2)} ${distanceLabel(distanceUnit)}`
       : undefined;
+  const origin = sourceLabel(activity.source, activity.sourceName);
 
   return (
     <Card flush>
@@ -40,6 +42,7 @@ export function ActivityRow({ activity, now }: ActivityRowProps): ReactElement {
         title={activityLabels[activity.type]}
         subtitle={subtitle}
         {...(distance ? { value: distance } : {})}
+        {...(origin ? { meta: origin, accessibilityLabel: `${activityLabels[activity.type]}, importado de ${origin}` } : {})}
         leading={
           <IconBadge size={sizes.badgeLg}>
             <Icon size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />

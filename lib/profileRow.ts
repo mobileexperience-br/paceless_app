@@ -1,6 +1,11 @@
 import { onboardingOptions } from '@/types/onboarding';
 import type { ProfileRow } from '@/types/database';
-import { defaultPreferences, distanceUnits, themePreferences } from '@/types/preferences';
+import {
+  defaultPreferences,
+  distanceUnits,
+  isValidMaxHeartRate,
+  themePreferences,
+} from '@/types/preferences';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -42,6 +47,7 @@ export function parseProfileRow(raw: unknown): ProfileRow | null {
     distance_unit:
       optionOrNull(distanceUnits, raw['distance_unit']) ?? defaultPreferences.distanceUnit,
     theme: optionOrNull(themePreferences, raw['theme']) ?? defaultPreferences.theme,
+    max_heart_rate: isValidMaxHeartRate(raw['max_heart_rate']) ? raw['max_heart_rate'] : null,
     created_at: createdAt,
     updated_at: updatedAt,
   };

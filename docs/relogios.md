@@ -50,6 +50,50 @@ Garmin, termos do Samsung Health Data SDK, prazo de aprovação da Coros.
 
 ### Fase 1: central de saúde do celular (maior cobertura, menor custo)
 
+**Status (29/10/2026): implementado no branch `feat/wearables`, aguardando dev build.**
+
+Feito no código (sem build nativo ainda):
+
+- Config plugins em `app.json`: HealthKit, Health Connect, `expo-build-properties` (minSdk 26,
+  compile e target 36), 7 permissões `android.permission.health.*`, Health na privacy manifest.
+- Migration `20261029130000_activities_external_source.sql` (não aplicada no remoto): `source`,
+  `external_id`, `source_name`, FC média e máxima, unique `(user_id, source, external_id)`.
+- Perfil > Dispositivos conectados: conectar, status, última sincronização, "Sincronizar agora",
+  desconectar com opção de apagar importados, "Abrir Play Store" quando o Health Connect falta
+  ou precisa de atualização, e guia por marca (Garmin, COROS, Polar, Samsung, Apple Watch).
+- Tela de consentimento `profile/health-consent` antes de qualquer permissão (LGPD).
+- Importação dos últimos 30 dias na conexão, ao abrir o app (sincronização automática a cada
+  15 minutos, em primeiro plano) e manualmente. Dedupe por id externo e por sobreposição de 50%
+  com corridas do Paceless.
+- Origem na lista de atividades ("Apple Saúde", "Garmin", etc.).
+- Gravação das corridas e caminhadas do Paceless no Apple Saúde e no Health Connect ao terminar
+  (distância, duração e rota). FC ainda não é gravada (o Paceless não grava FC até a fase 2).
+
+Pendente para testar em aparelho (dev build):
+
+- [ ] Permissão do Apple Saúde e tela de consentimento do Health Connect em Android 14 e Android 9 a 13.
+- [ ] Importar treinos de Garmin, COROS, Polar e Samsung e confirmar o nome de cada origem.
+  Os nomes de pacote do Health Connect (`brandByPackage` em `lib/healthHubLabels.ts`) são
+  **a confirmar** em aparelho.
+- [ ] Conferir se o Apple Saúde entrega rota e FC de treinos de outras marcas (a confirmar).
+- [ ] Conferir no Apple Saúde a corrida gravada pelo Paceless, com distância e rota.
+- [ ] Conferir os caminhos de menu de cada guia de marca em `lib/brandGuides.ts` (a confirmar).
+- [ ] Dedupe: corrida gravada pelo Paceless não aparece duplicada depois de sincronizar.
+- [ ] Desconectar com e sem "apagar importados" e conferir que a sincronização para.
+- [ ] Revogar a permissão fora do app e conferir o estado "Permissão revogada. Conecte de novo.".
+- [ ] Checklist de lojas em [lojas/health-connect-healthkit.md](./lojas/health-connect-healthkit.md).
+
+Escolhas desta fase, além do pedido:
+
+- A importação é feita pelo client, com insert sob RLS (sem Edge Function). Os dados são do próprio
+  usuário. Os endpoints `ingest-*` de [integracoes-relogios/](./integracoes-relogios/README.md)
+  podem vir depois.
+- O Health Connect não aceita sessão e distância no mesmo `insertRecords` (a lib lança erro
+  com tipos misturados). A gravação usa duas chamadas.
+- Desconectar no Android não chama `revokeAllPermissions` (só vale após reiniciar o app). O app
+  para de sincronizar e o usuário revoga em "Gerenciar permissões".
+- A FC não é gravada (o Paceless não grava FC até a fase 2).
+
 - iOS: `@kingstinct/react-native-healthkit`; Android: `react-native-health-connect` (plugin Expo
   embutido desde a v4, minSdk 26). Compatibilidade com o SDK 58: verificar na hora de instalar.
 - Perfil > Dispositivos conectados: "Conectar Apple Saúde" ou "Conectar Health Connect", com texto
@@ -62,8 +106,33 @@ Garmin, termos do Samsung Health Data SDK, prazo de aprovação da Coros.
 
 ### Fase 2: cinta cardíaca e FC ao vivo
 
-- `react-native-ble-plx`; tela para parear cinta; reconexão automática; FC e zonas na tela de corrida;
-  aviso quando a cinta desconectar; permissões Bluetooth com explicação.
+**Status:** implementado, aguardando teste em aparelho real (cinta BLE e relógio que transmite FC).
+
+Entregue no código (branch `feat/wearables`, ainda sem commit):
+
+- Biblioteca `react-native-ble-plx` com config plugin (`central`, `neverForLocation`, sem `isBackgroundEnabled`).
+- Tela **Dispositivos conectados > Cinta cardíaca**: pareamento com scan filtrado pelo serviço 0x180D,
+  prévia de bpm antes de salvar, troca e remoção da cinta. Dados em `connected_devices` (provider `ble_hr`).
+- Durante o treino: conexão automática com a cinta salva, bpm na tela, zona quando há FC máxima,
+  aviso de desconexão e reconexão com backoff (1 s, 2 s, 5 s, depois a cada 10 s). Nunca bloqueia o treino.
+- Preferência **Frequência cardíaca máxima** (100 a 230 bpm), sincronizada com `profiles.max_heart_rate`.
+  Sem valor, o app mostra só os batimentos, sem zonas.
+- Ao finalizar: média e máxima de FC gravadas em `activities`, e amostras por segundo em `activity_samples`.
+  Se estiver offline, as amostras ficam numa fila local e são enviadas depois.
+- Resumo pós-treino com FC média, máxima e tempo em cada zona (ou dica para definir a FC máxima).
+- Permissões com explicação, e tratamento de Bluetooth desligado e de permissão negada ou bloqueada.
+- Web: nada de BLE é carregado (`lib/platform/heartRateBle.web.ts`), e a tela de cinta não aparece.
+
+Pendências (precisam de teste em aparelho):
+
+- **Android em segundo plano:** confirmar se o serviço de localização em primeiro plano mantém a conexão
+  BLE com a tela bloqueada. Se não manter, o plano é usar `connectedDevice` como tipo de serviço em primeiro plano.
+- **`neverForLocation`:** testar com uma cinta Polar H10 ou um Garmin. Alguns aparelhos antigos podem
+  exigir localização para o scan mesmo com a flag.
+- **iOS, crash #1277:** o `react-native-ble-plx` pode travar no release ao usar `restoreStateIdentifier`.
+  Por isso o `BleManager` é criado sem restauração de estado nesta fase.
+- Confirmar no dev build que o `Info.plist` gerado tem `bluetooth-central` e `NSBluetoothAlwaysUsageDescription`
+  (conferido por `npx expo config --type introspect`, mas não num build real).
 
 ### Fase 3: nuvem das marcas (Garmin e Polar)
 

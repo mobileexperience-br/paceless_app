@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   defaultPreferences,
   distanceUnits,
+  isValidMaxHeartRate,
   themePreferences,
   type Preferences,
 } from '@/types/preferences';
@@ -21,6 +22,7 @@ export function parsePreferences(raw: unknown): Preferences {
   return {
     distanceUnit: pick(distanceUnits, raw['distanceUnit'], defaultPreferences.distanceUnit),
     theme: pick(themePreferences, raw['theme'], defaultPreferences.theme),
+    maxHeartRate: isValidMaxHeartRate(raw['maxHeartRate']) ? raw['maxHeartRate'] : null,
   };
 }
 

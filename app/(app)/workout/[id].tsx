@@ -4,20 +4,19 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StatRow } from '@/components';
-import { GpsNotice } from '@/components/workout/GpsNotice';
 import { SlideToFinish } from '@/components/workout/SlideToFinish';
 import { WorkoutControls } from '@/components/workout/WorkoutControls';
 import { WorkoutMenu } from '@/components/workout/WorkoutMenu';
 import { WorkoutHeading } from '@/components/workout/WorkoutHeading';
 import { WorkoutTopBar } from '@/components/workout/WorkoutTopBar';
-import { buildWorkoutStats } from '@/components/workout/workoutStats';
+import { WorkoutStatsBlock } from '@/components/workout/WorkoutStatsBlock';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
 import { useActiveSessionSync } from '@/hooks/useActiveSessionSync';
 import { useHardwareBack } from '@/hooks/useHardwareBack';
 import { useRunTracker } from '@/hooks/useRunTracker';
 import { SavingOverlay } from '@/components/workout/SavingOverlay';
 import { useWorkoutFinish } from '@/hooks/useWorkoutFinish';
+import { useWorkoutHeartRate } from '@/hooks/useWorkoutHeartRate';
 import { useStopwatch } from '@/hooks/useStopwatch';
 import { usePreferences } from '@/hooks/usePreferences';
 import { loadResumableSession, type ResumableSession } from '@/lib/activeSession';
@@ -35,6 +34,8 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
   const { confirmDiscard, confirmStop, showGpsHelp } = useWorkoutDialogs();
   const preferences = usePreferences();
   const [distanceUnit] = useState<DistanceUnit>(preferences.distanceUnit);
+  const [maxHeartRate] = useState<number | null>(preferences.maxHeartRate);
+  const [sessionKey] = useState<string>(() => String(resumed?.session.startedAt ?? Date.now()));
   const insets = useSafeAreaInsets();
   const { state, elapsedMs, formatted, running, start, pause, resume } = useStopwatch(resumed?.stopwatch);
   const [locked, setLocked] = useState<boolean>(false);
@@ -56,6 +57,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
     stopwatch: state,
     track: tracker.track,
   });
+  const heartRate = useWorkoutHeartRate({ running, startedAtRef, maxHeartRate, sessionKey });
   const { finishing, saving, finishWorkout } = useWorkoutFinish({
     type,
     startedAtRef,
@@ -65,6 +67,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
     distanceUnit,
     pause,
     clearSession: clear,
+    heartRate,
   });
 
   useEffect(() => {
@@ -73,10 +76,9 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
     start();
   }, [start, resumed]);
 
-  const stats = buildWorkoutStats(tracker, distanceUnit);
-
   const leave = (): void => {
     void clear();
+    heartRate.discard();
     void tracker.stop();
     router.back();
   };
@@ -114,10 +116,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
           }}
         />
 
-        <View style={styles.stats}>
-          <StatRow stats={stats} dark />
-          <GpsNotice tracker={tracker} />
-        </View>
+        <WorkoutStatsBlock tracker={tracker} distanceUnit={distanceUnit} heartRate={heartRate} />
 
         <View style={styles.controls}>
           <WorkoutControls
@@ -190,9 +189,6 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     paddingHorizontal: layout.screenPadding,
-  },
-  stats: {
-    marginBottom: spacing.huge,
   },
   controls: {
     marginBottom: spacing.huge,
