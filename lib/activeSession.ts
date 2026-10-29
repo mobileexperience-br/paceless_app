@@ -21,6 +21,7 @@ export interface StopwatchSnapshot {
 export interface ActiveSession {
   startedAt: number;
   type: WorkoutType;
+  userPlanWorkoutId: string | null;
   updatedAt: number;
   stopwatch: StopwatchSnapshot;
   track: TrackState;
@@ -110,6 +111,7 @@ function parseStopwatch(value: unknown): StopwatchSnapshot | null {
 function parseSession(stored: unknown, route: unknown): ActiveSession | null {
   if (!isRecord(stored)) return null;
   const { startedAt, type, updatedAt } = stored;
+  const planLink = stored['userPlanWorkoutId'];
   const points = listOf(route, isPoint);
   const stopwatch = parseStopwatch(stored['stopwatch']);
   const track = points ? parseTrack(stored['track'], points) : null;
@@ -117,7 +119,8 @@ function parseSession(stored: unknown, route: unknown): ActiveSession | null {
   if (!isNumber(startedAt) || !isNumber(updatedAt) || !workoutType || !stopwatch || !track) {
     return null;
   }
-  return { startedAt, type: workoutType, updatedAt, stopwatch, track };
+  const userPlanWorkoutId = typeof planLink === 'string' ? planLink : null;
+  return { startedAt, type: workoutType, userPlanWorkoutId, updatedAt, stopwatch, track };
 }
 
 function thinRoute(route: RoutePoint[]): RoutePoint[] {

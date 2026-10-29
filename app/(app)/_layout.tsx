@@ -32,6 +32,7 @@ export default function AppLayout(): ReactElement | null {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="workout/[id]" options={{ animation: 'fade', gestureEnabled: false }} />
       <Stack.Screen name="workout/summary" options={{ animation: 'fade' }} />
+      <Stack.Screen name="plan-paywall" options={{ presentation: 'modal' }} />
     </Stack>
   );
 }

@@ -22,6 +22,12 @@ export type WorkoutIntensity = 'easy' | 'moderate' | 'hard';
 export type UserPlanStatus = 'active' | 'paused' | 'completed' | 'cancelled';
 export type UserPlanWorkoutStatus = 'planned' | 'done' | 'skipped';
 
+export type PlanStep =
+  | { kind: 'warmup' | 'cooldown' | 'run' | 'walk' | 'strength'; durationSec: number; label: string }
+  | { kind: 'repeat'; times: number; steps: PlanStep[] };
+
+export type PlanTier = 'free' | 'full';
+
 export interface ExerciseRow {
   id: string;
   slug: string;
@@ -70,6 +76,9 @@ export interface PlanRow {
   weeks: number;
   sessions_per_week: number;
   is_premium: boolean;
+  settings_hash: string | null;
+  generator_version: number | null;
+  tier: PlanTier | null;
   created_at: string;
   updated_at: string;
 }
@@ -87,6 +96,7 @@ export interface PlanWorkoutRow {
   day_of_week: number;
   position: number;
   title: string;
+  description: string | null;
   kind: WorkoutKind;
   intensity: WorkoutIntensity | null;
   zone: number | null;
@@ -94,6 +104,7 @@ export interface PlanWorkoutRow {
   target_distance_meters: number | null;
   strength_workout_id: string | null;
   notes: string | null;
+  steps: PlanStep[];
 }
 
 export interface UserPlanRow {
@@ -118,4 +129,35 @@ export interface UserPlanWorkoutRow {
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export type PlanSessionState = 'done' | 'pending' | 'missed' | 'today';
+
+export type PlanWorkout = Omit<PlanWorkoutRow, 'strength_workout_id' | 'notes'>;
+
+export interface PlanSession {
+  id: string;
+  workout: PlanWorkout;
+  date: string;
+  status: UserPlanWorkoutStatus;
+  state: PlanSessionState;
+  completedAt: string | null;
+  weekNumber: number;
+}
+
+export interface PlanWeek {
+  weekNumber: number;
+  title: string;
+  sessions: PlanSession[];
+  done: number;
+  total: number;
+}
+
+export interface ActivePlan {
+  userPlanId: string;
+  name: string;
+  tier: PlanTier;
+  weeks: PlanWeek[];
+  fullWeeks: number;
+  startedAt: string;
 }

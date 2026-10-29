@@ -14,6 +14,7 @@ export type FinishOutcome = SaveResult | 'tooShort';
 interface FinishWorkoutOptions {
   type: WorkoutType;
   startedAtRef: RefObject<Date>;
+  userPlanWorkoutId: string | null;
   elapsedSeconds: number;
   tracker: RunTracker;
   distanceUnit: DistanceUnit;
@@ -30,6 +31,7 @@ interface FinishWorkout {
 export function useFinishWorkout({
   type,
   startedAtRef,
+  userPlanWorkoutId,
   elapsedSeconds,
   tracker,
   distanceUnit,
@@ -65,6 +67,7 @@ export function useFinishWorkout({
       avg_pace_seconds_per_km: averagePace,
       route: snapshot.route.length > 0 ? snapshot.route : null,
       splits: snapshot.splits.length > 0 ? snapshot.splits : null,
+      user_plan_workout_id: userPlanWorkoutId,
     };
     const status = await save(draft);
     if (status !== 'failed') await clearSession();

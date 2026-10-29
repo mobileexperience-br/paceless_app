@@ -24,6 +24,7 @@ export interface ActivityDraft {
   avg_pace_seconds_per_km: number | null;
   route: RoutePoint[] | null;
   splits: Split[] | null;
+  user_plan_workout_id: string | null;
 }
 
 export interface Activity {

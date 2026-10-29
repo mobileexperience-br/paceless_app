@@ -1,25 +1,17 @@
 import { useCallback, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import {
-  Bell,
-  ChevronRight,
-  ClipboardList,
-  Footprints,
-} from 'lucide-react-native';
-import {
-  Button,
-  Card,
-  Avatar,
-  IconBadge,
-  Screen,
-  Text,
-} from '@/components';
+import { Bell } from 'lucide-react-native';
+import { Button, Avatar, Screen, Text } from '@/components';
 import { QuickAccess } from '@/components/home/QuickAccess';
 import { LastWorkoutCard } from '@/components/home/LastWorkoutCard';
+import { PlanCard } from '@/components/home/PlanCard';
+import { TodayCard } from '@/components/home/TodayCard';
 import { WeekProgressCard } from '@/components/home/WeekProgressCard';
+import { useActivePlan } from '@/hooks/useActivePlan';
 import { useActivities } from '@/hooks/useActivities';
 import { useProfile } from '@/hooks/useProfile';
+import { localToday } from '@/lib/planDates';
 import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
@@ -31,6 +23,7 @@ export default function HomeScreen(): ReactElement {
   const firstName = name?.split(/\s+/)[0];
   const { activities, load } = useActivities();
   const lastActivity = activities[0];
+  const { plan, loading: planLoading } = useActivePlan();
 
   useFocusEffect(
     useCallback((): void => {
@@ -70,48 +63,11 @@ export default function HomeScreen(): ReactElement {
           </Text>
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Plano atual. Abrir plano"
-          onPress={() => { router.push('/plan'); }}
-        >
-          {({ pressed }) => (
-          <Card style={pressed ? styles.pressed : undefined}>
-            <View style={styles.rowBetween}>
-              <View style={styles.grow}>
-                <Text variant="captionStrong">Plano atual</Text>
-                <Text variant="title3" style={styles.planTitle}>
-                  Nenhum plano ativo
-                </Text>
-                <View style={styles.planMeta}>
-                  <ClipboardList size={sizes.iconSm} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />
-                  <Text variant="caption" color={colors.textSecondary} style={styles.planText}>
-                    Nenhuma semana em andamento
-                  </Text>
-                </View>
-              </View>
-              <ChevronRight size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
-            </View>
-          </Card>
-          )}
-        </Pressable>
+        <PlanCard plan={plan} loading={planLoading} />
 
         <WeekProgressCard activities={activities} />
 
-        <Card>
-          <Text variant="captionStrong">Próximo treino</Text>
-          <View style={[styles.rowBetween, styles.nextWorkout]}>
-            <IconBadge tone="primary" size={sizes.badgeLg}>
-              <Footprints size={sizes.iconLg} color={colors.onPrimary} strokeWidth={sizes.iconStroke} />
-            </IconBadge>
-            <View style={styles.grow}>
-              <Text variant="bodyStrong">Nenhum treino agendado</Text>
-              <Text variant="caption" color={colors.textSecondary}>
-                Escolha um plano para começar
-              </Text>
-            </View>
-          </View>
-        </Card>
+        <TodayCard plan={plan} loading={planLoading} today={localToday()} />
 
         {lastActivity ? <LastWorkoutCard activity={lastActivity} /> : null}
 
@@ -123,7 +79,7 @@ export default function HomeScreen(): ReactElement {
   );
 }
 
-const makeStyles = createStyles((colors) =>
+const makeStyles = createStyles(() =>
   StyleSheet.create({
     body: {
       paddingHorizontal: layout.screenPadding,
@@ -144,32 +100,6 @@ const makeStyles = createStyles((colors) =>
     },
     hidden: {
       opacity: 0,
-    },
-    pressed: {
-      backgroundColor: colors.track,
-    },
-    rowBetween: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.md,
-    },
-    grow: {
-      flex: 1,
-    },
-    planTitle: {
-      marginTop: spacing.xs,
-    },
-    planMeta: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.sm,
-      marginTop: spacing.sm,
-    },
-    planText: {
-      flexShrink: 1,
-    },
-    nextWorkout: {
-      marginTop: spacing.md,
     },
   }),
 );

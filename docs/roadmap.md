@@ -81,9 +81,10 @@ client) confirma.
 - [x] Modelo de plano / semana / treino no banco (migrations aplicadas; as
   telas ainda mostram estado vazio)
 - [x] Dias de treino: quantidade + combinações predefinidas (`lib/trainingDayCombos.ts`, coluna `profiles.training_days`)
-- Geração do plano a partir do onboarding (regra a definir — fixa por
-  objetivo ou via IA em Edge Function)
-- Plano, Semana e Próximo treino com dados reais
+- [x] Parte 1: geração do plano fixa por regras (sem IA) na Edge Function `generate-plan`,
+  regenerada ao salvar as configurações e após o onboarding. Regras em
+  [planos.md](./planos.md), a validar com o Pedro. Pendente de deploy: aplicar a migration, publicar a função e testar no projeto remoto
+- Parte 2: Plano, Semana e Próximo treino com dados reais, e upgrade para premium (`generate(true)` depois do paywall)
 
 ## Fase 6 — Treino em andamento `[x]`
 
