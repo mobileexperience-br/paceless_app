@@ -100,7 +100,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "monochromeImage": "./assets/adaptive-icon-monochrome.png",
-        "backgroundColor": "#BCD243"
+        "backgroundColor": "#111111"
       },
       "predictiveBackGestureEnabled": false,
       "blockedPermissions": [
