@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { cancelReminders } from '@/lib/platform/reminders';
 import { supabase } from '@/lib/supabase';
 
 interface DeleteAccountResult {
@@ -23,6 +24,7 @@ export function useDeleteAccount(): UseDeleteAccount {
       setDeleting(false);
       return { error: 'Não foi possível excluir a conta. Tente novamente.' };
     }
+    await cancelReminders();
     await supabase.auth.signOut({ scope: 'local' });
     setDeleting(false);
     return { error: null };

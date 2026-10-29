@@ -1,6 +1,8 @@
 import type { ReactElement } from 'react';
 import { Redirect, Stack } from 'expo-router';
 import { useOnboardingSync } from '@/hooks/useOnboardingSync';
+import { usePushTokenSync } from '@/hooks/usePushTokenSync';
+import { useReminderSync } from '@/hooks/useReminderSync';
 import { useResumeWorkout } from '@/hooks/useResumeWorkout';
 import { useSession } from '@/hooks/useSession';
 import { useTheme } from '@/hooks/useTheme';
@@ -9,6 +11,8 @@ export default function AppLayout(): ReactElement | null {
   const { colors } = useTheme();
   const { session, loading } = useSession();
   useOnboardingSync();
+  useReminderSync();
+  usePushTokenSync();
   useResumeWorkout(!loading && session !== null);
 
   if (loading) {

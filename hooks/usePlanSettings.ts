@@ -3,6 +3,8 @@ import { useProfile } from '@/hooks/useProfile';
 import { useSession } from '@/hooks/useSession';
 import { draftFromProfile, draftsDiffer, emptyPlanDraft, isPlanDraftComplete, type PlanDraft } from '@/lib/planDraft';
 import { comboGroup, trainingDaysFor, type TrainingDayComboId } from '@/lib/trainingDayCombos';
+import { offerReminderPermission, syncReminders } from '@/lib/notificationSettings';
+import { registerPushToken } from '@/lib/pushTokens';
 import { supabase } from '@/lib/supabase';
 import type { ProfileRow } from '@/types/database';
 import type { OnboardingAnswers } from '@/types/onboarding';
@@ -97,6 +99,11 @@ export function usePlanSettings(): UsePlanSettings {
     }
     setInitial(draft);
     await refresh();
+    if (userId) {
+      const permission = await offerReminderPermission(userId, trainingDaysFor(days));
+      if (permission === 'granted') void registerPushToken(userId);
+      await syncReminders(userId, trainingDaysFor(days));
+    }
     return true;
   }, [draft, complete, dirty, userId, refresh]);
 

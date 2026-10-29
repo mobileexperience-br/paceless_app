@@ -97,6 +97,7 @@
     },
     "android": {
       "package": "com.paceless.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "monochromeImage": "./assets/adaptive-icon-monochrome.png",
@@ -130,6 +131,13 @@
         }
       ],
       "expo-apple-authentication",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/adaptive-icon-monochrome.png",
+          "color": "#BCD243"
+        }
+      ],
       [
         "expo-image-picker",
         {
