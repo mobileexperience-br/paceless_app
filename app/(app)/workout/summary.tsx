@@ -2,7 +2,7 @@ import { useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { AlertTriangle, Check, CloudOff } from 'lucide-react-native';
+import { AlertTriangle, CalendarCheck, Check, CloudOff } from 'lucide-react-native';
 import { Button, Screen, StatRow, Text, type Stat } from '@/components';
 import { SplitsTable } from '@/components/workout/SplitsTable';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
@@ -16,7 +16,7 @@ import {
   setWorkoutSummary,
   type SummaryStatus,
 } from '@/lib/workoutSummary';
-import { layout, palettes, spacing, workout } from '@/theme';
+import { layout, palettes, sizes, spacing, workout } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { ThemeScope } from '@/providers/ThemeProvider';
 
@@ -39,6 +39,7 @@ function WorkoutSummaryContent(): ReactElement {
   if (!summary) return <Redirect href="/" />;
 
   const failed = status === 'failed';
+  const linkedToPlan = summary.draft.user_plan_workout_id !== null && !failed;
   const StatusIcon = failed ? AlertTriangle : status === 'saved' ? Check : CloudOff;
   const statusColor = failed ? colors.danger : colors.primary;
   const stats: Stat[] = [
@@ -73,6 +74,16 @@ function WorkoutSummaryContent(): ReactElement {
           {statusMessages[status]}
         </Text>
       </View>
+      {linkedToPlan ? (
+        <View style={styles.status}>
+          <CalendarCheck size={workout.statusIconSize} color={colors.primary} strokeWidth={sizes.iconStroke} />
+          <Text variant="caption" color={palettes.dark.ink} style={styles.statusText}>
+            {status === 'queued'
+              ? 'Será marcado no plano quando a conexão voltar'
+              : 'Treino do plano concluído'}
+          </Text>
+        </View>
+      ) : null}
       {failed ? (
         <Button
           label={saving ? 'Salvando...' : 'Tentar de novo'}

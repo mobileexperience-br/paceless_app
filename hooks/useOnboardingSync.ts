@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSession } from '@/hooks/useSession';
+import { localToday } from '@/lib/planDates';
 import { clearOnboardingState, readOnboardingAnswers } from '@/lib/onboardingStorage';
 import { parseProfileRow } from '@/lib/profileRow';
 import { trainingDaysFor } from '@/lib/trainingDayCombos';
@@ -29,6 +30,17 @@ async function syncOnboarding(userId: string): Promise<void> {
     { onConflict: 'id', defaultToNull: false },
   );
   if (upsertError) return;
+  let generated = false;
+  try {
+    const response = await supabase.functions.invoke('generate-plan', { body: { startDate: localToday() } });
+    generated = response.error === null;
+  } catch {
+    generated = false;
+  }
+  if (!generated) {
+    await clearOnboardingState();
+    return;
+  }
   await clearOnboardingState();
 }
 

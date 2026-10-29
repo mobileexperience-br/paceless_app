@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 export const PENDING_ACTIVITIES_KEY = 'paceless:pending-activities';
 
 const INSERT_TIMEOUT_MS = 10000;
+const ROW_SECURITY_VIOLATION = '42501';
 const MAX_QUEUED_ROUTE_POINTS = 1500;
 
 type ActivityListener = () => void;
@@ -49,6 +50,11 @@ function withQueueLock<T>(job: () => Promise<T>): Promise<T> {
   return run;
 }
 
+function withPlanLink(draft: ActivityDraft): ActivityDraft {
+  const link: unknown = draft.user_plan_workout_id;
+  return { ...draft, user_plan_workout_id: typeof link === 'string' ? link : null };
+}
+
 function isDraft(value: unknown): value is ActivityDraft {
   if (!isRecord(value)) return false;
   return (
@@ -69,7 +75,7 @@ export async function readQueue(): Promise<ActivityDraft[]> {
     const parsed: unknown = JSON.parse(stored);
     if (!Array.isArray(parsed)) return [];
     const items: unknown[] = parsed;
-    return items.filter(isDraft);
+    return items.filter(isDraft).map(withPlanLink);
   } catch {
     return [];
   }
@@ -119,7 +125,12 @@ export async function insertActivity(draft: ActivityDraft): Promise<boolean> {
       const { error } = await supabase
         .from('activities')
         .upsert(draft, { onConflict: 'id', ignoreDuplicates: true });
-      return error === null;
+      if (error === null) return true;
+      if (error.code !== ROW_SECURITY_VIOLATION || draft.user_plan_workout_id === null) return false;
+      const retry = await supabase
+        .from('activities')
+        .upsert({ ...draft, user_plan_workout_id: null }, { onConflict: 'id', ignoreDuplicates: true });
+      return retry.error === null;
     } catch {
       return false;
     }

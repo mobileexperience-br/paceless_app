@@ -33,6 +33,9 @@ export default function PlanSettingsScreen(): ReactElement {
     dirty,
     complete,
     saving,
+    regenerating,
+    needsRegeneration,
+    missingPlan,
     error,
     setGoal,
     setLevel,
@@ -63,11 +66,11 @@ export default function PlanSettingsScreen(): ReactElement {
   const needsDays = dirty && draft.daysPerWeek !== null && draft.trainingDays === null;
 
   const onSave = async (): Promise<void> => {
-    const ok = await save();
-    if (!ok) return;
+    const outcome = await save();
+    if (outcome !== 'saved') return;
     await alert({
       title: 'Configurações salvas',
-      message: 'Seu plano foi atualizado.',
+      message: missingPlan ? 'Seu plano foi gerado.' : 'Seu plano foi atualizado.',
       icon: <CheckCircle checked decorative size={sizes.badgeLg} />,
     });
     router.back();
@@ -131,8 +134,18 @@ export default function PlanSettingsScreen(): ReactElement {
                 </Text>
               ) : null}
               <Button
-                label={saving ? 'Salvando...' : 'Salvar alterações'}
-                disabled={!dirty || !complete || saving}
+                label={
+                  saving
+                    ? regenerating
+                      ? 'Atualizando plano...'
+                      : 'Salvando...'
+                    : !dirty && needsRegeneration
+                      ? 'Tentar novamente'
+                      : !dirty && missingPlan
+                        ? 'Gerar plano'
+                        : 'Salvar alterações'
+                }
+                disabled={(!dirty && !needsRegeneration && !missingPlan) || !complete || saving}
                 onPress={() => {
                   void onSave();
                 }}

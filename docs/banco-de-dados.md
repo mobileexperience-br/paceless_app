@@ -5,8 +5,8 @@ banco, então **a RLS é a única barreira**: toda tabela tem RLS ativa, `anon` 
 tem acesso a nada e cada política usa `(select auth.uid())`.
 Contexto: [decisoes.md](./decisoes.md).
 
-Todas as 15 migrations de `supabase/migrations/` estão aplicadas no projeto remoto
-`twfqvvfpnspbdaytrerm` (confirmado em 21/10/2026). O app só usa hoje `profiles`,
+As 16 primeiras migrations de `supabase/migrations/` estão aplicadas no projeto remoto
+`twfqvvfpnspbdaytrerm` (confirmado em 21/10/2026). A 17ª, `20261029000000_generated_plans.sql`, ainda precisa ser aplicada com `supabase db push` antes do deploy de `generate-plan`. O app só usa hoje `profiles`,
 `subscriptions`, `activities` e o Storage `avatars`; as demais tabelas existem no
 banco, mas ainda não têm tela.
 
@@ -77,9 +77,9 @@ Sessão de força executada vira linha em `activities` com `type = 'strength'`
 
 | Tabela | Propósito | RLS e escrita do client |
 |---|---|---|
-| `plans` | Plano (nome, `goal`, `level`, `weeks`, `sessions_per_week`, `is_premium`). `owner_id` nulo = catálogo | Select de catálogo + próprios. Sem escrita (planos de usuário serão gerados pelo servidor/IA) |
+| `plans` | Plano (nome, `goal`, `level`, `weeks`, `sessions_per_week`, `is_premium`, `settings_hash`, `generator_version`, `tier` free/full). `owner_id` nulo = catálogo; planos do usuário têm `owner_id` dele | Select de catálogo + próprios. Sem escrita: planos de usuário são gerados por regras na Edge Function `generate-plan` |
 | `plan_weeks` | Semana N do plano | Select se o plano é visível |
-| `plan_workouts` | Treino do dia: `day_of_week` (1 = segunda ... 7 = domingo), `kind` run/strength/rest, `intensity` easy/moderate/hard, `zone` 1 a 5, meta de duração/distância, `strength_workout_id` opcional | Select se a semana é visível |
+| `plan_workouts` | Treino do dia: `day_of_week` (1 = segunda ... 7 = domingo), `kind` run/strength/rest, `intensity` easy/moderate/hard, `zone` 1 a 5, meta de duração/distância, `description` (PT-BR), `steps` (jsonb: aquecimento, blocos, desaquecimento), `strength_workout_id` opcional | Select se a semana é visível |
 | `user_plans` | Inscrição: `plan_id`, `started_at`, `current_week`, `status`. Índice único parcial garante um plano `active` por usuário | Select/delete próprios. Update só de `current_week` e `status` (grant por coluna). Insert só via `enroll_in_plan` |
 | `user_plan_workouts` | Agenda: `scheduled_date`, `status` planned/done/skipped, `activity_id` concluído | Select próprio. Update só de `status`, `activity_id`, `completed_at`; `activity_id` precisa ser atividade do próprio usuário. Insert só via `enroll_in_plan` |
 
@@ -91,6 +91,47 @@ Planos com `is_premium` exigem linha ativa em `subscriptions` (entitlement `prem
 não expirada); caso contrário levanta `premium required` (`42501`). Um `pg_advisory_xact_lock`
 por usuário serializa inscrições concorrentes, e as linhas `planned` do plano cancelado são
 removidas para não duplicar a agenda (histórico `done`/`skipped` é mantido).
+
+### Plano gerado por regras (`20261029000000_generated_plans.sql`)
+
+- `plans`: novas colunas `settings_hash` (chave das entradas do plano, para não regenerar à toa),
+  `generator_version` e `tier` (`free` ou `full`). Índice `(owner_id, settings_hash)`.
+- `plan_workouts`: novas colunas `description` e `steps` (`jsonb`, sempre array).
+- `public.replace_generated_plan(p_user uuid, p_start date, p_today date, p_force boolean, p_plan jsonb) returns uuid`:
+  `security definer`, `search_path = ''`, execute revogado de `public`/`anon`/`authenticated` e
+  concedido só a `service_role`. Numa transação, com o mesmo `pg_advisory_xact_lock` de `enroll_in_plan`:
+  - Lê o `user_plans` ativo e o `settings_hash` do plano. Se `p_force` é falso e o hash é igual ao
+    de `p_plan ->> 'settings_hash'`, devolve o `user_plans.id` atual e não faz mais nada.
+  - No plano anterior, marca como `skipped` os `planned` com data `< p_today` e apaga os `planned`
+    com data `>= p_today`. O corte é `p_today` (a data de hoje em São Paulo), não `p_start`.
+  - Cancela o `user_plans` anterior (o `done` e o `skipped` ficam nele).
+  - Insere `plans`, `plan_weeks`, `plan_workouts`, `user_plans` (com `p_start`) e `user_plan_workouts`.
+    Para cada treino novo, procura no plano anterior uma linha `done` ou `skipped` com a mesma
+    `scheduled_date`, a mesma `plan_workouts.position` e o mesmo `kind`. Se achar, copia `status`,
+    `activity_id` e `completed_at`. Se não achar, entra `skipped` quando a data é anterior a `p_today`,
+    e `planned` nos outros casos.
+- O `weeks` do plano é o número de semanas do array `weeks` do JSON.
+- Quem chama é a Edge Function `generate-plan` com a service role. O client nunca chama a RPC.
+  Regras e números em [planos.md](./planos.md).
+- Migration `20261029010000_plan_session_link.sql` (Parte 2):
+  - `plans.full_weeks smallint` (`>= 1`): total de semanas do plano completo. No free, `weeks`
+    é 2 e `full_weeks` é o total (ex.: 12). Planos antigos ficam nulos e a UI usa `weeks`.
+  - `activities.user_plan_workout_id uuid` (FK para `user_plan_workouts`, `on delete set null`,
+    com índice). É o vínculo entre o treino feito e a sessão do plano.
+  - Policy `activities_insert_own` recriada: o insert só passa se `user_id` for do usuário e, se
+    houver `user_plan_workout_id`, a sessão pertencer a esse usuário e o `user_plans` estiver
+    `active`. Insert de outro usuário, ou de sessão de plano cancelado, falha por RLS.
+  - Trigger `activities_link_plan_workout` (`after insert`, só quando `user_plan_workout_id` não é
+    nulo) chama `public.link_activity_to_plan_workout()`. Ela marca a sessão como `done`, com
+    `activity_id = new.id` e `completed_at = new.ended_at`, e só se a sessão for do mesmo usuário
+    e ainda não estiver `done`. A função é `security definer`, `search_path = ''`, e o execute
+    está revogado de `public`/`anon`/`authenticated`. O client nunca faz `update` em
+    `user_plan_workouts`: o vínculo é só o insert da atividade.
+  - `replace_generated_plan` foi recriada (`create or replace`, mesma assinatura) para gravar
+    `plans.full_weeks` a partir de `p_plan ->> 'full_weeks'`.
+  - Histórico: quando o plano é regenerado, a RPC copia `status` e `activity_id` das sessões
+    antigas. `activities.user_plan_workout_id` antigo continua apontando para a linha do plano
+    cancelado. A UI lê só o plano ativo, então isso não aparece.
 
 ### Gamificação (`20261019210300_gamification.sql`)
 
@@ -132,8 +173,9 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 - `meals.notes`, `nutrition_goals`, `connected_devices` e dados de atividade também
   são dados de saúde/bem-estar: mesma RLS own-only, nunca expostos entre usuários.
 - Exclusão de conta: toda tabela de usuário referencia `auth.users` com `on delete cascade`
-  (`delete-account` apaga tudo). `user_plans.plan_id` usa `restrict` no catálogo: não
-  apague plano de catálogo que tenha inscritos (arquive em vez disso).
+  (`delete-account` apaga tudo). `user_plans.plan_id` usa `no action` (migration `20261029000000_generated_plans.sql`):
+  planos gerados pertencem ao usuário e caem em cascata junto com `user_plans` na exclusão de conta, e `no action` checa
+  só no fim do statement. Plano de catálogo com inscritos continua sem poder ser apagado (arquive em vez disso).
 - Não colocar dados de anamnese em logs, analytics ou prompts de IA sem base legal;
   a IA de nutrição passa por Edge Function.
 
@@ -166,8 +208,22 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 14. `20261020000000_restrict_core_table_grants.sql` (revoga `anon` e privilégios excessivos em `activities` e `profiles`)
 15. `20261020010000_handle_new_user.sql` (trigger de perfil no signup e backfill)
 16. `20261021000000_profiles_training_days.sql` (coluna `profiles.training_days`, `smallint[]` de 1 a 7, escolhida no onboarding entre combinações predefinidas em `lib/trainingDayCombos.ts`)
+17. `20261029000000_generated_plans.sql` (colunas de geração em `plans` e `plan_workouts`, índice `plans_owner_id_hash_idx` e a RPC `replace_generated_plan(p_user, p_start, p_today, p_force, p_plan)`, só `service_role`). **Ainda não aplicada no remoto**: aplicar antes do deploy de `generate-plan`
+
+18. `20261029010000_plan_session_link.sql` (Parte 2: `plans.full_weeks`, `activities.user_plan_workout_id`, policy `activities_insert_own` nova, trigger `activities_link_plan_workout` e `replace_generated_plan` recriada). **Ainda não aplicada no remoto**: depende de `20261029000000_generated_plans.sql`.
 
 A ordem acima segue a ordem dos timestamps dos arquivos.
+
+### Ordem de deploy
+
+A migration `20261029010000_plan_session_link.sql` e o deploy da Edge Function `generate-plan`
+com `GENERATOR_VERSION = 2` (`supabase/functions/_shared/plan/hash.ts`) precisam ir ao ar **antes**
+do build do app. O app passa a enviar `user_plan_workout_id` no upsert de `activities`. Sem a
+coluna e a policy novas, esse upsert falha e a atividade fica presa na fila offline
+(`lib/activityQueue.ts`) até a migration existir no remoto.
+
+Sequência: (1) `20261029000000_generated_plans.sql`, se ainda não estiver no remoto; (2)
+`20261029010000_plan_session_link.sql`; (3) deploy de `generate-plan`; (4) só então o build do app.
 
 ## Tipos TypeScript
 

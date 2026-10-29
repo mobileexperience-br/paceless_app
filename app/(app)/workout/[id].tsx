@@ -29,7 +29,7 @@ import type { DistanceUnit } from '@/types/preferences';
 
 const MS_PER_SECOND = 1000;
 
-function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): ReactElement {
+function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession | null; planSessionId: string | null }): ReactElement {
   useKeepAwake();
   const router = useRouter();
   const { confirmDiscard, confirmStop, showGpsHelp } = useWorkoutDialogs();
@@ -41,6 +41,7 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
   const [menuView, setMenuView] = useState<'closed' | 'menu' | 'types'>('closed');
   const [type, setType] = useState<WorkoutType>(resumed?.session.type ?? 'run');
   const startedAtRef = useRef<Date>(resumed ? new Date(resumed.session.startedAt) : new Date());
+  const [userPlanWorkoutId] = useState<string | null>(() => resumed?.session.userPlanWorkoutId ?? planSessionId);
   const elapsedSeconds = Math.floor(elapsedMs / MS_PER_SECOND);
   const tracker = useRunTracker({
     active: running,
@@ -51,12 +52,14 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
   const { clear } = useActiveSessionSync({
     startedAtRef,
     type,
+    userPlanWorkoutId,
     stopwatch: state,
     track: tracker.track,
   });
   const { finishing, saving, finishWorkout } = useWorkoutFinish({
     type,
     startedAtRef,
+    userPlanWorkoutId,
     elapsedSeconds,
     tracker,
     distanceUnit,
@@ -163,7 +166,7 @@ function WorkoutContent({ resumed }: { resumed: ResumableSession | null }): Reac
 }
 
 export default function WorkoutScreen(): ReactElement | null {
-  const { resume } = useLocalSearchParams<{ resume?: string }>();
+  const { resume, session } = useLocalSearchParams<{ resume?: string; session?: string }>();
   const [resumed, setResumed] = useState<ResumableSession | null>(null);
   const [ready, setReady] = useState<boolean>(resume !== '1');
 
@@ -176,7 +179,7 @@ export default function WorkoutScreen(): ReactElement | null {
   }, [resume]);
 
   if (!ready) return null;
-  return <ThemeScope scheme="dark"><WorkoutContent resumed={resumed} /></ThemeScope>;
+  return <ThemeScope scheme="dark"><WorkoutContent resumed={resumed} planSessionId={session ?? null} /></ThemeScope>;
 }
 
 const styles = StyleSheet.create({

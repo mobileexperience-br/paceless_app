@@ -1,4 +1,6 @@
 import { useCallback, useState } from 'react';
+import { useActivePlan } from '@/hooks/useActivePlan';
+import { useGeneratePlan } from '@/hooks/useGeneratePlan';
 import { useProfile } from '@/hooks/useProfile';
 import { useSession } from '@/hooks/useSession';
 import { draftFromProfile, draftsDiffer, emptyPlanDraft, isPlanDraftComplete, type PlanDraft } from '@/lib/planDraft';
@@ -13,14 +15,19 @@ export interface UsePlanSettings {
   dirty: boolean;
   complete: boolean;
   saving: boolean;
+  regenerating: boolean;
+  needsRegeneration: boolean;
+  missingPlan: boolean;
   error: string | null;
   setGoal: (value: OnboardingAnswers['goal']) => void;
   setLevel: (value: OnboardingAnswers['level']) => void;
   setDaysPerWeek: (value: OnboardingAnswers['daysPerWeek']) => void;
   setTrainingDays: (value: TrainingDayComboId) => void;
   setStrength: (value: OnboardingAnswers['strength']) => void;
-  save: () => Promise<boolean>;
+  save: () => Promise<SaveOutcome>;
 }
+
+export type SaveOutcome = 'saved' | 'regeneration_failed' | 'failed';
 
 const saveError = 'Não foi possível salvar as configurações. Tente novamente.';
 
@@ -28,11 +35,16 @@ export function usePlanSettings(): UsePlanSettings {
   const { user } = useSession();
   const userId = user?.id ?? null;
   const { profile, loading: profileLoading, refresh } = useProfile();
+  const { generate, generating: regenerating } = useGeneratePlan();
+  const { plan, loading: planLoading, reload } = useActivePlan();
   const [source, setSource] = useState<{ profile: ProfileRow | null } | null>(null);
   const [initial, setInitial] = useState<PlanDraft | null>(null);
   const [draft, setDraft] = useState<PlanDraft | null>(null);
   const [saving, setSaving] = useState(false);
+  const [needsRegeneration, setNeedsRegeneration] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const missingPlan = !planLoading && plan === null;
+  const canRegenerate = needsRegeneration || missingPlan;
 
   if (!profileLoading && source?.profile !== profile) {
     const next = draftFromProfile(profile);
@@ -63,13 +75,29 @@ export function usePlanSettings(): UsePlanSettings {
     });
   }, []);
 
-  const save = useCallback(async (): Promise<boolean> => {
+  const regenerate = useCallback(async (): Promise<SaveOutcome> => {
+    setSaving(true);
+    setError(null);
+    const regeneration = await generate();
+    setSaving(false);
+    if (regeneration.error) {
+      setNeedsRegeneration(true);
+      setError(regeneration.error);
+      return 'regeneration_failed';
+    }
+    setNeedsRegeneration(false);
+    await reload();
+    return 'saved';
+  }, [generate, reload]);
+
+  const save = useCallback(async (): Promise<SaveOutcome> => {
     const days = draft?.trainingDays ?? null;
-    if (!draft || days === null || !complete || !dirty) return false;
+    if (!draft || days === null || !complete || (!dirty && !canRegenerate)) return 'failed';
     if (!supabase || !userId) {
       setError('Serviço não configurado.');
-      return false;
+      return 'failed';
     }
+    if (!dirty) return regenerate();
     setSaving(true);
     setError(null);
     let saved = false;
@@ -90,15 +118,15 @@ export function usePlanSettings(): UsePlanSettings {
     } catch {
       saved = false;
     }
-    setSaving(false);
     if (!saved) {
+      setSaving(false);
       setError(saveError);
-      return false;
+      return 'failed';
     }
     setInitial(draft);
     await refresh();
-    return true;
-  }, [draft, complete, dirty, userId, refresh]);
+    return regenerate();
+  }, [draft, complete, dirty, canRegenerate, userId, refresh, regenerate]);
 
   return {
     loading: profileLoading || draft === null,
@@ -106,6 +134,9 @@ export function usePlanSettings(): UsePlanSettings {
     dirty,
     complete,
     saving,
+    regenerating,
+    needsRegeneration,
+    missingPlan,
     error,
     setGoal,
     setLevel,

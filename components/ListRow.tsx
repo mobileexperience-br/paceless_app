@@ -24,6 +24,8 @@ interface ListRowProps {
   external?: boolean;
   loading?: boolean;
   tone?: 'default' | 'danger';
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
   accessibilityRole?: AccessibilityRole;
   accessibilityState?: AccessibilityState;
   divider?: boolean;
@@ -42,6 +44,8 @@ export function ListRow({
   external = false,
   loading = false,
   tone = 'default',
+  accessibilityLabel,
+  accessibilityHint,
   accessibilityRole,
   accessibilityState,
   divider = false,
@@ -52,6 +56,8 @@ export function ListRow({
   const styles = useThemedStyles(makeStyles);
   return (
     <Pressable
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       accessibilityRole={accessibilityRole ?? (onPress ? 'button' : undefined)}
       accessibilityState={{ ...accessibilityState, busy: loading }}
       disabled={!onPress || loading}
