@@ -81,6 +81,8 @@ const makeStyles = createStyles((colors) =>
     },
     hero: {
       ...StyleSheet.absoluteFill,
+      width: '100%',
+      height: '100%',
       backgroundColor: colors.textSecondary,
     },
     scrim: {

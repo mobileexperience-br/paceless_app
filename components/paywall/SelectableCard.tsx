@@ -41,7 +41,7 @@ export function SelectableCard({
 const makeStyles = createStyles((colors) =>
   StyleSheet.create({
     card: {
-      flex: 1,
+      flexGrow: 1,
       borderWidth: 2,
       borderRadius: radius.lg,
     },
