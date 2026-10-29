@@ -15,6 +15,7 @@ Planejamento e acordos do projeto. O código diz *como* está; esta pasta diz
 | [publicacao-lojas.md](./publicacao-lojas.md) | Checklist de Google Play e App Store, e passos de EAS |
 | [lojas/](./lojas/checklist.md) | Requisitos de publicação: [Google Play](./lojas/google-play.md), [App Store](./lojas/app-store.md) e [checklist consolidado](./lojas/checklist.md) |
 | [legal/](./legal/politica-de-privacidade.md) | Rascunhos (revisar com advogado): [política de privacidade](./legal/politica-de-privacidade.md) e [termos de uso](./legal/termos-de-uso.md) |
+| [relogios.md](./relogios.md) | Planejamento de relógios, pulseiras e cintas cardíacas: central de saúde, Bluetooth, APIs das marcas |
 | [notificacoes.md](./notificacoes.md) | Planejamento de notificações: lembrete local, credenciais de push e push via Supabase |
 | [pesquisa/](./pesquisa/README.md) | Propostas da Trilha R: relógios e saúde, notificações, compartilhar corrida, gamificação e musculação |
 | [ambiente-web.md](./ambiente-web.md) | Rodar o app no navegador para desenvolvimento: o que funciona e o que não |
