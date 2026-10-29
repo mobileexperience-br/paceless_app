@@ -49,6 +49,7 @@ export default function RootLayout(): ReactElement | null {
                 <Stack.Screen name="(app)" />
                 <Stack.Screen name="legal/terms" />
                 <Stack.Screen name="legal/privacy" />
+                <Stack.Screen name="auth/callback" />
               </ThemedStack>
             </DialogProvider>
           </ThemeProvider>

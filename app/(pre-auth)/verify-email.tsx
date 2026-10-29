@@ -5,6 +5,7 @@ import { MailCheck } from 'lucide-react-native';
 import { Button, IconBadge, Screen, ScreenHeader, Text } from '@/components';
 import { InlineError } from '@/components/InlineError';
 import { supabase } from '@/lib/supabase';
+import { authRedirectUrl } from '@/lib/authRedirect';
 import { layout, spacing } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -37,7 +38,11 @@ export default function VerifyEmailScreen(): ReactElement {
     }
     setError(null);
     setSending(true);
-    const { error: resendError } = await supabase.auth.resend({ type: 'signup', email });
+    const { error: resendError } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: authRedirectUrl },
+    });
     setSending(false);
     if (resendError) {
       setError(RESEND_ERROR);

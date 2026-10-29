@@ -9,6 +9,7 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { authRedirectUrl } from '@/lib/authRedirect';
 
 export interface AuthResult {
   error: string | null;
@@ -105,7 +106,7 @@ export function SessionProvider({ children }: { children: ReactNode }): ReactEle
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { name } },
+        options: { data: { name }, emailRedirectTo: authRedirectUrl },
       });
       if (!error && data.user?.identities?.length === 0) {
         return { error: translateError('already registered'), needsConfirmation: false };
@@ -130,7 +131,7 @@ export function SessionProvider({ children }: { children: ReactNode }): ReactEle
     if (!supabase) {
       return notConfigured;
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: authRedirectUrl });
     return toResult(error);
   }, []);
 
