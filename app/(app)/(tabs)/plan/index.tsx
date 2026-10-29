@@ -71,6 +71,7 @@ export default function PlanScreen(): ReactElement {
             title="Configurações do plano"
             leading={<Settings size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />}
             showChevron
+            onPress={() => { router.push('/plan/settings'); }}
           />
         </Card>
       </View>

@@ -10,6 +10,8 @@ interface SelectableCardProps {
   onPress: () => void;
   children: ReactNode;
   pressableStyle?: StyleProp<ViewStyle>;
+  accessibilityLabel?: string;
+  disabled?: boolean;
 }
 
 export function SelectableCard({
@@ -17,6 +19,8 @@ export function SelectableCard({
   onPress,
   children,
   pressableStyle,
+  accessibilityLabel,
+  disabled,
 }: SelectableCardProps): ReactElement {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
@@ -24,7 +28,9 @@ export function SelectableCard({
   return (
     <Pressable
       accessibilityRole="radio"
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ checked: active, selected: active }}
+      disabled={disabled}
       onPress={onPress}
       style={pressableStyle}
     >
