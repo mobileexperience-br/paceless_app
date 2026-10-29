@@ -6,6 +6,7 @@ import { useSaveActivity, type NewActivity, type SaveResult } from '@/hooks/useS
 import type { WorkoutType } from '@/lib/activities';
 import { setWorkoutSummary } from '@/lib/workoutSummary';
 import type { DistanceUnit } from '@/types/preferences';
+import type { HeartRateSummary } from '@/types/heartRate';
 
 const MIN_SAVE_SECONDS = 10;
 
@@ -20,6 +21,7 @@ interface FinishWorkoutOptions {
   distanceUnit: DistanceUnit;
   pause: () => void;
   clearSession: () => Promise<void>;
+  heartRate: { finish: () => HeartRateSummary | null };
 }
 
 interface FinishWorkout {
@@ -37,6 +39,7 @@ export function useFinishWorkout({
   distanceUnit,
   pause,
   clearSession,
+  heartRate,
 }: FinishWorkoutOptions): FinishWorkout {
   const router = useRouter();
   const { save, saving } = useSaveActivity();
@@ -49,6 +52,7 @@ export function useFinishWorkout({
     setFinishing(true);
     pause();
     const snapshot = await tracker.stop();
+    const hr = heartRate.finish();
     if (elapsedSeconds < MIN_SAVE_SECONDS) {
       await clearSession();
       finishingRef.current = false;
@@ -68,8 +72,10 @@ export function useFinishWorkout({
       route: snapshot.route.length > 0 ? snapshot.route : null,
       splits: snapshot.splits.length > 0 ? snapshot.splits : null,
       user_plan_workout_id: userPlanWorkoutId,
+      avg_heart_rate: hr?.avg ?? null,
+      max_heart_rate: hr?.max ?? null,
     };
-    const status = await save(draft);
+    const status = await save(draft, hr?.samples ?? []);
     if (status !== 'failed') await clearSession();
     setWorkoutSummary({
       type,
@@ -81,6 +87,7 @@ export function useFinishWorkout({
       status,
       distanceUnit,
       draft,
+      heartRate: hr,
       discardSession: clearSession,
     });
     router.replace('/workout/summary');

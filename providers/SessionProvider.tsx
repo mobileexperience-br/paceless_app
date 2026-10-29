@@ -11,6 +11,7 @@ import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { authRedirectUrl } from '@/lib/authRedirect';
 import { cancelReminders } from '@/lib/platform/reminders';
+import { clearHeartRateLocalData } from '@/lib/strapDevice';
 import { unregisterPushToken } from '@/lib/pushTokens';
 
 export interface AuthResult {
@@ -127,6 +128,7 @@ export function SessionProvider({ children }: { children: ReactNode }): ReactEle
     }
     await unregisterPushToken();
     await cancelReminders();
+    await clearHeartRateLocalData();
     const { error } = await supabase.auth.signOut();
     return toResult(error);
   }, []);

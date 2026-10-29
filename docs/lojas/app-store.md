@@ -72,8 +72,12 @@ para anúncios/dados de terceiros) = **Não**.
 | Informações de contato > Endereço de e-mail | Sim | Sim | Não | Funcionalidade do app |
 | Informações de contato > Nome | Sim | Sim | Não | Funcionalidade; personalização |
 | Localização > Localização precisa | Sim (rota ao salvar) | Sim | Não | Funcionalidade do app |
-| Saúde e fitness > Fitness | Sim (distância, duração, ritmo, rota) | Sim | Não | Funcionalidade; personalização |
-| Saúde e fitness > Saúde | Não | n/a | n/a | n/a (sem dados médicos; objetivo/nível são preferências de treino, tratar como fitness) |
+| Saúde e fitness > Fitness | Sim (distância, duração, ritmo, rota; treinos importados do Apple Saúde) | Sim | Não | Funcionalidade; personalização |
+| Saúde e fitness > Saúde | Sim, desde a fase 1 de relógios (frequência cardíaca média e máxima dos treinos importados do Apple Saúde). Objetivo e nível continuam sendo preferências de treino | Sim | Não | Funcionalidade do app (histórico e plano) |
+
+Frequência cardíaca de cinta BLE (fase 2): média, máxima e amostras do treino são coletadas só depois que o usuário pareia uma cinta, ficam vinculadas à conta e armazenadas no servidor, sem compartilhamento com terceiros. Finalidade: funcionalidade do app (histórico e zonas).
+
+Dados do HealthKit não são usados para publicidade e não são enviados ao iCloud. Detalhes e testes em [health-connect-healthkit.md](./health-connect-healthkit.md).
 | Compras > Histórico de compras | Sim (status da assinatura) | Sim | Não | Funcionalidade do app |
 | Identificadores > ID do usuário | Sim | Sim | Não | Funcionalidade do app |
 | Identificadores > ID do dispositivo | **A verificar** (RevenueCat pode coletar identificador de instalação/IDFV) | Sim | Não | Funcionalidade do app |
@@ -119,6 +123,10 @@ Fontes: [Privacy manifest files](https://developer.apple.com/documentation/bundl
 - Se o app não pedir permissão de localização no primeiro uso sem contexto
   (hoje pede ao iniciar treino), está dentro das regras.
 - Adicionar tradução EN do texto se o app for lançado em outros países.
+- Modo de segundo plano `bluetooth-central` (`UIBackgroundModes`, fase 2): mantém a leitura de FC de uma cinta BLE com a tela bloqueada durante um treino que o usuário iniciou. Fora do treino e da tela de pareamento, o app não faz scan nem conexão. Texto de permissão `NSBluetoothAlwaysUsageDescription` (PT-BR): "O Paceless usa o Bluetooth para ler sua frequência cardíaca da cinta ou do relógio durante o treino."
+- Nota para o App Review (copiar em inglês):
+  > "Paceless connects to standard Bluetooth heart-rate chest straps (Bluetooth SIG Heart Rate Service 0x180D) during an active run. The `bluetooth-central` background mode keeps the heart-rate stream alive while the screen is locked during a workout the user started. No scanning or connection happens outside an active workout or the pairing screen. To test without a strap, the run works normally and simply shows no heart rate."
+- Privacidade (App Privacy): frequência cardíaca entra como "Saúde" (vinculada ao usuário, sem rastreamento, finalidade "Funcionalidade do app").
 
 ## 7. Conta demo para a revisão (2.1, 5.1.1)
 

@@ -1,5 +1,6 @@
 import type { RoutePoint } from '@/lib/geo';
 import type { Split } from '@/lib/splits';
+import type { ActivitySource } from '@/types/healthHub';
 
 export type ActivityType = 'run' | 'walk' | 'strength';
 
@@ -25,6 +26,8 @@ export interface ActivityDraft {
   route: RoutePoint[] | null;
   splits: Split[] | null;
   user_plan_workout_id: string | null;
+  avg_heart_rate: number | null;
+  max_heart_rate: number | null;
 }
 
 export interface Activity {
@@ -33,10 +36,12 @@ export interface Activity {
   startedAt: Date;
   durationSeconds: number;
   distanceMeters: number;
+  source: ActivitySource;
+  sourceName: string | null;
   pending?: boolean;
 }
 
-export const activitySelect = 'id,type,started_at,duration_seconds,distance_meters';
+export const activitySelect = 'id,type,started_at,duration_seconds,distance_meters,source,source_name';
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -44,6 +49,10 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function isActivityType(value: unknown): value is ActivityType {
   return value === 'run' || value === 'walk' || value === 'strength';
+}
+
+export function isActivitySource(value: unknown): value is ActivitySource {
+  return value === 'paceless' || value === 'healthkit' || value === 'health_connect';
 }
 
 function toNumber(value: unknown): number | null {
@@ -60,12 +69,23 @@ export function parseActivity(row: unknown): Activity | null {
   const { id, type, started_at: startedAt } = row;
   const duration = toNumber(row['duration_seconds']);
   const distance = toNumber(row['distance_meters']);
+  const source: unknown = row['source'] ?? 'paceless';
+  const sourceName: unknown = row['source_name'];
   if (typeof id !== 'string' || !isActivityType(type) || typeof startedAt !== 'string') {
     return null;
   }
+  if (!isActivitySource(source)) return null;
   const date = new Date(startedAt);
   if (Number.isNaN(date.getTime()) || duration === null || distance === null) return null;
-  return { id, type, startedAt: date, durationSeconds: duration, distanceMeters: distance };
+  return {
+    id,
+    type,
+    startedAt: date,
+    durationSeconds: duration,
+    distanceMeters: distance,
+    source,
+    sourceName: typeof sourceName === 'string' ? sourceName : null,
+  };
 }
 
 export function draftToActivity(draft: ActivityDraft): Activity {
@@ -75,6 +95,8 @@ export function draftToActivity(draft: ActivityDraft): Activity {
     startedAt: new Date(draft.started_at),
     durationSeconds: draft.duration_seconds,
     distanceMeters: draft.distance_meters,
+    source: 'paceless',
+    sourceName: null,
     pending: true,
   };
 }

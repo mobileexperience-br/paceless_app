@@ -13,6 +13,7 @@ export interface ProfileRow {
   onboarding_completed_at: string | null;
   distance_unit: DistanceUnit;
   theme: ThemePreference;
+  max_heart_rate: number | null;
   created_at: string;
   updated_at: string;
 }

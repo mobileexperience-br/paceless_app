@@ -23,6 +23,7 @@ export interface PreferencesValue extends Preferences {
   error: string | null;
   setDistanceUnit: (unit: DistanceUnit) => Promise<void>;
   setTheme: (theme: ThemePreference) => Promise<void>;
+  setMaxHeartRate: (value: number | null) => Promise<void>;
 }
 
 const SAVE_ERROR = 'Não foi possível salvar a preferência. Tente novamente.';
@@ -34,7 +35,9 @@ async function fetchPreferences(userId: string): Promise<Preferences | null> {
   const result = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
   const raw: unknown = result.data;
   const row = parseProfileRow(raw);
-  return row ? { distanceUnit: row.distance_unit, theme: row.theme } : null;
+  return row
+    ? { distanceUnit: row.distance_unit, theme: row.theme, maxHeartRate: row.max_heart_rate }
+    : null;
 }
 
 async function pushPreferences(userId: string, patch: Partial<Preferences>): Promise<boolean> {
@@ -44,6 +47,7 @@ async function pushPreferences(userId: string, patch: Partial<Preferences>): Pro
       id: userId,
       ...(patch.distanceUnit !== undefined && { distance_unit: patch.distanceUnit }),
       ...(patch.theme !== undefined && { theme: patch.theme }),
+      ...(patch.maxHeartRate !== undefined && { max_heart_rate: patch.maxHeartRate }),
     },
     { onConflict: 'id', defaultToNull: false },
   );
@@ -62,6 +66,10 @@ function revertPatch(
         : current.distanceUnit,
     theme:
       patch.theme !== undefined && current.theme === patch.theme ? previous.theme : current.theme,
+    maxHeartRate:
+      patch.maxHeartRate !== undefined && current.maxHeartRate === patch.maxHeartRate
+        ? previous.maxHeartRate
+        : current.maxHeartRate,
   };
 }
 
@@ -137,10 +145,14 @@ export function PreferencesProvider({ children }: { children: ReactNode }): Reac
     (theme: ThemePreference): Promise<void> => update({ theme }),
     [update],
   );
+  const setMaxHeartRate = useCallback(
+    (maxHeartRate: number | null): Promise<void> => update({ maxHeartRate }),
+    [update],
+  );
 
   const value = useMemo<PreferencesValue>(
-    () => ({ ...preferences, error, setDistanceUnit, setTheme }),
-    [preferences, error, setDistanceUnit, setTheme],
+    () => ({ ...preferences, error, setDistanceUnit, setTheme, setMaxHeartRate }),
+    [preferences, error, setDistanceUnit, setTheme, setMaxHeartRate],
   );
 
   return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>;

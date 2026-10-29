@@ -164,6 +164,18 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 | `meals` | Refeição do dia: `meal_type` breakfast/lunch/dinner/snack (café/almoço/jantar/lanche), macros opcionais, notas | CRUD próprio |
 | `anamnesis` | Restrições e condições de saúde (`text[]`), com `consented_at` obrigatório | CRUD próprio |
 
+### Frequência cardíaca BLE (`20261029140000_ble_heart_rate.sql`)
+
+- `connected_devices`: o check de `provider` passa a aceitar `ble_hr`. Novas colunas `device_id text` e `device_name text`. Check `connected_devices_ble_device_check`: `provider <> 'ble_hr' or device_id is not null`. As policies de insert e update aceitam `health_connect`, `healthkit` e `ble_hr`. Grant de update ampliado para `(device_id, device_name)`. Continuam valendo `status`, `granted_scopes` e `last_sync_at`.
+- `profiles.max_heart_rate smallint`, entre 100 e 230. Sincroniza com Preferências. Sem data de nascimento: a zona de FC só existe com este valor.
+- `activity_samples`: uma linha por segundo com leitura de FC do treino.
+  - Colunas: `activity_id uuid` (FK para `activities`, `on delete cascade`), `user_id uuid` (FK para `auth.users`, default `auth.uid()`), `t_offset_s integer` (≥ 0), `hr_bpm smallint` (30 a 230, nulo permitido).
+  - Chave primária `(activity_id, t_offset_s)`.
+  - RLS ativa. `select` e `delete` só do dono. `insert` só do dono e só se a atividade for do usuário.
+  - Grants: `revoke all` de `anon` e `authenticated`, depois `select, insert, delete` para `authenticated`.
+  - Não há `update`. Atividade e amostras não são editadas depois de salvas.
+  - Amostras não guardam `lat`/`lng` (a rota já fica em `activities.route`) nem intervalos RR.
+
 ## LGPD
 
 - `anamnesis` (diabetes, intolerância etc.) é **dado pessoal sensível de saúde**
@@ -187,6 +199,22 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
   `connected_devices`), além da RLS.
 - Valores de domínio em inglês nos checks (`breakfast`, `easy`...); a tradução é da UI.
 - Tokens de dispositivo em tabela separada, para o `select` do client nunca tocar segredo.
+- Migration `20261029130000_activities_external_source.sql` (origem dos treinos, fase 1 de
+  relógios):
+  - `activities.source text not null default 'paceless'`, com check em `paceless`, `healthkit`
+    e `health_connect`. Treinos do Paceless ficam com o default, sem mudança no client.
+  - `activities.external_id text`: id do treino no Apple Saúde ou no Health Connect. Check
+    `activities_external_id_check`: `external_id` é nulo se e só se `source = 'paceless'`.
+  - `activities.source_name text`: nome da fonte no Saúde (ex.: "Garmin Connect"), usado no
+    rótulo de origem da lista de atividades.
+  - `activities.avg_heart_rate` e `max_heart_rate smallint`, entre 20 e 250.
+  - Unique `activities_user_source_external_key (user_id, source, external_id)`. É uma unique
+    constraint completa, não índice parcial, porque o `onConflict` do PostgREST exige uma
+    constraint. Linhas do Paceless têm `external_id` nulo, e nulos são distintos no unique.
+  - Importação: o client faz `upsert` com `onConflict: 'user_id,source,external_id'` e
+    `ignoreDuplicates`, que vira `ON CONFLICT DO NOTHING`. Não precisa de grant de update. A
+    policy `activities_insert_own` vale para as linhas importadas, e `user_plan_workout_id`
+    fica nulo.
 - Segredos em `device_credentials` estão em texto: avaliar Supabase Vault ou criptografia
   antes de ligar Garmin/Strava.
 
@@ -211,6 +239,8 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 17. `20261029000000_generated_plans.sql` (colunas de geração em `plans` e `plan_workouts`, índice `plans_owner_id_hash_idx` e a RPC `replace_generated_plan(p_user, p_start, p_today, p_force, p_plan)`, só `service_role`). **Ainda não aplicada no remoto**: aplicar antes do deploy de `generate-plan`
 
 18. `20261029010000_plan_session_link.sql` (Parte 2: `plans.full_weeks`, `activities.user_plan_workout_id`, policy `activities_insert_own` nova, trigger `activities_link_plan_workout` e `replace_generated_plan` recriada). **Ainda não aplicada no remoto**: depende de `20261029000000_generated_plans.sql`.
+19. `20261029130000_activities_external_source.sql` (origem das atividades: `source`, `external_id`, `source_name`, FC média e máxima, check e unique `(user_id, source, external_id)`). **Não aplicada no remoto**. Não há mudança de grants nem de RLS.
+20. `20261029140000_ble_heart_rate.sql` (cinta BLE em `connected_devices`, `profiles.max_heart_rate`, tabela `activity_samples`). **Não aplicada no remoto**.
 
 A ordem acima segue a ordem dos timestamps dos arquivos.
 

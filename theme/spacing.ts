@@ -19,6 +19,7 @@ export const layout = {
   cardPadding: 16,
   controlHeight: 52,
   progressHeight: 8,
+  zoneLabelMinWidth: 120,
   tabBarHeight: 60,
   tabIconSize: 22,
 } as const;

@@ -64,7 +64,8 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 | Declaração de serviço em primeiro plano (tipo Localização) com vídeo do treino com tela bloqueada | Play | painel + Pedro | `[ ]` |
 | Justificar `UIBackgroundModes: location` nas notas do revisor (treino iniciado pelo usuário, indicador de localização visível, para ao finalizar) | Apple | painel | `[ ]` |
 | Teste em aparelho: corrida com tela bloqueada, notificação e consumo de bateria | Ambas | Pedro | `[ ]` |
-| Declaração de apps de saúde, anúncios, público-alvo, classificação | Play | painel | `[ ]` |
+| Declaração de apps de saúde, anúncios, público-alvo, classificação ([Health Connect](./health-connect-healthkit.md)) | Play | painel | `[ ]` |
+| Capability HealthKit no App ID, texto de revisão e rótulo Saúde/Fitness ([HealthKit](./health-connect-healthkit.md)) | Apple | painel | `[ ]` |
 | App Privacy (rótulos) conforme [seção 4](./app-store.md#4-app-privacy-rótulos-de-nutrição) | Apple | painel | `[ ]` |
 | Questionário de classificação etária (incluindo as novas perguntas) | Apple | painel | `[ ]` |
 | Conta de revisão (usuário com premium) e notas para o revisor | Ambas | painel + Pedro | `[ ]` |
@@ -74,3 +75,15 @@ Status: `[x]` já feito no repositório · `[ ]` pendente · `[?]` a verificar
 | Revisão jurídica dos textos legais | Ambas | Pedro (advogado) | `[ ]` |
 
 > Nota: os itens `[x]` acima refletem o estado de 21/10/2026. O app tem Termos, Privacidade e FAQ dentro dele (conteúdo em `content/legal/` e `content/faq.ts`, sem o aviso de rascunho). As lojas continuam exigindo **URLs públicas** de Termos/Privacidade (e de exclusão de dados no Play), que ainda precisam ser hospedadas e configuradas nas envs. Os textos seguem como rascunho e precisam de revisão jurídica; os placeholders (`[RAZÃO SOCIAL]`, `[DATA]` etc.) ainda não foram preenchidos.
+
+## Bluetooth e cinta cardíaca (fase 2)
+
+- [ ] Testar o pareamento com uma cinta real (Polar H10 ou equivalente) em iOS e Android, incluindo a prévia de bpm antes de salvar.
+- [ ] Testar o treino com a tela bloqueada no iPhone: a FC continua chegando com `bluetooth-central`.
+- [ ] Testar no Android com a tela bloqueada: confirmar se o serviço de localização mantém a conexão BLE (ver `docs/relogios.md`).
+- [ ] Testar `neverForLocation` no Android 12+ com a cinta e confirmar que o scan funciona sem localização ligada.
+- [ ] Testar desligar o Bluetooth no meio do treino e ligar de novo (o app deve reconectar sozinho).
+- [ ] Testar a permissão negada e bloqueada, e o botão de abrir configurações.
+- [ ] Conferir o texto de `NSBluetoothAlwaysUsageDescription` e a nota de App Review na seção "Textos de permissão" da App Store.
+- [ ] Conferir que a migration `20261029140000_ble_heart_rate.sql` foi aplicada no projeto antes do build de produção.
+

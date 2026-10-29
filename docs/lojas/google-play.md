@@ -67,6 +67,11 @@ Observações:
   página de privacidade deles ao preencher (a verificar).
 - A localização é "coletada" porque a rota é enviada ao servidor ao salvar.
 
+### Data safety para a fase 2 (cinta BLE)
+
+- Dados de saúde e fitness: frequência cardíaca do treino (média, máxima e amostras) coletada pelo app, enviada ao servidor e armazenada, vinculada à conta do usuário, sem compartilhamento com terceiros. Finalidade: funcionalidade do app.
+- A frequência cardíaca só é coletada depois que o usuário pareia uma cinta. A leitura da cinta é feita só durante o treino e na tela de pareamento.
+
 ## 4. Exclusão de conta
 
 Fonte: [Exclusão de conta no Play](https://support.google.com/googleplay/android-developer/answer/13327111).
@@ -86,6 +91,10 @@ Fonte: [Exclusão de conta no Play](https://support.google.com/googleplay/androi
 | `ACCESS_BACKGROUND_LOCATION` | **Não usada** (`isAndroidBackgroundLocationEnabled: false`, mantida em `blockedPermissions`) | Conferir no manifesto final que não aparece |
 | `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_LOCATION` | Serviço em primeiro plano do tipo `location` com notificação persistente "Paceless — treino em andamento" (`isAndroidForegroundServiceEnabled: true`) | Declaração de serviço em primeiro plano no Play Console (tipo Localização) com vídeo |
 | `POST_NOTIFICATIONS` | Exibir a notificação do serviço em primeiro plano (Android 13+) | Permissão em tempo de execução pedida ao iniciar o treino |
+| `BLUETOOTH_SCAN` (com `neverForLocation`) | Procurar a cinta cardíaca (serviço 0x180D) na tela de pareamento | Pedida em tempo de execução. A flag `neverForLocation` diz ao sistema que o scan não é usado para localização |
+| `BLUETOOTH_CONNECT` | Conectar à cinta e ler a FC durante o treino | Pedida em tempo de execução, junto com o scan (Android 12+) |
+| `BLUETOOTH`, `BLUETOOTH_ADMIN` | Só para Android antigo (API 30 e abaixo) | Declaradas pelo plugin, sem uso adicional |
+| `ACCESS_FINE_LOCATION` (até API 30) | Scan de BLE em Android antigo | Declarada com `maxSdkVersion=30` pelo plugin de BLE. No Android 12+ não é pedida. O `expo-location` continua declarando a mesma permissão para o rastreio |
 
 Política: [Permissões de localização](https://support.google.com/googleplay/android-developer/answer/9799150).
 Decisão: o rastreio com tela bloqueada usa serviço em primeiro plano iniciado
@@ -124,7 +133,7 @@ de Termos e Privacidade. Feito.
 | Acesso ao app | Há login: fornecer **conta de teste** (seção 10) |
 | Anúncios | Não contém |
 | Público-alvo | Adultos (18+) sugerido, evita regras de "Families". Decidir com o Pedro |
-| Apps de saúde (Health apps declaration) | O Play pede o formulário para apps com recursos de saúde/fitness. Paceless: atividade física/bem-estar, sem dados médicos, sem Health Connect. Textos exatos a verificar no console. [Ajuda](https://support.google.com/googleplay/android-developer/answer/14738291) (a verificar) |
+| Apps de saúde (Health apps declaration) | O Play pede o formulário para apps com recursos de saúde/fitness. Paceless: atividade física/bem-estar, sem dados médicos. **Usa Health Connect desde a fase 1 de relógios** (leitura e gravação de treinos, distância e FC): declaração com as permissões justificadas, ver [health-connect-healthkit.md](./health-connect-healthkit.md). Textos exatos a verificar no console. [Ajuda](https://support.google.com/googleplay/android-developer/answer/14738291) (a verificar) |
 | Aviso médico | Incluir nos termos/no app: o plano não substitui orientação médica |
 | ID de publicidade | Não usa; conferir se algum SDK injeta `AD_ID` e remover se sim (a verificar) |
 | Financeiro, notícias, governo, COVID | Não se aplica |

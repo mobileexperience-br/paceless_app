@@ -1,6 +1,7 @@
 import { useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Check } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { Card, ListRow, Screen, ScreenHeader, Text } from '@/components';
 import { usePreferences } from '@/hooks/usePreferences';
 import { layout, sizes, spacing } from '@/theme';
@@ -73,6 +74,8 @@ function OptionGroup<T extends string>({
 export default function PreferencesScreen(): ReactElement {
   const { distanceUnit, theme, error, setDistanceUnit, setTheme } = usePreferences();
   const [lastGroup, setLastGroup] = useState<'unit' | 'theme'>('unit');
+  const router = useRouter();
+  const { maxHeartRate } = usePreferences();
 
   return (
     <Screen scroll flush>
@@ -98,6 +101,19 @@ export default function PreferencesScreen(): ReactElement {
             void setTheme(value);
           }}
         />
+        <View style={styles.group}>
+          <Text variant="captionStrong">Treino</Text>
+          <Card flush>
+            <ListRow
+              title="Frequência cardíaca máxima"
+              value={maxHeartRate ? `${maxHeartRate} bpm` : 'Não definida'}
+              showChevron
+              onPress={() => {
+                router.push('/profile/heart-rate');
+              }}
+            />
+          </Card>
+        </View>
       </View>
     </Screen>
   );

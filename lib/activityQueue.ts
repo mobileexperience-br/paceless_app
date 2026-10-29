@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from 'react-native';
 import { isActivityType, isRecord, type ActivityDraft } from '@/lib/activities';
 import type { RoutePoint } from '@/lib/geo';
+import { flushPendingSamples } from '@/lib/activitySamples';
 import { supabase } from '@/lib/supabase';
 
 export const PENDING_ACTIVITIES_KEY = 'paceless:pending-activities';
@@ -52,7 +53,14 @@ function withQueueLock<T>(job: () => Promise<T>): Promise<T> {
 
 function withPlanLink(draft: ActivityDraft): ActivityDraft {
   const link: unknown = draft.user_plan_workout_id;
-  return { ...draft, user_plan_workout_id: typeof link === 'string' ? link : null };
+  const avgHeartRate: unknown = draft.avg_heart_rate;
+  const maxHeartRate: unknown = draft.max_heart_rate;
+  return {
+    ...draft,
+    user_plan_workout_id: typeof link === 'string' ? link : null,
+    avg_heart_rate: typeof avgHeartRate === 'number' ? avgHeartRate : null,
+    max_heart_rate: typeof maxHeartRate === 'number' ? maxHeartRate : null,
+  };
 }
 
 function isDraft(value: unknown): value is ActivityDraft {
@@ -163,6 +171,8 @@ export async function flushPendingActivities(): Promise<number> {
       if (draft.user_id !== userId) continue;
       if (await insertActivity(draft)) sentIds.add(draft.id);
     }
+    const pendingIds = new Set(queue.filter((draft) => !sentIds.has(draft.id)).map((draft) => draft.id));
+    void flushPendingSamples(userId, pendingIds);
     if (sentIds.size === 0) return 0;
     await withQueueLock(async () => {
       const latest = await readQueue();

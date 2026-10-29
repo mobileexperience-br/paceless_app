@@ -8,6 +8,9 @@ import {
   notifyActivitiesChanged,
 } from '@/lib/activityQueue';
 import { useSession } from '@/hooks/useSession';
+import { exportToHealthHub } from '@/lib/healthExport';
+import { enqueueSamples, persistSamples } from '@/lib/activitySamples';
+import type { HeartRateSample } from '@/types/heartRate';
 
 export type SaveResult = 'saved' | 'queued' | 'failed';
 
@@ -15,7 +18,7 @@ export type NewActivity = Omit<ActivityDraft, 'id' | 'user_id'>;
 
 interface UseSaveActivity {
   saving: boolean;
-  save: (activity: NewActivity) => Promise<SaveResult>;
+  save: (activity: NewActivity, samples?: HeartRateSample[]) => Promise<SaveResult>;
 }
 
 export function useSaveActivity(): UseSaveActivity {
@@ -27,7 +30,7 @@ export function useSaveActivity(): UseSaveActivity {
     if (user) userIdRef.current = user.id;
   }, [user]);
 
-  const save = useCallback(async (activity: NewActivity): Promise<SaveResult> => {
+  const save = useCallback(async (activity: NewActivity, samples: HeartRateSample[] = []): Promise<SaveResult> => {
     setSaving(true);
     try {
       const userId = userIdRef.current ?? (await currentUserId());
@@ -35,9 +38,14 @@ export function useSaveActivity(): UseSaveActivity {
       const draft: ActivityDraft = { ...activity, id: randomUUID(), user_id: userId };
       if (await insertActivity(draft)) {
         notifyActivitiesChanged();
+        void exportToHealthHub(draft);
+        await persistSamples(draft.id, userId, samples);
         return 'saved';
       }
-      return (await enqueueActivity(draft)) ? 'queued' : 'failed';
+      if (!(await enqueueActivity(draft))) return 'failed';
+      if (samples.length > 0) await enqueueSamples(draft.id, userId, samples);
+      void exportToHealthHub(draft);
+      return 'queued';
     } finally {
       setSaving(false);
     }

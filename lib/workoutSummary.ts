@@ -2,6 +2,7 @@ import type { WorkoutType } from '@/lib/activities';
 import type { NewActivity } from '@/hooks/useSaveActivity';
 import type { DistanceUnit } from '@/types/preferences';
 import type { Split } from '@/lib/splits';
+import type { HeartRateSummary } from '@/types/heartRate';
 
 export type SummaryStatus = 'saved' | 'queued' | 'failed';
 
@@ -15,6 +16,7 @@ export interface WorkoutSummary {
   status: SummaryStatus;
   distanceUnit: DistanceUnit;
   draft: NewActivity;
+  heartRate: HeartRateSummary | null;
   discardSession: () => Promise<void>;
 }
 
