@@ -1,5 +1,7 @@
 # Relógios, pulseiras e cintas cardíacas: planejamento
 
+Pesquisa aprofundada por marca, com cadastros, exemplos de código e o checklist do Pedro: [integracoes-relogios/](./integracoes-relogios/README.md).
+
 Planejado em 29/10/2026. Atualiza a pesquisa de [pesquisa/relogios-e-saude.md](./pesquisa/relogios-e-saude.md)
 (19/10). Marcas pedidas pelo Pedro: **Garmin, Apple Watch, Samsung, Coros e Polar**, além das
 **cintas cardíacas**.
