@@ -55,7 +55,12 @@ export function SplitsTable({ splits, unit }: SplitsTableProps): ReactElement {
                 : palettes.dark.track;
           return (
             <View key={split.index} style={styles.row}>
-              <Text variant="bodyStrong" color={palettes.dark.ink} style={styles.cell}>
+              <Text
+                variant="bodyStrong"
+                color={palettes.dark.ink}
+                numberOfLines={1}
+                style={styles.cell}
+              >
                 {splitLabel(split, unit)}
               </Text>
               <View style={styles.barTrack}>
@@ -102,14 +107,14 @@ const styles = StyleSheet.create({
     borderBottomColor: palettes.dark.border,
   },
   cell: {
-    flex: 1,
+    flex: 2,
   },
   cellEnd: {
     flex: 4,
     textAlign: 'right',
   },
   barTrack: {
-    flex: 3,
+    flex: 2,
     marginHorizontal: spacing.md,
   },
   bar: {
@@ -117,7 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   pace: {
-    flex: 1,
+    flex: 1.5,
     textAlign: 'right',
   },
   empty: {

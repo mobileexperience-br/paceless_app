@@ -93,6 +93,7 @@ const makeStyles = createStyles((colors) =>
       gap: spacing.xs,
     },
     heroArt: {
+      flex: 0,
       height: sizes.planArtHeight,
       borderRadius: radius.sm,
       backgroundColor: colors.primarySoft,

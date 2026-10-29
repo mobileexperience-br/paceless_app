@@ -85,7 +85,7 @@ export default function HomeScreen(): ReactElement {
                 </Text>
                 <View style={styles.planMeta}>
                   <ClipboardList size={sizes.iconSm} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />
-                  <Text variant="caption" color={colors.textSecondary}>
+                  <Text variant="caption" color={colors.textSecondary} style={styles.planText}>
                     Nenhuma semana em andamento
                   </Text>
                 </View>
@@ -164,6 +164,9 @@ const makeStyles = createStyles((colors) =>
       alignItems: 'center',
       gap: spacing.sm,
       marginTop: spacing.sm,
+    },
+    planText: {
+      flexShrink: 1,
     },
     nextWorkout: {
       marginTop: spacing.md,

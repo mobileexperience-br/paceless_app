@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, ProgressBar, Screen, ScreenHeader, Text } from '@/components';
 import { SelectableCard } from '@/components/paywall/SelectableCard';
@@ -36,7 +36,11 @@ export default function OnboardingScreen(): ReactElement {
       <ScreenHeader showBack onBack={goBack} centerLabel={`${step + 1} / ${stepCount}`} />
       <ProgressBar progress={(step + 1) / stepCount} style={styles.progress} />
 
-      <View style={styles.body}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.intro}>
           <Text variant="title1">{current?.title}</Text>
           <Text variant="body" color={colors.textSecondary}>
@@ -55,7 +59,7 @@ export default function OnboardingScreen(): ReactElement {
             </SelectableCard>
           ))}
         </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.footer}>
         {isLast ? (
@@ -74,8 +78,10 @@ const makeStyles = createStyles(() =>
     progress: {
       marginHorizontal: layout.screenPadding,
     },
-    body: {
+    scroll: {
       flex: 1,
+    },
+    body: {
       paddingHorizontal: layout.screenPadding,
       paddingTop: spacing.xxl,
       gap: spacing.xxl,

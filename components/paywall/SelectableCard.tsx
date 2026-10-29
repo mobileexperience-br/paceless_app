@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'rea
 import { Check } from 'lucide-react-native';
 import { Card } from '../Card';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
-import { createStyles, radius, spacing } from '@/theme';
+import { createStyles, radius, sizes, spacing } from '@/theme';
 
 interface SelectableCardProps {
   active: boolean;
@@ -31,7 +31,7 @@ export function SelectableCard({
       <Card style={[styles.card, active && styles.cardActive]}>
         <View style={styles.row}>
           <View style={styles.content}>{children}</View>
-          {active ? <Check size={20} color={colors.primaryDeep} strokeWidth={3} /> : null}
+          {active ? <Check size={sizes.iconMd} color={colors.primaryDeep} strokeWidth={3} /> : null}
         </View>
       </Card>
     </Pressable>

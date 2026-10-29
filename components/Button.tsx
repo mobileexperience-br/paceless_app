@@ -1,10 +1,9 @@
 import { type ReactNode, type ReactElement } from 'react';
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
+import { MIN_TOUCH_TARGET } from './touch';
 import { createStyles, layout, type Palette, radius, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
-
-const minTouchTarget = 44;
 
 type ButtonVariant = 'primary' | 'secondary' | 'text' | 'danger';
 
@@ -74,7 +73,7 @@ const makeStyles = createStyles((colors) =>
     },
     textBase: {
       height: undefined,
-      minHeight: minTouchTarget,
+      minHeight: MIN_TOUCH_TARGET,
       paddingVertical: spacing.sm,
     },
     primary: {

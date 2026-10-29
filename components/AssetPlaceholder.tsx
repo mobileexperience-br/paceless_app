@@ -35,7 +35,7 @@ export function AssetPlaceholder({
 const makeStyles = createStyles((colors) =>
   StyleSheet.create({
     box: {
-      flex: 1,
+      flexGrow: 1,
       backgroundColor: colors.track,
       alignItems: 'center',
       justifyContent: 'center',

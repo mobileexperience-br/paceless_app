@@ -3,7 +3,7 @@ import { ActivityIndicator, Image, Pressable, StyleSheet, type ImageSourcePropTy
 import logoApple from '@/assets/logo-apple.png';
 import logoGoogle from '@/assets/logo-google.png';
 import { Text } from './Text';
-import { createStyles, layout, radius, spacing } from '@/theme';
+import { createStyles, layout, radius, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 type SocialProvider = 'apple' | 'google';
@@ -74,8 +74,8 @@ const makeStyles = createStyles((colors) =>
       opacity: 0.4,
     },
     logo: {
-      width: 20,
-      height: 20,
+      width: sizes.iconMd,
+      height: sizes.iconMd,
     },
   }),
 );

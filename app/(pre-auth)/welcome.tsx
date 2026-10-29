@@ -59,7 +59,7 @@ export default function WelcomeScreen(): ReactElement {
             onPress={() => { router.push('/login'); }}
             style={styles.footer}
           >
-            <Text variant="caption" color={colors.white}>
+            <Text variant="caption" color={colors.white} style={styles.footerPrompt}>
               Já tem uma conta?{' '}
             </Text>
             <Text variant="captionStrong" color={colors.primary}>
@@ -113,6 +113,9 @@ const makeStyles = createStyles((colors) =>
       alignItems: 'center',
       marginTop: spacing.sm,
       minHeight: MIN_TOUCH_TARGET,
+    },
+    footerPrompt: {
+      flexShrink: 1,
     },
   }),
 );

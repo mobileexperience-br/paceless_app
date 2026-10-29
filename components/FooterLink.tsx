@@ -22,11 +22,11 @@ export function FooterLink({ prompt, action, disabled, onPress }: FooterLinkProp
       style={styles.footer}
     >
       {prompt ? (
-        <Text variant="caption" color={colors.textSecondary}>
+        <Text variant="caption" color={colors.textSecondary} style={styles.text}>
           {prompt}{' '}
         </Text>
       ) : null}
-      <Text variant="captionStrong" color={colors.primaryDeep}>
+      <Text variant="captionStrong" color={colors.primaryDeep} style={styles.text}>
         {action}
       </Text>
     </Pressable>
@@ -39,5 +39,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: MIN_TOUCH_TARGET,
+  },
+  text: {
+    flexShrink: 1,
   },
 });

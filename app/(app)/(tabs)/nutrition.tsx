@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import {
   Card,
@@ -40,11 +40,9 @@ export default function NutritionScreen(): ReactElement {
             <Text variant="captionStrong" style={styles.grow}>
               Resumo do dia
             </Text>
-            <Pressable accessibilityRole="button">
-              <Text variant="caption" color={colors.primaryDeep}>
-                Ver detalhes
-              </Text>
-            </Pressable>
+            <Text variant="caption" color={colors.textSecondary}>
+              Ver detalhes
+            </Text>
           </View>
 
           <View style={styles.summary}>

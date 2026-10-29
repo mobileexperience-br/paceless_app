@@ -17,7 +17,7 @@ import { LegalNotice } from '@/components/LegalNotice';
 import { useSession } from '@/hooks/useSession';
 import { useSocialSignIn } from '@/hooks/useSocialSignIn';
 import { validateSignUp } from '@/hooks/validateAuth';
-import { createStyles, layout, spacing } from '@/theme';
+import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 export default function SignUpScreen(): ReactElement {
@@ -178,7 +178,7 @@ const makeStyles = createStyles((colors) =>
     },
     line: {
       flex: 1,
-      height: 1,
+      height: sizes.hairline,
       backgroundColor: colors.border,
     },
     social: {

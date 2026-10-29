@@ -9,7 +9,7 @@ import {
   ScreenHeader,
   Text,
 } from '@/components';
-import { createStyles, layout, spacing } from '@/theme';
+import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 const weekdays = [
@@ -80,12 +80,12 @@ const makeStyles = createStyles((colors) =>
       paddingVertical: spacing.md,
     },
     divider: {
-      borderBottomWidth: 1,
+      borderBottomWidth: sizes.hairline,
       borderBottomColor: colors.border,
     },
     dayText: {
       flex: 1,
-      gap: 2,
+      gap: sizes.micro,
     },
   }),
 );

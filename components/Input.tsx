@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Text } from './Text';
-import { createStyles, layout, radius, spacing, typography } from '@/theme';
+import { createStyles, layout, radius, sizes, spacing, typography } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 export type InputRef = ComponentRef<typeof TextInput>;
@@ -57,13 +57,13 @@ export function Input({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={hidden ? 'Mostrar senha' : 'Ocultar senha'}
-            hitSlop={12}
+            hitSlop={sizes.hitSlop}
             onPress={() => { setHidden((value) => !value); }}
           >
             {hidden ? (
-              <EyeOff size={20} color={colors.textSecondary} strokeWidth={1.75} />
+              <EyeOff size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
             ) : (
-              <Eye size={20} color={colors.textSecondary} strokeWidth={1.75} />
+              <Eye size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
             )}
           </Pressable>
         ) : null}
@@ -91,13 +91,14 @@ const makeStyles = createStyles((colors) =>
       flexDirection: 'row',
       alignItems: 'center',
       paddingHorizontal: layout.cardPadding,
-      gap: 12,
+      gap: spacing.md,
     },
     input: {
       flex: 1,
       height: '100%',
       color: colors.ink,
       ...typography.body,
+      lineHeight: undefined,
     },
   }),
 );

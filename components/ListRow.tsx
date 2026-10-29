@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { ChevronRight, ExternalLink } from 'lucide-react-native';
 import { Text } from './Text';
-import { createStyles, layout, spacing } from '@/theme';
+import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface ListRowProps {
@@ -82,17 +82,17 @@ export function ListRow({
       </View>
 
       {value ? (
-        <Text variant="caption" color={colors.textSecondary}>
+        <Text variant="caption" color={colors.textSecondary} style={styles.value}>
           {value}
         </Text>
       ) : null}
       {trailing}
       {loading ? <ActivityIndicator color={colors.textSecondary} accessibilityLabel="Carregando" /> : null}
       {external && !loading ? (
-        <ExternalLink size={20} color={colors.textSecondary} strokeWidth={1.75} />
+        <ExternalLink size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
       ) : null}
       {showChevron && !external ? (
-        <ChevronRight size={20} color={colors.textSecondary} strokeWidth={1.75} />
+        <ChevronRight size={sizes.iconMd} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
       ) : null}
     </Pressable>
   );
@@ -121,6 +121,9 @@ const makeStyles = createStyles((colors) =>
     content: {
       flex: 1,
       gap: 2,
+    },
+    value: {
+      flexShrink: 1,
     },
   }),
 );

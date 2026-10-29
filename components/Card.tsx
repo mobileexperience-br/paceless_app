@@ -12,7 +12,9 @@ interface CardProps {
 export function Card({ children, flush, style }: CardProps): ReactElement {
   const styles = useThemedStyles(makeStyles);
   return (
-    <View style={[styles.card, !flush && styles.padded, style]}>{children}</View>
+    <View style={[styles.card, !flush && styles.padded, style]}>
+      {flush ? <View style={styles.clip}>{children}</View> : children}
+    </View>
   );
 }
 
@@ -23,8 +25,12 @@ const makeStyles = createStyles((colors) =>
       borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: colors.border,
-      overflow: 'hidden',
       ...shadows.card,
+    },
+    clip: {
+      flexGrow: 1,
+      overflow: 'hidden',
+      borderRadius: radius.lg - 1,
     },
     padded: {
       padding: layout.cardPadding,

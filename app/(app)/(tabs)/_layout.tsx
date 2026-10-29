@@ -25,7 +25,9 @@ function ActivitiesTabButton({
     <View style={[style, styles.fabSlot]}>
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel="Atividades"
         accessibilityState={accessibilityState}
+        hitSlop={sizes.hitSlop}
         onPress={onPress}
         onLongPress={onLongPress}
         style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
@@ -40,6 +42,7 @@ export default function TabsLayout(): ReactElement {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, spacing.sm);
+  const tabBarContentHeight = Math.max(layout.tabBarHeight, sizes.fab + sizes.fabLift);
 
   return (
     <Tabs
@@ -51,7 +54,7 @@ export default function TabsLayout(): ReactElement {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          height: layout.tabBarHeight + bottomInset,
+          height: tabBarContentHeight + bottomInset,
           paddingBottom: bottomInset,
         },
         tabBarLabelStyle: {
@@ -129,7 +132,6 @@ export default function TabsLayout(): ReactElement {
 const makeStyles = createStyles((colors) =>
   StyleSheet.create({
     fabSlot: {
-      top: -sizes.fabLift,
       alignItems: 'center',
       justifyContent: 'center',
     },

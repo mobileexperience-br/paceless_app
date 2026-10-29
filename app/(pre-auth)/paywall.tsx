@@ -16,7 +16,7 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import { usePremium, type PurchaseResult } from '@/hooks/usePremium';
 import { summarizeAnswers } from '@/lib/onboardingSteps';
 import { subscriptionsUnavailableMessage } from '@/lib/platform/subscriptionsUnavailableMessage';
-import { createStyles, layout, spacing } from '@/theme';
+import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 const benefits = [
@@ -81,7 +81,7 @@ export default function PaywallScreen(): ReactElement {
           {benefits.map((benefit) => (
             <View key={benefit} style={styles.benefit}>
               <IconBadge tone="soft" size={28}>
-                <Check size={16} color={colors.primaryDeep} strokeWidth={3} />
+                <Check size={sizes.iconSm} color={colors.primaryDeep} strokeWidth={3} />
               </IconBadge>
               <Text variant="body" style={styles.benefitLabel}>
                 {benefit}

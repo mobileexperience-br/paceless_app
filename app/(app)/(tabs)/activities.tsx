@@ -82,7 +82,7 @@ export default function ActivitiesScreen(): ReactElement {
         ListHeaderComponent={header}
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator color={colors.primary} style={styles.loader} />
+            <ActivityIndicator color={colors.primaryDeep} style={styles.loader} />
           ) : (
             <ActivitiesEmpty
               filter={filter}
@@ -99,8 +99,8 @@ export default function ActivitiesScreen(): ReactElement {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={() => { void refresh(); }}
-            tintColor={colors.primary}
-            colors={[colors.primary]}
+            tintColor={colors.primaryDeep}
+            colors={[colors.primaryDeep]}
           />
         }
       />
