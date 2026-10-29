@@ -10,6 +10,8 @@ import {
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { authRedirectUrl } from '@/lib/authRedirect';
+import { cancelReminders } from '@/lib/platform/reminders';
+import { unregisterPushToken } from '@/lib/pushTokens';
 
 export interface AuthResult {
   error: string | null;
@@ -123,6 +125,8 @@ export function SessionProvider({ children }: { children: ReactNode }): ReactEle
     if (!supabase) {
       return notConfigured;
     }
+    await unregisterPushToken();
+    await cancelReminders();
     const { error } = await supabase.auth.signOut();
     return toResult(error);
   }, []);

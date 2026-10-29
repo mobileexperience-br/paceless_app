@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "336845760115",
+    "project_id": "paceless",
+    "storage_bucket": "paceless.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336845760115:android:92ad97a75db5758bbd2c06",
+        "android_client_info": {
+          "package_name": "com.paceless.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "336845760115-1ngeb7mvuj45t5dijeaicum9d51hihkh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbvHH2zm1-AR2pvP6FQUCPo3IqNDzYJHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "336845760115-1ngeb7mvuj45t5dijeaicum9d51hihkh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "336845760115-g25oh3ntu49024k0sdtlv3n5ne5r97nq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.paceless.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

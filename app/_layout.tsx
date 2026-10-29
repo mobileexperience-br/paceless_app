@@ -16,8 +16,10 @@ import { PreferencesProvider } from '@/providers/PreferencesProvider';
 import { SessionProvider } from '@/providers/SessionProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { ThemedStack } from '@/components/ThemedStack';
+import { configureReminders } from '@/lib/platform/reminders';
 
 void SplashScreen.preventAutoHideAsync();
+configureReminders();
 
 export default function RootLayout(): ReactElement | null {
   const [fontsLoaded] = useFonts({
