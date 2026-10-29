@@ -46,3 +46,6 @@ yarn-error.*
 
 # claude code agent worktrees
 .claude/worktrees/
+
+# supabase cli
+supabase/.temp/
