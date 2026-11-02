@@ -86,7 +86,7 @@ export default function PlanScreen(): ReactElement {
         <Card flush>
           <ListRow
             title="Configurações do plano"
-            leading={<Settings size={sizes.iconTab} color={colors.ink} strokeWidth={sizes.iconStroke} />}
+            leading={<Settings size={sizes.iconLg}color={colors.ink} strokeWidth={sizes.iconStroke} />}
             showChevron
             onPress={() => {
               router.push('/plan/settings');

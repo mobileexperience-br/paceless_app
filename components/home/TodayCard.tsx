@@ -5,7 +5,7 @@ import { CalendarCheck, Dumbbell, Footprints, Moon, type LucideIcon } from 'luci
 import { Card, IconBadge, Text } from '@/components';
 import { isPlanLocked, nextSession, sessionTargetLabel, stateOn, todaySessions } from '@/lib/planProgress';
 import { weekdayName } from '@/lib/planCalendar';
-import { createStyles, sizes, spacing } from '@/theme';
+import { createStyles, opacity, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 import type { ActivePlan, PlanSession } from '@/types/training';
 
@@ -42,7 +42,7 @@ function todayViewOf(plan: ActivePlan | null, today: string): TodayView {
   if (plan === null) {
     return {
       title: 'Nenhum treino agendado',
-      detail: 'Configure seu plano para começar',
+      detail: 'Configure seu plano para começar.',
       route: '/plan/settings',
       icon: Moon,
     };
@@ -96,6 +96,7 @@ export function TodayCard({ plan, loading, today }: TodayCardProps): ReactElemen
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`${view.title}. ${view.detail}`}
+      accessibilityState={{ busy: loading && plan === null }}
       onPress={() => {
         router.push(view.route);
       }}
@@ -136,7 +137,7 @@ const makeStyles = createStyles((colors) =>
       gap: spacing.xs,
     },
     hidden: {
-      opacity: 0,
+      opacity: opacity.hidden,
     },
     pressed: {
       backgroundColor: colors.track,

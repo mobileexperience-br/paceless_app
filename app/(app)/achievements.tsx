@@ -14,8 +14,8 @@ import { useAchievements } from '@/hooks/useAchievements';
 import { layout, spacing } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 
-const EMPTY_TITLE = 'Nenhuma conquista disponível ainda.';
-const LOAD_ERROR_TITLE = 'Não foi possível carregar suas conquistas.';
+const EMPTY_TITLE = 'Nenhuma conquista disponível ainda';
+const LOAD_ERROR_TITLE = 'Não foi possível carregar suas conquistas';
 
 export default function AchievementsScreen(): ReactElement {
   const { colors } = useTheme();
@@ -24,12 +24,19 @@ export default function AchievementsScreen(): ReactElement {
 
   const renderBody = (): ReactElement => {
     if (achievements.length === 0 && loading) {
-      return <ActivityIndicator color={colors.primaryDeep} style={styles.loader} />;
+      return (
+        <ActivityIndicator
+          color={colors.primaryDeep}
+          style={styles.loader}
+          accessibilityLabel="Carregando conquistas"
+        />
+      );
     }
     if (achievements.length === 0 && error) {
       return (
         <EmptyState
           title={LOAD_ERROR_TITLE}
+          description="Verifique sua conexão e tente novamente."
           action={
             <Button
               label="Tentar novamente"

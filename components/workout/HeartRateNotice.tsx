@@ -4,7 +4,7 @@ import { Heart, HeartOff } from 'lucide-react-native';
 import { Text } from '@/components/Text';
 import type { WorkoutHeartRate } from '@/hooks/useWorkoutHeartRate';
 import { zoneLabels } from '@/lib/heartRate/heartRateZones.ts';
-import { palettes, sizes, spacing, workout } from '@/theme';
+import { sizes, spacing, workout } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 
 type HeartRateNoticeProps = Pick<WorkoutHeartRate, 'status' | 'bpm' | 'zone'>;
@@ -15,7 +15,7 @@ const captions = {
   unauthorized: 'Sem permissão de Bluetooth. Ative em Dispositivos conectados.',
 } as const;
 
-const unavailableCaption = 'FC indisponível';
+const unavailableCaption = 'Frequência cardíaca indisponível';
 
 export function HeartRateNotice({ status, bpm, zone }: HeartRateNoticeProps): ReactElement {
   const { colors } = useTheme();
@@ -28,7 +28,7 @@ export function HeartRateNotice({ status, bpm, zone }: HeartRateNoticeProps): Re
     return (
       <View style={styles.metric}>
         <Heart size={workout.statusIconSize} color={colors.primary} strokeWidth={sizes.iconStroke} />
-        <Text variant="metric" color={palettes.dark.ink}>{`${bpm} bpm`}</Text>
+        <Text variant="metric" color={colors.ink}>{`${String(bpm)} bpm`}</Text>
         {zone !== null ? (
           <Text variant="captionStrong" color={colors.primary}>{zoneLabels[zone]}</Text>
         ) : null}
@@ -40,7 +40,7 @@ export function HeartRateNotice({ status, bpm, zone }: HeartRateNoticeProps): Re
     return (
       <View style={styles.notice}>
         <HeartOff size={workout.statusIconSize} color={colors.danger} strokeWidth={sizes.iconStroke} />
-        <Text variant="caption" center color={palettes.dark.textSecondary}>
+        <Text variant="caption" center color={colors.textSecondary}>
           Cinta desconectada. Tentando reconectar...
         </Text>
       </View>
@@ -48,17 +48,18 @@ export function HeartRateNotice({ status, bpm, zone }: HeartRateNoticeProps): Re
   }
 
   return (
-    <Text variant="caption" center color={palettes.dark.textSecondary} style={styles.caption}>
+    <Text variant="caption" center color={colors.textSecondary} style={styles.caption}>
       {captions[status]}
     </Text>
   );
 }
 
 function HeartRateUnavailable(): ReactElement {
+  const { colors } = useTheme();
   return (
     <View style={styles.notice}>
-      <HeartOff size={workout.statusIconSize} color={palettes.dark.textSecondary} strokeWidth={sizes.iconStroke} />
-      <Text variant="caption" center color={palettes.dark.textSecondary}>
+      <HeartOff size={workout.statusIconSize} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
+      <Text variant="caption" center color={colors.textSecondary}>
         {unavailableCaption}
       </Text>
     </View>

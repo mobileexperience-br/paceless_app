@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ChevronRight, ClipboardList } from 'lucide-react-native';
 import { Card, Text } from '@/components';
 import { currentWeekNumber, planProgress } from '@/lib/planProgress';
-import { createStyles, sizes, spacing } from '@/theme';
+import { createStyles, opacity, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 import type { ActivePlan } from '@/types/training';
 
@@ -26,6 +26,7 @@ export function PlanCard({ plan, loading }: PlanCardProps): ReactElement {
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={plan ? `Plano atual: ${plan.name}. Abrir plano` : 'Nenhum plano ativo. Configurar plano'}
+      accessibilityState={{ busy: loading && plan === null }}
       onPress={() => {
         router.push(target);
       }}
@@ -79,7 +80,7 @@ const makeStyles = createStyles((colors) =>
       flexShrink: 1,
     },
     hidden: {
-      opacity: 0,
+      opacity: opacity.hidden,
     },
     pressed: {
       backgroundColor: colors.track,

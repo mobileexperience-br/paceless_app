@@ -517,3 +517,51 @@ npx eslint .
 
 Visual (não dá para provar por grep): A1/A2 (largura dos botões) e M1 (espaço acima da
 tab bar) precisam ser conferidos no device, tema claro e escuro.
+
+---
+
+## Status da correção
+
+Aplicado no branch `fix/prd-style`. Itens marcados como `[x]` foram corrigidos; os demais
+ficaram fora do escopo (só reportados).
+
+Tokens:
+- [x] T1 `sizes.iconHero: 56` em `theme/sizes.ts`
+- [x] T2 `theme/opacity.ts` (`opacity.hidden`) exportado em `theme/index.ts`
+
+Alta:
+- [x] A1 `plan-ready.tsx`: `cta` com `alignSelf: 'stretch'` nos três botões
+- [x] A2 `EmptyState.tsx`: ação envolvida em `View` com `alignSelf: 'stretch'` e `marginTop`
+
+Média:
+- [x] M1 `plan/session/[id].tsx`: `paddingBottom: spacing.lg` fixo no footer; removidos `insets` e import
+- [x] M2 `plan/DayRow.tsx`: toque com `backgroundColor: colors.track` e `radius.sm`
+- [x] M3 `plan/settings.tsx`: loader com `colors.primaryDeep` e `styles.loader` (`spacing.huge`)
+- [x] M4 `workout/PerceivedEffortPicker.tsx`: troca `Pressable` manual por `SelectableCard`, rótulo do radiogroup, `colors.*`; removido `workout.effortOptionHeight` de `theme/workout.ts`
+- [x] M5 `activities/HistoryHeader.tsx`: erro via `InlineError`
+- [x] M6 `iconXl * 2` trocado por `sizes.iconHero` em `plan/week/[week].tsx`, `onboarding/plan-ready.tsx` e `plan/PlanStates.tsx`
+- [x] M7 `plan/OptionSection.tsx`: estilos movidos para `StyleSheet.create`
+
+Baixa:
+- [x] B1 `minHeight` de `DayRow`/`plan-paywall` com `MIN_TOUCH_TARGET`; `SessionStatus` sem `minHeight`
+- [x] B2 `hitSlop` removido de `DayRow`
+- [x] B3 `palettes.dark.*` trocado por `colors.*` em `summary.tsx`, `HeartRateNotice.tsx` (com `useTheme` em `HeartRateUnavailable`), `WorkoutHeading.tsx`, `PerceivedEffortPicker.tsx` e `BlockGuide.tsx` (que passou a usar `createStyles`/`useThemedStyles`)
+- [x] B4 `strokeWidth` solto trocado por `sizes.iconStroke` em `summary.tsx` e `WorkoutHeading.tsx`
+- [x] B5 `ListRow.leading` com `sizes.iconLg` em `plan/index.tsx` e `HistoryHeader.tsx`
+- [x] B6 `opacity: 0` trocado por `opacity.hidden` em `(tabs)/index.tsx`, `PlanCard.tsx` e `TodayCard.tsx`
+- [x] B7 `accessibilityLabel` nos loaders de `achievements.tsx` e `(tabs)/activities.tsx`
+- [x] B8 `color={colors.textSecondary}` removido de `captionStrong` em `WeekStatusCard.tsx` e `AttemptHistory.tsx`
+- [x] B9 `BlockGuide` com `layout.cardPadding`
+- [x] B10 `numberOfLines={1} adjustsFontSizeToFit` no tempo restante do `BlockGuide`
+- [x] B11 ` · ` trocado por ` • ` em `WeekProgressCard.tsx`, `WeekStatusCard.tsx` e `BlockGuide.tsx`
+- [x] B12 `String()` em `BlockGuide.tsx` e `HeartRateNotice.tsx`
+- [x] B13 textos: `HeartRateNotice` (`Frequência cardíaca indisponível`), `TodayCard` (ponto final), `achievements` (títulos sem ponto, descrição no erro), `session/[id].tsx` (texto de musculação)
+- [x] B14 `accessibilityState={{ busy: loading && plan === null }}` em `PlanCard.tsx` e `TodayCard.tsx`
+- [x] B15 `AlertTriangle` com `sizes.iconHero` no bloco `failed` de `plan-ready.tsx`
+
+Não aplicados (fora do escopo de estilo, conforme o próprio documento): texto fixo de `plan-ready.tsx:37`,
+duplicação de CTA na home sem plano, `WeekProgressCard`/`WeekStatusCard` repetindo formatação,
+e os itens "Fora da lista do PRD" (`NextSessionCard`, `ListRow`, `Button`, `SocialButton`,
+`NameField`, `WeekList` com `sizes.iconTab`, `ReminderTimeStepper`).
+
+Pendente de confirmação visual no device (tema claro e escuro): A1, A2 e M1.

@@ -10,7 +10,7 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import { Text } from '@/components/Text';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 import {
   blockAt,
   blockKindLabels,
@@ -18,7 +18,7 @@ import {
   type BlockKind,
   type WorkoutBlock,
 } from '@/lib/workoutBlocks';
-import { palettes, radius, sizes, spacing, workout } from '@/theme';
+import { createStyles, layout, radius, sizes, spacing, workout } from '@/theme';
 
 interface BlockGuideProps {
   blocks: WorkoutBlock[];
@@ -38,6 +38,7 @@ const kindIcons: Record<BlockKind, LucideIcon> = {
 
 export function BlockGuide({ blocks, activeSeconds, paused }: BlockGuideProps): ReactElement | null {
   const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const position = blockAt(blocks, activeSeconds);
   const [bannerVisible, setBannerVisible] = useState<boolean>(false);
   const lastIndexRef = useRef<number | null>(null);
@@ -69,15 +70,15 @@ export function BlockGuide({ blocks, activeSeconds, paused }: BlockGuideProps): 
         ) : null}
         <View style={styles.row}>
           <CheckCircle2 size={workout.statusIconSize} color={colors.primary} strokeWidth={sizes.iconStroke} />
-          <Text variant="captionStrong" color={palettes.dark.ink}>{DONE_MESSAGE}</Text>
+          <Text variant="captionStrong" color={colors.ink}>{DONE_MESSAGE}</Text>
         </View>
-        <Text variant="caption" color={palettes.dark.textSecondary}>Finalize quando quiser</Text>
+        <Text variant="caption" color={colors.textSecondary}>Finalize quando quiser</Text>
       </View>
     );
   }
 
   const Icon = kindIcons[current.kind];
-  const iconColor = current.kind === 'run' ? colors.primary : palettes.dark.ink;
+  const iconColor = current.kind === 'run' ? colors.primary : colors.ink;
   const bannerText = `Agora: ${blockKindLabels[current.kind]}`;
 
   return (
@@ -89,59 +90,61 @@ export function BlockGuide({ blocks, activeSeconds, paused }: BlockGuideProps): 
       ) : null}
       <View style={styles.row}>
         <Icon size={workout.statusIconSize} color={iconColor} strokeWidth={sizes.iconStroke} />
-        <Text variant="captionStrong" color={palettes.dark.ink}>
+        <Text variant="captionStrong" color={colors.ink}>
           {blockKindLabels[current.kind].toUpperCase()}
         </Text>
-        <Text variant="caption" color={palettes.dark.textSecondary} style={styles.blockLabel}>
+        <Text variant="caption" color={colors.textSecondary} style={styles.blockLabel}>
           {current.label}
         </Text>
       </View>
       {paused ? (
-        <Text variant="captionStrong" color={palettes.dark.textSecondary}>Pausado</Text>
+        <Text variant="captionStrong" color={colors.textSecondary}>Pausado</Text>
       ) : null}
-      <Text variant="metric" color={palettes.dark.ink} style={styles.remaining}>
+      <Text variant="metric" color={colors.ink} style={styles.remaining} numberOfLines={1} adjustsFontSizeToFit>
         {formatBlockTime(remainingSec)}
       </Text>
-      <Text variant="caption" color={palettes.dark.textSecondary}>Restante do bloco</Text>
-      <Text variant="caption" color={palettes.dark.textSecondary}>
+      <Text variant="caption" color={colors.textSecondary}>Restante do bloco</Text>
+      <Text variant="caption" color={colors.textSecondary}>
         {next !== null
-          ? `Próximo: ${blockKindLabels[next.kind]} · ${formatBlockTime(next.endSec - next.startSec)}`
+          ? `Próximo: ${blockKindLabels[next.kind]} • ${formatBlockTime(next.endSec - next.startSec)}`
           : 'Último bloco'}
       </Text>
-      <Text variant="caption" color={palettes.dark.textSecondary}>
-        {`Bloco ${index + 1} de ${blocks.length}`}
+      <Text variant="caption" color={colors.textSecondary}>
+        {`Bloco ${String(index + 1)} de ${String(blocks.length)}`}
       </Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-    borderWidth: sizes.hairline,
-    borderColor: palettes.dark.surface,
-    backgroundColor: palettes.dark.surface,
-  },
-  banner: {
-    alignSelf: 'stretch',
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  blockLabel: {
-    flexShrink: 1,
-  },
-  remaining: {
-    fontSize: workout.blockTimeSize,
-    lineHeight: workout.blockTimeSize,
-  },
-});
+const makeStyles = createStyles((colors) =>
+  StyleSheet.create({
+    card: {
+      gap: spacing.sm,
+      marginBottom: spacing.xl,
+      padding: layout.cardPadding,
+      borderRadius: radius.lg,
+      borderWidth: sizes.hairline,
+      borderColor: colors.surface,
+      backgroundColor: colors.surface,
+    },
+    banner: {
+      alignSelf: 'stretch',
+      borderRadius: radius.sm,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.xs,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+    },
+    blockLabel: {
+      flexShrink: 1,
+    },
+    remaining: {
+      fontSize: workout.blockTimeSize,
+      lineHeight: workout.blockTimeSize,
+    },
+  }),
+);

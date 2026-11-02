@@ -4,6 +4,7 @@ export const sizes = {
   iconTab: 22,
   iconLg: 24,
   iconXl: 28,
+  iconHero: 56,
   iconStroke: 1.75,
   badgeSm: 36,
   badgeLg: 48,

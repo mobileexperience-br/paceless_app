@@ -15,7 +15,7 @@ import { usePlanWeekStatus } from '@/hooks/usePlanWeekStatus';
 import { useProfile } from '@/hooks/useProfile';
 import { PlanError } from '@/components/plan/PlanStates';
 import { localToday } from '@/lib/planDates';
-import { createStyles, layout, sizes, spacing } from '@/theme';
+import { createStyles, layout, opacity, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 export default function HomeScreen(): ReactElement {
@@ -110,7 +110,7 @@ const makeStyles = createStyles(() =>
       marginBottom: spacing.xs,
     },
     hidden: {
-      opacity: 0,
+      opacity: opacity.hidden,
     },
   }),
 );

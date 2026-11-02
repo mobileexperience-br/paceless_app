@@ -5,6 +5,7 @@ import { Trophy } from 'lucide-react-native';
 import { Card } from '@/components/Card';
 import { ListRow } from '@/components/ListRow';
 import { StatRow, type Stat } from '@/components/StatRow';
+import { InlineError } from '@/components/InlineError';
 import { Text } from '@/components/Text';
 import { formatDuration, formatWeekDistance } from '@/lib/activityStats';
 import { distanceLabel } from '@/lib/units';
@@ -54,18 +55,14 @@ export function HistoryHeader({ weekStats, total, showError }: HistoryHeaderProp
         <ListRow
           title="Conquistas"
           leading={
-            <Trophy size={sizes.iconMd} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />
+            <Trophy size={sizes.iconLg} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />
           }
           showChevron
           onPress={() => { router.push('/achievements'); }}
         />
       </Card>
 
-      {showError ? (
-        <Text variant="caption" color={colors.danger}>
-          Não foi possível carregar seus treinos.
-        </Text>
-      ) : null}
+      <InlineError message={showError ? 'Não foi possível carregar seus treinos.' : null} />
     </View>
   );
 }

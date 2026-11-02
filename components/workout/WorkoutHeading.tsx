@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
 import { Text } from '@/components';
 import { activityLabels, type WorkoutType } from '@/lib/activities';
-import { palettes, spacing, workout } from '@/theme';
+import { sizes, spacing, workout } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 
 interface WorkoutHeadingProps {
@@ -35,24 +35,24 @@ export function WorkoutHeading({
           onPress={onPressType}
           style={[styles.chip, typeDisabled && styles.disabled]}
         >
-          <Text variant="title1" color={palettes.dark.ink}>
+          <Text variant="title1" color={colors.ink}>
             {activityLabels[type]}
           </Text>
-          <ChevronDown size={workout.menuIconSize} color={palettes.dark.textSecondary} strokeWidth={2} />
+          <ChevronDown size={workout.menuIconSize} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
         </Pressable>
-        <Text variant="caption" color={palettes.dark.textSecondary}>
+        <Text variant="caption" color={colors.textSecondary}>
           Treino livre
         </Text>
       </View>
 
       <View style={styles.timer}>
-        <Text variant="caption" center color={palettes.dark.textSecondary}>
+        <Text variant="caption" center color={colors.textSecondary}>
           Tempo ativo
         </Text>
         <Text
           variant="timer"
           center
-          color={paused ? palettes.dark.textSecondary : colors.primary}
+          color={paused ? colors.textSecondary : colors.primary}
           style={paused && styles.pausedTimer}
         >
           {formatted}
@@ -62,7 +62,7 @@ export function WorkoutHeading({
             PAUSADO
           </Text>
         ) : null}
-        <Text variant="caption" center color={palettes.dark.textSecondary}>
+        <Text variant="caption" center color={colors.textSecondary}>
           {`Tempo total ${totalFormatted}`}
         </Text>
       </View>

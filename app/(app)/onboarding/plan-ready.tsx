@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactElement } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { CalendarCheck, Hourglass } from 'lucide-react-native';
+import { AlertTriangle, CalendarCheck, Hourglass } from 'lucide-react-native';
 import { Button, InlineError, Screen, Text } from '@/components';
 import { useCompleteOnboarding } from '@/hooks/useCompleteOnboarding';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
@@ -29,7 +29,7 @@ export default function PlanReadyScreen(): ReactElement {
       <View style={styles.body}>
         {status === 'ready' ? (
           <>
-            <CalendarCheck size={sizes.iconXl * 2} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />
+            <CalendarCheck size={sizes.iconHero} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />
             <Text variant="title1" center>
               Seu plano está pronto
             </Text>
@@ -38,6 +38,7 @@ export default function PlanReadyScreen(): ReactElement {
             </Text>
             <Button
               label="Continuar"
+              style={styles.cta}
               onPress={() => {
                 router.replace('/plan-paywall');
               }}
@@ -47,7 +48,7 @@ export default function PlanReadyScreen(): ReactElement {
 
         {status === 'unavailable' ? (
           <>
-            <Hourglass size={sizes.iconXl * 2} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
+            <Hourglass size={sizes.iconHero} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
             <Text variant="title1" center>
               Seu plano ainda não está disponível
             </Text>
@@ -57,6 +58,7 @@ export default function PlanReadyScreen(): ReactElement {
             </Text>
             <Button
               label="Ir para o início"
+              style={styles.cta}
               onPress={() => {
                 router.replace('/(app)');
               }}
@@ -66,11 +68,12 @@ export default function PlanReadyScreen(): ReactElement {
 
         {status === 'failed' ? (
           <>
+            <AlertTriangle size={sizes.iconHero} color={colors.danger} strokeWidth={sizes.iconStroke} />
             <Text variant="title1" center>
               Não foi possível montar seu plano
             </Text>
             <InlineError message={error} />
-            <Button label="Tentar novamente" onPress={retry} />
+            <Button label="Tentar novamente" style={styles.cta} onPress={retry} />
           </>
         ) : null}
 
@@ -95,6 +98,9 @@ const makeStyles = createStyles(() =>
       justifyContent: 'center',
       gap: spacing.md,
       paddingHorizontal: layout.screenPadding,
+    },
+    cta: {
+      alignSelf: 'stretch',
     },
   }),
 );
