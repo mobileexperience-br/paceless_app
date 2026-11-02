@@ -107,3 +107,13 @@ Disparar e inspecionar: sair (Perfil), excluir conta e trocar avatar (Conta), mu
 - [ ] Estados vazios fora do padrão (EmptyState).
 - [ ] Rolagem quebrada (conteúdo inalcançável, rolagem dupla).
 - [ ] Alvo de toque pequeno (menor que 44x44).
+
+## Status por rodada
+
+### Rodada 1
+
+- Varredura não executada: o QA não conseguiu abrir o navegador.
+  - `chrome-devtools`: ECONNREFUSED em 127.0.0.1:9222 (nenhum Chrome com porta de debug).
+  - Plugin `chrome-devtools-mcp`: perfil `~/.cache/chrome-devtools-mcp/chrome-profile` travado por outro Chrome.
+- Nenhum problema visual levantado e nenhuma correção feita nesta rodada.
+- Próxima rodada: subir um Chrome headless isolado com `--remote-debugging-port=9222` e perfil temporário, e refazer a varredura completa.
