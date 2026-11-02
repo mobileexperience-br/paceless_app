@@ -1,9 +1,8 @@
 import type { ReactElement } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, SignInOverlay, SocialButton, Text } from '@/components';
+import { Button, FocusedSystemBars, SignInOverlay, SocialButton, Text } from '@/components';
 import { MIN_TOUCH_TARGET } from '@/components/touch';
 import { useSocialSignIn } from '@/hooks/useSocialSignIn';
 import { createStyles, layout, palettes, sizes, spacing } from '@/theme';
@@ -19,7 +18,7 @@ export default function WelcomeScreen(): ReactElement {
 
   return (
     <View style={styles.root}>
-      <StatusBar style="light" />
+      <FocusedSystemBars scheme="dark" />
 
       <Image source={heroWelcome} style={styles.hero} resizeMode="cover" />
       <View style={styles.scrim} />

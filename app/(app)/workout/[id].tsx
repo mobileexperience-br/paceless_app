@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
 import { useKeepAwake } from 'expo-keep-awake';
-import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FocusedSystemBars } from '@/components/SystemBars';
 import { SlideToFinish } from '@/components/workout/SlideToFinish';
 import { WorkoutControls } from '@/components/workout/WorkoutControls';
 import { WorkoutMenu } from '@/components/workout/WorkoutMenu';
@@ -116,7 +116,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
 
   return (
     <View style={styles.root}>
-      <StatusBar style="light" />
+      <FocusedSystemBars scheme="dark" />
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
         <WorkoutTopBar
           disabled={locked}

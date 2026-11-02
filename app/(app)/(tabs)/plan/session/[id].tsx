@@ -1,6 +1,7 @@
 import { useCallback, useState, type ReactElement } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, CheckCircle, EmptyState, Screen, ScreenHeader, Text } from '@/components';
 import { StepList } from '@/components/plan/StepList';
 import { NoPlanState, PlanError, PlanLoading } from '@/components/plan/PlanStates';
@@ -82,6 +83,7 @@ function SessionContent({ plan, session, resumable }: SessionContentProps): Reac
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const today = localToday();
   const { workout } = session;
   const state = stateOn(session, today);
@@ -125,7 +127,7 @@ function SessionContent({ plan, session, resumable }: SessionContentProps): Reac
         <StepList steps={workout.steps} distanceLabel={distanceTargetLabel(workout)} />
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.lg }]}>
         {isCompleted ? (
           <View style={styles.doneRow}>
             <CheckCircle checked size={sizes.iconLg} decorative />

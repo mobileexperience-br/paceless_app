@@ -17,6 +17,7 @@ export { SegmentedTabs } from './SegmentedTabs';
 export { SignInOverlay } from './SignInOverlay';
 export { SocialButton } from './SocialButton';
 export { StatRow } from './StatRow';
+export { FocusedSystemBars, SystemBars } from './SystemBars';
 export { SubscriptionDisclosure } from './SubscriptionDisclosure';
 export type { Stat } from './StatRow';
 export { Text } from './Text';
