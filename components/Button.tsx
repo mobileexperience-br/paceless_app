@@ -66,6 +66,7 @@ const makeStyles = createStyles((colors) =>
   StyleSheet.create({
     base: {
       height: layout.controlHeight,
+      paddingHorizontal: spacing.xl,
       borderRadius: radius.md,
       flexDirection: 'row',
       alignItems: 'center',

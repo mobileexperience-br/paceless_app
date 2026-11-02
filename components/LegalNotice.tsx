@@ -1,6 +1,5 @@
 import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { LegalLink } from './LegalLink';
 import { Text } from './Text';
 import { useOpenLink } from '@/hooks/useOpenLink';
 import { spacing } from '@/theme';
@@ -13,15 +12,25 @@ export function LegalNotice(): ReactElement {
   return (
     <View style={styles.container}>
       <Text variant="caption" color={colors.textSecondary} center>
-        Ao criar conta, você aceita os
-      </Text>
-      <View style={styles.links}>
-        <LegalLink label="Termos de uso" onPress={() => { openLegal('terms'); }} />
-        <Text variant="caption" color={colors.textSecondary}>
-          e a
+        Ao criar conta, você aceita os{' '}
+        <Text
+          variant="captionStrong"
+          color={colors.primaryDeep}
+          accessibilityRole="link"
+          onPress={() => { openLegal('terms'); }}
+        >
+          Termos de uso
         </Text>
-        <LegalLink label="Política de privacidade" onPress={() => { openLegal('privacy'); }} />
-      </View>
+        {' '}e a{' '}
+        <Text
+          variant="captionStrong"
+          color={colors.primaryDeep}
+          accessibilityRole="link"
+          onPress={() => { openLegal('privacy'); }}
+        >
+          Política de privacidade
+        </Text>
+      </Text>
       {error ? (
         <Text variant="caption" color={colors.danger} center>
           {error}
@@ -34,12 +43,6 @@ export function LegalNotice(): ReactElement {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-  },
-  links: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'center',
-    columnGap: spacing.xs,
+    gap: spacing.xs,
   },
 });
