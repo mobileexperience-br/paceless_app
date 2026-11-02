@@ -10,6 +10,7 @@ import {
   ScreenHeader,
   Text,
 } from '@/components';
+import { AttemptHistory } from '@/components/plan/AttemptHistory';
 import { DayRow } from '@/components/plan/DayRow';
 import { NoPlanState, PlanError, PlanLoading } from '@/components/plan/PlanStates';
 import { useActivePlan } from '@/hooks/useActivePlan';
@@ -59,8 +60,9 @@ function WeekContent({ plan, week }: WeekContentProps): ReactElement {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const today = localToday();
-  const days = weekDays(week, weekStartDate(plan, week.weekNumber, today));
+  const days = weekDays(week, weekStartDate(plan, week));
   const progress = week.total === 0 ? 0 : week.done / week.total;
+  const isFuture = week.weekNumber > plan.currentWeek;
 
   return (
     <Screen flush>
@@ -74,6 +76,11 @@ function WeekContent({ plan, week }: WeekContentProps): ReactElement {
           accessibilityValue={{ min: 0, max: week.total, now: week.done }}
           style={styles.progress}
         />
+        {isFuture ? (
+          <Text variant="caption" color={colors.textSecondary} style={styles.notice}>
+            Libera quando você avançar de semana.
+          </Text>
+        ) : null}
         <View style={styles.days}>
           {days.map((day) => (
             <DayRow
@@ -81,11 +88,16 @@ function WeekContent({ plan, week }: WeekContentProps): ReactElement {
               day={day}
               todayDate={today}
               onSessionPress={(sessionId) => {
-                router.push(`/plan/session/${sessionId}`);
+                if (!isFuture) router.push(`/plan/session/${sessionId}`);
               }}
             />
           ))}
         </View>
+        {week.history.length > 0 ? (
+          <View style={styles.history}>
+            <AttemptHistory history={week.history} />
+          </View>
+        ) : null}
       </ScrollView>
     </Screen>
   );
@@ -135,7 +147,13 @@ const makeStyles = createStyles(() =>
     progress: {
       marginTop: spacing.md,
     },
+    notice: {
+      marginTop: spacing.md,
+    },
     days: {
+      marginTop: spacing.lg,
+    },
+    history: {
       marginTop: spacing.lg,
     },
   }),

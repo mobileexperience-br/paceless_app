@@ -33,6 +33,12 @@ Dois lugares no AsyncStorage:
 - Se a task de localização ainda está rodando (`hasStartedLocationUpdatesAsync`), ela é reaproveitada, o buffer não é esvaziado e o treino volta rodando. Os fixes acumulados no buffer enquanto o app estava fechado entram na distância. O primeiro fix após a retomada vira novo ponto de base, sem somar a distância em linha reta do intervalo.
 - Se a task não está rodando (processo morto junto com o serviço), o treino volta pausado, com o tempo contado até a última gravação, para não somar o tempo em que o app esteve fechado. A task é reiniciada e o usuário continua pelo botão de retomar. Fixes antigos do buffer não são contados em distância nesse caso.
 
+## Identidade da atividade
+
+- A sessão ativa guarda `activityId`, gerado no início do treino (ou lido da sessão gravada antes dessa mudança, que ganha um id novo ao ser carregada). Esse id é o `id` da atividade.
+- Finalizar, tentar de novo no resumo ou reenviar pela fila usa sempre o mesmo id: o insert é um upsert com `ignoreDuplicates` e a fila substitui o rascunho pelo id. Nenhum desses caminhos cria outra linha.
+- O bloco guiado de uma sessão do plano é recalculado a partir do tempo ativo ao retomar. Não há estado extra de bloco: a retomada volta ao bloco certo.
+
 ## Limites conhecidos
 
 - No pior caso perdem-se até 10 s de dados recentes do snapshot (os fixes do buffer não se perdem).

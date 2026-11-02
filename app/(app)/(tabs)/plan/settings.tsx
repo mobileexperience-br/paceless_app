@@ -7,13 +7,17 @@ import { OptionSection } from '@/components/plan/OptionSection';
 import { useDialog } from '@/hooks/useDialog';
 import { usePlanSettings } from '@/hooks/usePlanSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { onboardingLabels } from '@/lib/onboardingSteps';
+import { levelDescriptions, onboardingLabels } from '@/lib/onboardingSteps';
 import { trainingDayCombos } from '@/lib/trainingDayCombos';
 import { onboardingOptions } from '@/types/onboarding';
 import { layout, sizes, spacing } from '@/theme';
 
 const goalOptions = onboardingOptions.goal.map((id) => ({ id, label: onboardingLabels.goal[id] }));
-const levelOptions = onboardingOptions.level.map((id) => ({ id, label: onboardingLabels.level[id] }));
+const levelOptions = onboardingOptions.level.map((id) => ({
+  id,
+  label: onboardingLabels.level[id],
+  description: levelDescriptions[id],
+}));
 const daysOptions = onboardingOptions.daysPerWeek.map((id) => ({
   id,
   label: onboardingLabels.daysPerWeek[id],
@@ -93,13 +97,6 @@ export default function PlanSettingsScreen(): ReactElement {
               onSelect={setGoal}
             />
             <OptionSection
-              title="Preparo atual"
-              options={levelOptions}
-              selected={draft.level}
-              disabled={saving}
-              onSelect={setLevel}
-            />
-            <OptionSection
               title="Dias por semana"
               options={daysOptions}
               selected={draft.daysPerWeek}
@@ -117,6 +114,13 @@ export default function PlanSettingsScreen(): ReactElement {
               selected={draft.trainingDays}
               disabled={saving}
               onSelect={setTrainingDays}
+            />
+            <OptionSection
+              title="Preparo atual"
+              options={levelOptions}
+              selected={draft.level}
+              disabled={saving}
+              onSelect={setLevel}
             />
             <OptionSection
               title="Musculação"

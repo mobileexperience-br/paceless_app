@@ -10,6 +10,7 @@ import { loadResumableSession } from '@/lib/activeSession';
 import { formatLongDate } from '@/lib/planCalendar';
 import { localToday } from '@/lib/planDates';
 import {
+  canStartSession,
   distanceTargetLabel,
   findSession,
   intensityLabel,
@@ -19,7 +20,7 @@ import {
 } from '@/lib/planProgress';
 import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
-import type { PlanSession } from '@/types/training';
+import type { ActivePlan, PlanSession } from '@/types/training';
 
 export default function PlanSessionScreen(): ReactElement {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -43,7 +44,7 @@ export default function PlanSessionScreen(): ReactElement {
   const session = id ? findSession(plan, id) : null;
   if (session === null) return <Centered><SessionNotFound /></Centered>;
 
-  return <SessionContent session={session} resumable={resumable} />;
+  return <SessionContent plan={plan} session={session} resumable={resumable} />;
 }
 
 function Centered({ children }: { children: ReactElement }): ReactElement {
@@ -73,11 +74,12 @@ function SessionNotFound(): ReactElement {
 }
 
 interface SessionContentProps {
+  plan: ActivePlan;
   session: PlanSession;
   resumable: boolean;
 }
 
-function SessionContent({ session, resumable }: SessionContentProps): ReactElement {
+function SessionContent({ plan, session, resumable }: SessionContentProps): ReactElement {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
@@ -86,7 +88,9 @@ function SessionContent({ session, resumable }: SessionContentProps): ReactEleme
   const { workout } = session;
   const state = stateOn(session, today);
   const isRun = workout.kind === 'run';
-  const isDone = state === 'done';
+  const isCompleted = state === 'completed';
+  const startable = canStartSession(plan, session, today);
+  const upcoming = session.weekNumber > plan.currentWeek;
   const meta = [
     formatLongDate(session.date),
     intensityLabel(workout.intensity),
@@ -124,7 +128,7 @@ function SessionContent({ session, resumable }: SessionContentProps): ReactEleme
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.lg }]}>
-        {isDone ? (
+        {isCompleted ? (
           <View style={styles.doneRow}>
             <CheckCircle checked size={sizes.iconLg} decorative />
             <Text variant="captionStrong" color={colors.primaryDeep} style={styles.grow}>
@@ -132,7 +136,7 @@ function SessionContent({ session, resumable }: SessionContentProps): ReactEleme
             </Text>
           </View>
         ) : null}
-        {isDone && isRun ? (
+        {isCompleted && isRun ? (
           <Button
             label="Fazer de novo"
             variant="secondary"
@@ -141,10 +145,15 @@ function SessionContent({ session, resumable }: SessionContentProps): ReactEleme
             }}
           />
         ) : null}
-        {!isDone && isRun ? (
+        {!isCompleted && isRun && startable ? (
           <Button label={resumable ? 'Retomar treino' : 'Começar treino'} onPress={startPlanSession} />
         ) : null}
-        {!isDone && !isRun ? (
+        {!isCompleted && isRun && !startable && upcoming ? (
+          <Text variant="caption" color={colors.textSecondary} center>
+            Libera quando você avançar de semana.
+          </Text>
+        ) : null}
+        {!isCompleted && !isRun ? (
           <Text variant="caption" color={colors.textSecondary} center>
             Musculação ainda não tem treino guiado. Registre como concluído pelo app em breve.
           </Text>

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { randomUUID } from 'expo-crypto';
 import type { ActivityDraft } from '@/lib/activities';
 import {
   currentUserId,
@@ -14,7 +13,7 @@ import type { HeartRateSample } from '@/types/heartRate';
 
 export type SaveResult = 'saved' | 'queued' | 'failed';
 
-export type NewActivity = Omit<ActivityDraft, 'id' | 'user_id'>;
+export type NewActivity = Omit<ActivityDraft, 'user_id'>;
 
 interface UseSaveActivity {
   saving: boolean;
@@ -35,7 +34,7 @@ export function useSaveActivity(): UseSaveActivity {
     try {
       const userId = userIdRef.current ?? (await currentUserId());
       if (userId === null) return 'failed';
-      const draft: ActivityDraft = { ...activity, id: randomUUID(), user_id: userId };
+      const draft: ActivityDraft = { ...activity, user_id: userId };
       if (await insertActivity(draft)) {
         notifyActivitiesChanged();
         void exportToHealthHub(draft);

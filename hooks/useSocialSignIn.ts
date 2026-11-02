@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDialog } from './useDialog';
+import { reportSocialSignup } from '@/lib/analytics';
 import { appleSignIn, googleSignIn } from '@/lib/platform/socialAuth';
 import type { SocialResult } from '@/lib/platform/socialResult';
 
@@ -43,6 +44,7 @@ export function useSocialSignIn(): UseSocialSignIn {
       };
       const result = await action(onToken);
       if (result.signedIn) {
+        void reportSocialSignup(next);
         router.replace('/(app)');
         return;
       }

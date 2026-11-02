@@ -5,92 +5,75 @@ a mesma entrada sempre dá o mesmo plano. O código vive em
 `supabase/functions/_shared/plan/` (módulo puro, com testes em `generate.test.ts`) e é
 chamado pela Edge Function `generate-plan` (ver [edge-functions.md](./edge-functions.md)).
 
-> **Todos os números deste documento estão marcados como "a validar com o Pedro".**
-> Nada aqui é regra fechada até o Pedro revisar. Quando ele mudar um número, muda a
-> tabela em `tables.ts` (ou a regra em `volume.ts`, `days.ts`, `intervals.ts`), sobe
+> Regras do primeiro acesso alinhadas ao PRD (Fase 1, `generator_version = 3`). As decisões
+> provisórias estão em [decisoes-provisorias-prd.md](./decisoes-provisorias-prd.md) (DP-01 a
+> DP-12). Os itens marcados como "a validar com o Pedro" continuam abertos: quando ele mudar um
+> número, muda a tabela em `tables.ts` (ou a regra em `days.ts`, `intervals.ts`), sobe
 > `GENERATOR_VERSION` e roda os testes.
 
 ## Entradas
 
-Vêm do perfil (`profiles`) e do início escolhido pelo usuário:
+Vêm do perfil (`profiles`), preenchido no onboarding e em Configurações do plano:
 
 | Entrada | Valores | De onde |
 | --- | --- | --- |
-| Objetivo (`goal`) | `start_running` (começar a correr), `run_5k`, `run_10k`, `fitness` | Configurações do plano |
-| Preparo (`level`) | `never_ran` (nunca corri), `sometimes` (corro às vezes), `weekly` (corro toda semana) | Configurações do plano |
-| Dias de treino (`training_days`) | 1 a 7 (1 = segunda, 7 = domingo) | Configurações do plano |
-| Musculação (`strength`) | `yes`, `maybe_later`, `no` | Configurações do plano |
+| Objetivo (`goal`) | `complete_5k` (completar 5 km), `race` (fazer uma prova), `fitness` (ganhar condicionamento), `weight_loss` (emagrecer) | Onboarding e configurações |
+| Preparo (`level`) | `total_beginner` (iniciante total), `beginner` (iniciante), `intermediate` (intermediário), `advanced` (avançado) | Onboarding e configurações |
+| Dias de treino (`training_days`) | 1 a 7 (1 = segunda, 7 = domingo) | Onboarding e configurações |
+| Musculação (`strength`) | `yes`, `maybe_later`, `no` (default `no`, DP-04) | Configurações do plano |
 | Início (`startDate`) | Data local `AAAA-MM-DD` | Hoje, ou a data original do plano em upgrade |
+
+**Níveis com plano:** só `total_beginner` e `beginner` (DP-01). Para `intermediate` e `advanced`
+a Edge Function responde `422 { error: 'level_not_supported' }` sem gravar nada, e o app mostra
+"Seu plano ainda não está disponível". O objetivo não muda o conteúdo (DP-02): todo plano é o
+plano-base de 5 km, e o objetivo fica gravado em `plans.goal` para uso futuro.
 
 ## 4.1 Duração do plano (semanas)
 
-*(a validar com o Pedro)*
+*(a validar com o Pedro, DP-03)*
 
-| Objetivo \ preparo | Nunca corri | Corro às vezes | Corro toda semana |
-| --- | --- | --- | --- |
-| Começar a correr | 8 | 6 | 6 |
-| Rumo aos 5 km | 10 | 8 | 6 |
-| Rumo aos 10 km | 12 | 10 | 8 |
-| Condicionamento | 8 | 8 | 8 |
+- Todo plano completo tem **8 semanas fixas**, sem semana de recuperação nem polimento.
+- Plano grátis: as 2 primeiras semanas (ver "Plano grátis e premium").
 
-## 4.2 Volume semanal
+## 4.2 Progressão
 
-*(a validar com o Pedro)*
+*(a validar com o Pedro, DP-03)*
 
-| Preparo | Minutos na semana 1 | Máx. de corridas por semana | Teto de minutos por semana |
-| --- | --- | --- | --- |
-| Nunca corri | 60 | 3 | 150 |
-| Corro às vezes | 75 | 4 | 200 |
-| Corro toda semana | 100 | 5 | 260 |
+A progressão é feita pelos estágios de caminhada e corrida (seção 4.5). Não há volume em
+minutos por semana nem teto de corridas além de 3 por semana.
 
-Regras de progressão:
-
-- Cada semana normal aumenta **10%** sobre a semana normal anterior (*a validar com o Pedro*).
-- **Semana de recuperação:** a cada 4 semanas (semanas 4, 8, 12...), exceto a última.
-  Ela tem **80%** da semana normal anterior, e a semana seguinte volta da última semana
-  normal, sem contar a recuperação (*a validar com o Pedro*).
-- **Polimento (taper):** só em 5 km e 10 km, na última semana, com **70%** da semana
-  anterior. Nessa semana acontece a sessão de prova (*a validar com o Pedro*).
-- Os minutos são arredondados para múltiplos de 5 e limitados ao teto.
+- Máximo de **3 corridas por semana** para os dois níveis elegíveis. Se houver mais dias de
+  treino, entram os dias espaçados igualmente (ex.: 6 dias → 1º, 3º e 5º).
+- Tudo em intensidade leve (zona 2).
 
 ## 4.3 Dias de corrida
 
 *(a validar com o Pedro)*
 
-- Número de corridas na semana = o menor entre os dias de treino escolhidos e o máximo da
-  tabela 4.2. Os dias que sobram **não viram descanso** e não geram sessão.
+- Número de corridas na semana = o menor entre os dias de treino escolhidos e 3. Os dias que
+  sobram **não viram descanso** e não geram sessão.
 - Os dias de corrida são escolhidos a intervalos regulares dentro dos dias de treino.
   Exemplo: com 6 dias e 3 corridas, entram o 1º, o 3º e o 5º dia da lista.
-- **Corrida longa:** sempre o último dia de corrida da semana (sábado ou domingo, quando
-  o usuário escolheu esses dias).
-- **Treino de ritmo ou fartlek:** só para 5 km e 10 km, preparo "corro às vezes" ou
-  "corro toda semana", a partir da semana 3, fora da recuperação e do polimento, e só
-  quando a semana tem 3 ou mais corridas. Cai no dia do meio, entre o primeiro dia e o dia
-  longo. Nas semanas pares é treino de ritmo; nas ímpares, fartlek.
+- **Corrida longa:** sempre o último dia de corrida da semana. Na semana 8 é o dia da corrida
+  de 5 km (ver 4.5).
 - **Musculação** (só com `strength = yes`): até 2 sessões por semana, no mesmo dia de uma
-  corrida, na segunda sessão do dia. Nunca cai no dia longo nem no dia de ritmo. Pega o
-  primeiro e o terceiro dia candidatos.
+  corrida, na segunda sessão do dia. Nunca cai no último dia de corrida. Pega o primeiro e o
+  terceiro dia candidatos.
 
 ## 4.4 Minutos por sessão
 
-*(a validar com o Pedro)*
+*(a validar com o Pedro, DP-03)*
 
-- Com 3 ou mais corridas: a longa tem **35%** do volume da semana. Com 2 corridas: **55%**.
-  O resto é dividido igualmente entre as outras corridas.
-- Mínimo de 20 min por sessão. A longa tem no máximo 90 min.
-- Com 1 corrida por semana (dia único escolhido): ela é a longa e usa o volume da semana,
-  limitado a 90 min.
-- Em objetivo "começar a correr" e "condicionamento", a longa só recebe o nome "Corrida longa"
-  com 40 min ou mais. Abaixo disso, o nome é "Corrida leve".
-- Em 5 km e 10 km, a longa sempre se chama "Corrida longa".
-- O treino de ritmo e o fartlek têm duração fixa pelos blocos (ver 4.7), e não pelo volume.
+- Nas semanas 1 a 4 do iniciante, a sessão é de caminhada e corrida (seção 4.5). A duração
+  é a soma dos passos.
+- Nas semanas 5 a 8 do iniciante, a corrida é contínua leve de **20, 25, 30 e 30 min** de
+  corrida (o tempo total da sessão inclui 10 min de aquecimento e desaquecimento caminhando:
+  30, 35, 40 e 40 min).
+- Iniciante total usa só caminhada e corrida, em todas as semanas.
 
 ## 4.5 Caminhada e corrida (intervalos)
 
-*(a validar com o Pedro)*
-
-Vale para **quem nunca correu, em qualquer objetivo**, e para quem "corre às vezes" nas
-duas primeiras semanas. Quem "corre toda semana" não tem intervalos.
+*(a validar com o Pedro, DP-03)*
 
 | Estágio | Corrida | Caminhada | Repetições |
 | --- | --- | --- | --- |
@@ -101,14 +84,16 @@ duas primeiras semanas. Quem "corre toda semana" não tem intervalos.
 | 5 | 5 min | 2 min | 4 |
 | 6 | 8 min | 2 min | 3 |
 | 7 | 10 min | 1 min | 3 |
-| 8 | corrida contínua | | |
+| 8 | 15 min | 1 min | 2 |
 
-- **Nunca corri:** a semana usa o estágio igual ao número da semana. Na recuperação,
-  repete o estágio da semana anterior. Do estágio 8 em diante, a corrida vira contínua,
-  no volume da seção 4.4.
-- **Corro às vezes:** semana 1 no estágio 5, semana 2 no estágio 6. Depois, corrida contínua.
+- **Iniciante total:** a semana N usa o estágio N (semanas 1 a 8 = estágios 1 a 8).
+- **Iniciante:** semanas 1 a 4 usam os estágios 5 a 8. Nas semanas 5 a 8 a corrida é contínua
+  (seção 4.4).
+- **Semana 8 do iniciante:** a última sessão da semana é a **corrida de 5 km** em ritmo leve,
+  sem tempo alvo. A distância é o alvo (`target_distance_meters = 5000`). O texto pede para
+  caminhar quando precisar e retomar.
 - Em uma semana com intervalos, a sessão é: 5 min de caminhada, as repetições e 5 min
-  de caminhada. A duração do bloco substitui o volume da seção 4.4.
+  de caminhada. A duração do bloco substitui o tempo da seção 4.4.
 - Os intervalos valem para **todas** as corridas da semana, inclusive a longa.
 
 ## 4.6 Datas
@@ -129,37 +114,33 @@ duas primeiras semanas. Quem "corre toda semana" não tem intervalos.
 
 | Sessão | Passos | Intensidade / zona | Duração alvo |
 | --- | --- | --- | --- |
-| Corrida leve ou longa | Caminhada 5 min, corrida (total − 10 min), caminhada 5 min | Fácil / 2 | Total da sessão |
+| Corrida leve (contínua) | Caminhada 5 min, corrida (total − 10 min), caminhada 5 min | Fácil / 2 | Total da sessão |
 | Caminhada e corrida | Caminhada 5 min, repetições (corrida + caminhada), caminhada 5 min | Fácil / 2 | Soma dos passos |
-| Treino de ritmo (semana par) | Caminhada 10 min, 3 × (5 min em ritmo moderado + 2 min leves), caminhada 5 min | Moderada / 3 | Soma dos passos (36 min) |
-| Fartlek (semana ímpar) | Caminhada 10 min, 6 × (1 min forte + 2 min leves), caminhada 5 min | Moderada / 3 | Soma dos passos (33 min) |
-| Prova (última semana, 5 km e 10 km) | Caminhada 10 min, corrida na distância da prova, caminhada 5 min | Moderada / 3 | Sem tempo alvo: a distância é o alvo (5.000 m ou 10.000 m) |
+| Corrida de 5 km (semana 8, iniciante) | Caminhada 10 min, corrida leve na distância da prova, caminhada 5 min | Fácil / 2 | Sem tempo alvo: a distância é o alvo (5.000 m) |
 | Fortalecimento | 3 rodadas de: agachamento 45 s, elevação de quadril 45 s, prancha 30 s, panturrilha 45 s, descanso 60 s | Sem zona | Soma dos passos (11 min) |
 
 Pontos para o Pedro decidir:
 
-- **Fortalecimento:** a especificação pedia cerca de 20 min, mas os passos dão
-  3 × (45 + 45 + 30 + 45 + 60) s = 675 s, cerca de **11 min** (o app mostra 11 min 15 s).
-  A descrição imprime a duração calculada pelos passos, sem valor fixo. Os passos não mudam
-  até o Pedro dizer o que quer (mais rodadas, aquecimento ou outro bloco).
-- **Prova:** o passo de corrida não tem tempo alvo (`durationSec = 0` no código). Quem
+- **Fortalecimento:** os passos dão 3 × (45 + 45 + 30 + 45 + 60) s = 675 s, cerca de **11 min**.
+  A descrição imprime a duração calculada pelos passos, sem valor fixo.
+- **Corrida de 5 km:** o passo de corrida não tem tempo alvo (`durationSec = 0` no código). Quem
   mostra o treino deve usar a distância, não o tempo.
 
 ## Plano grátis e premium
 
-*(a validar com o Pedro)*
+*(a validar com o Pedro, DP-10)*
 
 - **Grátis:** só as **2 primeiras semanas** do mesmo plano, com `tier = free` e o nome
-  "(2 semanas)". As semanas são iguais às do plano completo, então a regra de progressão
-  não muda.
-- **Premium:** o plano completo.
+  "Rumo aos 5 km (2 semanas)". As semanas são iguais às do plano completo.
+- **Premium:** o plano completo de 8 semanas (`full_weeks = 8`).
 - O tier é decidido **no servidor**, pela linha em `subscriptions` (entitlement `premium`,
   ativa e não expirada). Hoje o webhook do RevenueCat ainda não está publicado, então
   **todo usuário é grátis**.
 - **Upgrade para premium:** quando o usuário vira premium, o plano é regenerado com a
   **mesma data de início**. As semanas 1 e 2 não mudam, e o histórico fica.
-- Na Parte 1 o app não dispara o upgrade. O parâmetro `force` existe para a Parte 2
-  (depois do paywall, chamar `generate(true)`).
+- O paywall aparece depois de "Seu plano está pronto", pode ser fechado e não aparece para
+  quem recebeu "Seu plano ainda não está disponível" (DP-10).
+- O parâmetro `force` existe para o upgrade (o paywall chama `generate(true)`).
 
 ## Regeneração e histórico
 
@@ -188,7 +169,55 @@ Pontos para o Pedro decidir:
   ou ignorar planos cancelados. O histórico copiado para o plano novo mantém o mesmo
   `activity_id` do plano cancelado, então sem esse filtro a mesma atividade conta duas vezes.
 
+## Semanas: encerrar, avançar e repetir
+
+Regras da fase 3 (PLAN-03, PLAN-04, US-PLAN-01, BR-01 a BR-03 do PRD; spec em `docs/spec-fase3.md`).
+Decisões provisórias DP-21 a DP-28 em `docs/decisoes-provisorias-prd.md`.
+
+- **Estado da sessão**: `scheduled`, `in_progress`, `paused`, `completed`, `interrupted`, `cancelled`.
+  Na tela aparecem como Concluído, Em andamento, Interrompido, Cancelado, Não realizado (programada
+  com data passada), Hoje e Pendente. "Não realizado" nunca é gravado.
+- **Semana encerrada**: passou o domingo da semana atual, ou todas as sessões elegíveis da
+  tentativa estão concluídas ou interrompidas.
+- **Aderência (BR-01)**: concluídas ÷ elegíveis da tentativa atual. Elegível é toda sessão da
+  tentativa que não está cancelada. Dia de descanso não tem sessão, então não entra.
+- **Avançar (BR-03)**: só por toque da pessoa ("Avançar para a semana N"), nunca pela passagem do
+  calendário. Exige semana encerrada, pelo menos `ceil(elegíveis × 2 / 3)` concluídas e a semana
+  seguinte liberada. Na última semana, avançar conclui o plano.
+- **Abaixo do mínimo**: só "Repetir semana" fica disponível, com a mensagem de quantos treinos faltam.
+- **Repetir semana (PLAN-04)**: exige semana encerrada. Cria nova tentativa com as sessões da
+  semana; a tentativa anterior fica intacta e aparece em "Tentativas anteriores".
+- **Datas**: a semana seguinte começa no maior entre a segunda seguinte à semana atual e a próxima
+  segunda a partir de hoje. As semanas futuras são remarcadas a partir dela.
+- **Quem grava**: o app só registra início, pausa e interrupção (`transition_plan_session`, em
+  melhor esforço). A conclusão vem do trigger ao salvar a atividade. Avançar e repetir são RPCs
+  (`advance_plan_week`, `repeat_plan_week`). O client não tem mais `update` em `user_plan_workouts`
+  nem em `user_plans`.
+- **Paywall**: a semana bloqueada (plano grátis) mostra "Ver planos" depois que a semana fecha.
+
+## Conquistas e progresso
+
+Regras da fase 4 (DASH-01 a DASH-03, GAME-01, US-GAME-01, BR-06 do PRD; spec em `docs/spec-fase4.md`).
+Decisões provisórias DP-29 a DP-36 em `docs/decisoes-provisorias-prd.md`.
+
+- **Primeiro treino**: primeira atividade com `source = 'paceless'`. Importadas de HealthKit ou
+  Health Connect não contam.
+- **Semana concluída**: todas as sessões elegíveis (não canceladas) de uma tentativa de semana
+  concluídas. Descanso não tem linha e nunca entra na conta. Sessão interrompida não conta até ser
+  completada. Mais estrita que o mínimo de 2/3 para avançar.
+- **Concessão**: só pelo servidor, com `on conflict do nothing`. Reenviar a mesma atividade ou
+  concluir outra semana não cria linha nova. Apagar a atividade mantém a conquista.
+- **Sem pressão**: nenhuma conquista premia treino fora do plano, sequência diária ou volume extra.
+- **Início com plano**: o card de progresso mostra `X de Y treinos concluídos` e aderência da
+  tentativa atual, com aviso de que descanso não conta como falta. Sem plano ativo, a Início mostra
+  "Criar meu plano" e a contagem de atividades da semana.
+- **Histórico**: "Esta semana" é calculado no app (inclui a fila offline). "Desde o início" vem de
+  `get_progress_summary`. Se a consulta falhar, o bloco some sem mensagem extra.
+
 ## Desvios da especificação original
+
+> Histórico: os itens abaixo descrevem o gerador antes da Fase 1 do PRD (volume em minutos, tempo, fartlek, 10 km). Ficam como registro; o comportamento atual está nas seções 4.x acima.
+
 
 - **`p_today` e `p_force` na RPC:** foram mantidos. São necessários para tratar a corrida entre
   duas chamadas e para fazer a checagem do `settings_hash` dentro do lock. Sem eles, a checagem
@@ -203,6 +232,9 @@ Pontos para o Pedro decidir:
   `session` e por `ActiveSession.userPlanWorkoutId`, então o módulo não fazia nada.
 
 ## Perguntas em aberto para o Pedro
+
+> Histórico: os itens abaixo descrevem o gerador antes da Fase 1 do PRD (volume em minutos, tempo, fartlek, 10 km). Ficam como registro; o comportamento atual está nas seções 4.x acima.
+
 
 1. **Perda de premium:** hoje não regeneramos sozinhos. O plano completo continua até a
    próxima mudança de configuração, e aí o plano novo sai grátis. Quer regenerar na hora

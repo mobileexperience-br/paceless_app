@@ -7,7 +7,9 @@ import { NextSessionCard } from '@/components/plan/NextSessionCard';
 import { NoPlanState, PlanError, PlanLoading } from '@/components/plan/PlanStates';
 import { PlanHero } from '@/components/plan/PlanHero';
 import { WeekList } from '@/components/plan/WeekList';
+import { WeekStatusCard } from '@/components/plan/WeekStatusCard';
 import { useActivePlan } from '@/hooks/useActivePlan';
+import { usePlanWeekStatus } from '@/hooks/usePlanWeekStatus';
 import { localToday } from '@/lib/planDates';
 import { currentWeekNumber, findWeek, isPlanLocked, nextSession, planProgress } from '@/lib/planProgress';
 import { createStyles, layout, sizes, spacing } from '@/theme';
@@ -18,7 +20,12 @@ export default function PlanScreen(): ReactElement {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { plan, loading, error, reload } = useActivePlan();
+  const week = usePlanWeekStatus();
   const today = localToday();
+
+  const afterWeekAction = (action: () => Promise<void>): void => {
+    void action().then(() => reload());
+  };
 
   if (plan === null) {
     return (
@@ -33,7 +40,7 @@ export default function PlanScreen(): ReactElement {
     );
   }
 
-  const weekNumber = currentWeekNumber(plan, today);
+  const weekNumber = currentWeekNumber(plan);
   const currentWeek = findWeek(plan, weekNumber);
   const progress = planProgress(plan);
   const next = nextSession(plan, today);
@@ -51,6 +58,23 @@ export default function PlanScreen(): ReactElement {
           done={progress.done}
           total={progress.total}
         />
+
+        {week.status !== null ? (
+          <WeekStatusCard
+            status={week.status}
+            busy={week.busy}
+            error={week.error}
+            onAdvance={() => {
+              afterWeekAction(week.advance);
+            }}
+            onRepeat={() => {
+              afterWeekAction(week.repeat);
+            }}
+            onUnlock={() => {
+              router.push('/plan-paywall');
+            }}
+          />
+        ) : null}
 
         <NextSessionCard session={next} isToday={isToday} locked={isPlanLocked(plan)} />
 

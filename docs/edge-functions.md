@@ -81,11 +81,11 @@ Recibos do Expo (`/getReceipts`) ainda não são consultados: fica como próximo
 - Sem o `revenuecat-webhook` publicado, nenhum usuário tem linha premium em
   `subscriptions`: **todo mundo gera o plano grátis (2 semanas)**.
 - Resposta 200 `generated` e `unchanged` traz `fullWeeks` (total de semanas do plano completo,
-  ex.: 12 no `run_10k` com `never_ran`). O free recebe `weeks: 2` e `fullWeeks: 12`; a UI mostra
-  as semanas 3 a 12 bloqueadas. Forma completa:
-  `{status, userPlanId, tier, weeks, fullWeeks, sessions?}`.
-- `GENERATOR_VERSION` está em `2` (era `1`). A forma do plano mudou (campo `full_weeks`), então
-  o `settings_hash` mudou e o próximo save regenera o plano mesmo sem mudar as entradas.
+  sempre `8`). O free recebe `weeks: 2` e `fullWeeks: 8`; a UI mostra as semanas 3 a 8
+  bloqueadas. Forma completa: `{status, userPlanId, tier, weeks, fullWeeks, sessions?}`.
+- Preparo fora de `total_beginner` e `beginner` (intermediário ou avançado) responde
+  `422 { error: 'level_not_supported' }` sem escrever no banco. O plano anterior, se houver, continua ativo.
+- `GENERATOR_VERSION` está em `3` (era `2`). Ao mudar o gerador, o `settings_hash` muda e o próximo save regenera o plano mesmo sem mudar as entradas.
 - Não precisa de `--no-verify-jwt`: a função valida o JWT do usuário logado.
 
 ## Variáveis de ambiente

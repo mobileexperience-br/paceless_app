@@ -1,4 +1,5 @@
 import { isRecord } from '@/lib/activities';
+import { mondayOf } from '@/lib/planCalendar';
 import { parsePlanSteps } from '@/lib/planSteps';
 import type {
   PlanTier,
@@ -10,7 +11,14 @@ import type {
 const workoutKinds = ['run', 'strength', 'rest'] as const;
 const intensities: readonly WorkoutIntensity[] = ['easy', 'moderate', 'hard'];
 const tiers: readonly PlanTier[] = ['free', 'full'];
-const sessionStatuses: readonly UserPlanWorkoutStatus[] = ['planned', 'done', 'skipped'];
+const sessionStatuses: readonly UserPlanWorkoutStatus[] = [
+  'scheduled',
+  'in_progress',
+  'paused',
+  'completed',
+  'interrupted',
+  'cancelled',
+];
 
 export interface ParsedWeek {
   weekNumber: number;
@@ -25,6 +33,9 @@ export interface ParsedUserPlan {
   tier: PlanTier;
   fullWeeks: number;
   weeks: ParsedWeek[];
+  currentWeek: number;
+  currentAttempt: number;
+  currentWeekStartedOn: string;
 }
 
 export interface SessionRow {
@@ -33,6 +44,8 @@ export interface SessionRow {
   date: string;
   status: UserPlanWorkoutStatus;
   completedAt: string | null;
+  weekNumber: number;
+  attempt: number;
 }
 
 function textField(record: Record<string, unknown>, key: string): string | null {
@@ -117,6 +130,10 @@ export function parseUserPlan(value: unknown): ParsedUserPlan | null {
     tier: oneOf(tiers, plan['tier']) ?? 'free',
     fullWeeks: numberField(plan, 'full_weeks') ?? weekCount,
     weeks,
+    currentWeek: numberField(value, 'current_week') ?? 1,
+    currentAttempt: numberField(value, 'current_attempt') ?? 1,
+    currentWeekStartedOn:
+      textField(value, 'current_week_started_on') ?? mondayOf(startedAt),
   };
 }
 
@@ -126,8 +143,18 @@ function parseSessionRow(value: unknown): SessionRow | null {
   const planWorkoutId = textField(value, 'plan_workout_id');
   const date = textField(value, 'scheduled_date');
   const status = oneOf(sessionStatuses, value['status']);
+  const weekNumber = numberField(value, 'week_number');
   if (id === null || planWorkoutId === null || date === null || status === null) return null;
-  return { id, planWorkoutId, date, status, completedAt: textField(value, 'completed_at') };
+  if (weekNumber === null) return null;
+  return {
+    id,
+    planWorkoutId,
+    date,
+    status,
+    completedAt: textField(value, 'completed_at'),
+    weekNumber,
+    attempt: numberField(value, 'attempt') ?? 1,
+  };
 }
 
 export function parseSessionRows(value: unknown): SessionRow[] {

@@ -1,6 +1,5 @@
 import { combosForGroup, trainingDayCombos } from '@/lib/trainingDayCombos';
 import type {
-  LabeledStepKey,
   OnboardingAnswers,
   OnboardingLabels,
   OnboardingStepKey,
@@ -9,15 +8,16 @@ import type {
 
 export const onboardingLabels: OnboardingLabels = {
   goal: {
-    start_running: 'Começar a correr',
-    run_5k: 'Correr 5 km',
-    run_10k: 'Correr 10 km',
+    complete_5k: 'Completar 5 km',
+    race: 'Fazer uma prova',
     fitness: 'Ganhar condicionamento',
+    weight_loss: 'Emagrecer',
   },
   level: {
-    never_ran: 'Nunca corri',
-    sometimes: 'Corro de vez em quando',
-    weekly: 'Corro toda semana',
+    total_beginner: 'Iniciante total',
+    beginner: 'Iniciante',
+    intermediate: 'Intermediário',
+    advanced: 'Avançado',
   },
   daysPerWeek: {
     two: '2 dias',
@@ -32,9 +32,17 @@ export const onboardingLabels: OnboardingLabels = {
   },
 };
 
+export const levelDescriptions: Record<OnboardingAnswers['level'], string> = {
+  total_beginner: 'Não corro ou estou voltando agora',
+  beginner: 'Corro trechos curtos, mas ainda não 5 km sem parar',
+  intermediate: 'Já corro 5 km sem parar',
+  advanced: 'Treino corrida com regularidade há bastante tempo',
+};
+
 export interface OnboardingOption {
   id: string;
   label: string;
+  description?: string;
 }
 
 export interface OnboardingStepConfig {
@@ -44,13 +52,17 @@ export interface OnboardingStepConfig {
   options: OnboardingOption[];
 }
 
-function buildStep<K extends LabeledStepKey>(
-  key: K,
+function buildStep(
+  key: OnboardingStepKey,
   title: string,
   subtitle: string,
-  labels: Record<OnboardingAnswers[K], string>,
+  labels: Readonly<Record<string, string>>,
+  descriptions?: Readonly<Record<string, string>>,
 ): OnboardingStepConfig {
-  const options = Object.entries<string>(labels).map(([id, label]) => ({ id, label }));
+  const options = Object.entries(labels).map(([id, label]) => {
+    const description = descriptions?.[id];
+    return description === undefined ? { id, label } : { id, label, description };
+  });
   return { key, title, subtitle, options };
 }
 
@@ -62,15 +74,9 @@ export const onboardingSteps: readonly OnboardingStepConfig[] = [
     onboardingLabels.goal,
   ),
   buildStep(
-    'level',
-    'Como está seu preparo hoje?',
-    'Seja honesto — dá para evoluir de qualquer ponto.',
-    onboardingLabels.level,
-  ),
-  buildStep(
     'daysPerWeek',
-    'Quantos dias por semana?',
-    'Você pode ajustar isso depois.',
+    'Quantos dias por semana você pode treinar?',
+    'Mínimo de 2 dias. Você pode ajustar depois.',
     onboardingLabels.daysPerWeek,
   ),
   {
@@ -80,29 +86,13 @@ export const onboardingSteps: readonly OnboardingStepConfig[] = [
     options: trainingDayCombos.map(({ id, label }) => ({ id, label })),
   },
   buildStep(
-    'strength',
-    'Quer incluir musculação?',
-    'Treino de força reduz lesão e melhora o ritmo.',
-    onboardingLabels.strength,
+    'level',
+    'Como está seu preparo hoje?',
+    'Seja honesto — dá para evoluir de qualquer ponto.',
+    onboardingLabels.level,
+    levelDescriptions,
   ),
 ];
-
-const goalSummaries: Record<OnboardingAnswers['goal'], string> = {
-  start_running: 'Plano para começar a correr',
-  run_5k: 'Plano para correr 5 km',
-  run_10k: 'Plano para correr 10 km',
-  fitness: 'Plano para ganhar condicionamento',
-};
-
-export function summarizeAnswers(answers: PartialOnboardingAnswers): string | null {
-  const goal = answers.goal ? goalSummaries[answers.goal] : null;
-  const combo = trainingDayCombos.find(({ id }) => id === answers.trainingDays);
-  const days = combo
-    ? `${combo.days.length} dias: ${combo.label.charAt(0).toLowerCase()}${combo.label.slice(1)}`
-    : null;
-  const parts = [goal, days].filter((part): part is string => part !== null);
-  return parts.length > 0 ? parts.join(' · ') : null;
-}
 
 export function optionsForStep(
   step: OnboardingStepConfig,

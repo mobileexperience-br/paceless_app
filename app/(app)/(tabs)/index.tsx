@@ -5,12 +5,15 @@ import { Bell } from 'lucide-react-native';
 import { Button, Avatar, Screen, Text } from '@/components';
 import { QuickAccess } from '@/components/home/QuickAccess';
 import { LastWorkoutCard } from '@/components/home/LastWorkoutCard';
+import { NoPlanCard } from '@/components/home/NoPlanCard';
 import { PlanCard } from '@/components/home/PlanCard';
 import { TodayCard } from '@/components/home/TodayCard';
 import { WeekProgressCard } from '@/components/home/WeekProgressCard';
 import { useActivePlan } from '@/hooks/useActivePlan';
 import { useActivities } from '@/hooks/useActivities';
+import { usePlanWeekStatus } from '@/hooks/usePlanWeekStatus';
 import { useProfile } from '@/hooks/useProfile';
+import { PlanError } from '@/components/plan/PlanStates';
 import { localToday } from '@/lib/planDates';
 import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
@@ -23,7 +26,9 @@ export default function HomeScreen(): ReactElement {
   const firstName = name?.split(/\s+/)[0];
   const { activities, load } = useActivities();
   const lastActivity = activities[0];
-  const { plan, loading: planLoading } = useActivePlan();
+  const { plan, loading: planLoading, error: planError, reload: reloadPlan } = useActivePlan();
+  const { status } = usePlanWeekStatus();
+  const noPlan = !planLoading && plan === null && planError === null;
 
   useFocusEffect(
     useCallback((): void => {
@@ -59,13 +64,19 @@ export default function HomeScreen(): ReactElement {
             {firstName ? `Olá, ${firstName}!` : 'Olá!'}
           </Text>
           <Text variant="body" color={colors.textSecondary}>
-            Pronto para o seu treino de hoje?
+            {noPlan ? 'Vamos montar seu plano de treino?' : 'Pronto para o seu treino de hoje?'}
           </Text>
         </View>
 
-        <PlanCard plan={plan} loading={planLoading} />
+        {planError !== null && plan === null ? (
+          <PlanError message={planError} onRetry={() => { void reloadPlan(); }} />
+        ) : noPlan ? (
+          <NoPlanCard />
+        ) : (
+          <PlanCard plan={plan} loading={planLoading} />
+        )}
 
-        <WeekProgressCard activities={activities} />
+        <WeekProgressCard activities={activities} status={plan ? status : null} />
 
         <TodayCard plan={plan} loading={planLoading} today={localToday()} />
 

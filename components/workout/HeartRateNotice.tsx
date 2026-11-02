@@ -15,15 +15,20 @@ const captions = {
   unauthorized: 'Sem permissão de Bluetooth. Ative em Dispositivos conectados.',
 } as const;
 
-export function HeartRateNotice({ status, bpm, zone }: HeartRateNoticeProps): ReactElement | null {
+const unavailableCaption = 'FC indisponível';
+
+export function HeartRateNotice({ status, bpm, zone }: HeartRateNoticeProps): ReactElement {
   const { colors } = useTheme();
-  if (status === 'none' || status === 'idle') return null;
+  if (status === 'none' || status === 'idle') {
+    return <HeartRateUnavailable />;
+  }
 
   if (status === 'connected') {
+    if (bpm === null || bpm <= 0) return <HeartRateUnavailable />;
     return (
       <View style={styles.metric}>
         <Heart size={workout.statusIconSize} color={colors.primary} strokeWidth={sizes.iconStroke} />
-        <Text variant="metric" color={palettes.dark.ink}>{`${bpm ?? '--'} bpm`}</Text>
+        <Text variant="metric" color={palettes.dark.ink}>{`${bpm} bpm`}</Text>
         {zone !== null ? (
           <Text variant="captionStrong" color={colors.primary}>{zoneLabels[zone]}</Text>
         ) : null}
@@ -46,6 +51,17 @@ export function HeartRateNotice({ status, bpm, zone }: HeartRateNoticeProps): Re
     <Text variant="caption" center color={palettes.dark.textSecondary} style={styles.caption}>
       {captions[status]}
     </Text>
+  );
+}
+
+function HeartRateUnavailable(): ReactElement {
+  return (
+    <View style={styles.notice}>
+      <HeartOff size={workout.statusIconSize} color={palettes.dark.textSecondary} strokeWidth={sizes.iconStroke} />
+      <Text variant="caption" center color={palettes.dark.textSecondary}>
+        {unavailableCaption}
+      </Text>
+    </View>
   );
 }
 

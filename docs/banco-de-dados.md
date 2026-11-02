@@ -62,6 +62,14 @@ erDiagram
 
 ## Tabelas
 
+### Perfil (`profiles`)
+
+- `goal`: `complete_5k`, `race`, `fitness` ou `weight_loss` (check `profiles_goal_check`).
+- `level`: `total_beginner`, `beginner`, `intermediate` ou `advanced` (check `profiles_level_check`). Só `total_beginner` e `beginner` recebem plano (ver [planos.md](./planos.md)).
+- `strength`: `yes`, `maybe_later` ou `no`, default `'no'` e `not null`. Não é perguntado no onboarding; editável em Configurações do plano.
+- `onboarding_completed_at`: gravado quando o primeiro acesso termina (plano gerado ou nível não elegível). Nulo significa que o app manda a pessoa para `/onboarding`. Falha de rede não grava.
+- Migration `20261102000000_prd_onboarding_values.sql` troca os valores antigos (zera goal, level e a conclusão do onboarding), recria os checks e marca `plans.goal` e `plans.level` como `not valid` para aceitar linhas antigas. **Não aplicada no remoto**.
+
 ### Musculação (`20261019210000_strength.sql`)
 
 | Tabela | Propósito | RLS e escrita do client |
@@ -80,8 +88,8 @@ Sessão de força executada vira linha em `activities` com `type = 'strength'`
 | `plans` | Plano (nome, `goal`, `level`, `weeks`, `sessions_per_week`, `is_premium`, `settings_hash`, `generator_version`, `tier` free/full). `owner_id` nulo = catálogo; planos do usuário têm `owner_id` dele | Select de catálogo + próprios. Sem escrita: planos de usuário são gerados por regras na Edge Function `generate-plan` |
 | `plan_weeks` | Semana N do plano | Select se o plano é visível |
 | `plan_workouts` | Treino do dia: `day_of_week` (1 = segunda ... 7 = domingo), `kind` run/strength/rest, `intensity` easy/moderate/hard, `zone` 1 a 5, meta de duração/distância, `description` (PT-BR), `steps` (jsonb: aquecimento, blocos, desaquecimento), `strength_workout_id` opcional | Select se a semana é visível |
-| `user_plans` | Inscrição: `plan_id`, `started_at`, `current_week`, `status`. Índice único parcial garante um plano `active` por usuário | Select/delete próprios. Update só de `current_week` e `status` (grant por coluna). Insert só via `enroll_in_plan` |
-| `user_plan_workouts` | Agenda: `scheduled_date`, `status` planned/done/skipped, `activity_id` concluído | Select próprio. Update só de `status`, `activity_id`, `completed_at`; `activity_id` precisa ser atividade do próprio usuário. Insert só via `enroll_in_plan` |
+| `user_plans` | Inscrição: `plan_id`, `started_at`, `current_week`, `current_attempt` (tentativa da semana atual), `current_week_started_on` (segunda-feira da semana atual), `status`. Índice único parcial garante um plano `active` por usuário | Select/delete próprios. Sem update pelo client: avanço e repetição de semana só pelas RPCs |
+| `user_plan_workouts` | Agenda: `scheduled_date`, `status` (6 estados, abaixo), `week_number`, `attempt` (tentativa da semana, começa em 1), `started_at`, `interrupted_at`, `interruption_reason` (`discarded`, `too_short`, `superseded`), `activity_id` e `completed_at` | Select próprio. Sem update pelo client (desde a migration `20261102020000_plan_session_states.sql`). `completed` só pelo trigger `activities_link_plan_workout`; início, pausa e interrupção por `transition_plan_session`. Insert só via `enroll_in_plan`, `replace_generated_plan` ou `repeat_plan_week` |
 
 `public.enroll_in_plan(p_plan_id, p_start_date)` (`security definer`,
 `search_path = ''`, só `authenticated`): valida que o plano é visível, cancela o plano
@@ -90,7 +98,45 @@ da semana de `p_start_date` (descansos não geram linha; a tela deriva "Descanso
 Planos com `is_premium` exigem linha ativa em `subscriptions` (entitlement `premium`,
 não expirada); caso contrário levanta `premium required` (`42501`). Um `pg_advisory_xact_lock`
 por usuário serializa inscrições concorrentes, e as linhas `planned` do plano cancelado são
-removidas para não duplicar a agenda (histórico `done`/`skipped` é mantido).
+removidas para não duplicar a agenda (histórico `completed` é mantido).
+
+#### Estados de sessão (BR-02)
+
+`user_plan_workouts.status` aceita `scheduled` (programada), `in_progress`, `paused`,
+`completed` (atividade vinculada), `interrupted` (começou e foi encerrada sem salvar) e
+`cancelled`. Os antigos `planned`, `done` e `skipped` foram migrados para `scheduled`,
+`completed` e `cancelled`. "Não realizado" é só estado exibido (programada com data passada),
+nunca gravado. Transições válidas estão na spec da fase 3 (`docs/spec-fase3.md`, seção 2.1);
+`completed` e `cancelled` são finais, e a mesma transição repetida devolve o estado atual.
+
+`public.transition_plan_session(p_session, p_to, p_reason)` (`security definer`, só
+`authenticated`) é a única escrita de estado pelo app, para `in_progress`, `paused` e
+`interrupted`. Recusa transições inválidas com `invalid_transition`, sessão de outra semana ou
+tentativa com `session_not_current`, e plano não ativo com `plan_not_active`.
+
+#### Semanas: estado, avanço e repetição
+
+- `public.get_plan_week_status(p_today)`: estado da semana atual (encerrada, aderência,
+  bloqueio) calculado no servidor.
+- `public.advance_plan_week(p_today)`: avança a semana (BR-03). Falha com
+  `cannot_advance:<motivo>` quando não pode. Não há avanço automático pelo calendário.
+- `public.repeat_plan_week(p_today)`: cria nova tentativa da semana (PLAN-04). As linhas da
+  tentativa anterior ficam intactas.
+- Funções internas (sem grant para o client): `plan_week_state` e `plan_next_week_start`.
+
+#### Progresso e conquistas
+
+- `public.get_progress_summary(p_today)`: totais de sessões, distância e tempo da semana e
+  desde o início (fuso America/Sao_Paulo). Só para `authenticated`.
+- Trigger `activities_post_award_achievements` (`after insert` em `activities`): concede
+  `first_workout` e `first_week_completed` (DP-29 a DP-34). Ordem alfabética garante que roda depois
+  de `activities_link_plan_workout`. Não renomear.
+- `p_today` precisa estar a no máximo um dia de `America/Sao_Paulo` (`invalid_today`).
+
+Migrations de estados e progressão: `20261102020000_plan_session_states.sql` (estados,
+colunas novas, grants de update removidos) e `20261102030000_plan_week_progression.sql`
+(RPCs de semana, `replace_generated_plan` e `enroll_in_plan` ajustadas). Ambas **não aplicadas
+no remoto** e sempre juntas.
 
 ### Plano gerado por regras (`20261029000000_generated_plans.sql`)
 
@@ -138,8 +184,8 @@ removidas para não duplicar a agenda (histórico `done`/`skipped` é mantido).
 | Tabela | Propósito | RLS e escrita do client |
 |---|---|---|
 | `weekly_goals` | Meta semanal: `week_start` (segunda), `target_sessions`, `target_distance_meters`. O "cumprido" não é gravado: sai de `activities` | CRUD próprio |
-| `achievements` | Catálogo: `code`, `title`, `kind` milestone/personal, `metric` + `threshold` | Só select |
-| `user_achievements` | Conquistas ganhas, única por (`user_id`, `achievement_id`), `activity_id` de origem | Só select próprio. Quem concede é o servidor (trigger/Edge Function) |
+| `achievements` | Catálogo: `code`, `title`, `kind` milestone/personal, `metric` + `threshold`. Semeadas: `first_workout` (Primeiro treino) e `first_week_completed` (Semana concluída) | Só select |
+| `user_achievements` | Conquistas ganhas, única por (`user_id`, `achievement_id`), `activity_id` de origem. Concedidas pelo trigger `activities_post_award_achievements` (após inserir em `activities`) | Só select próprio. Quem concede é só o servidor |
 
 Sem ranking, sem sequência diária, sem tabela social ([gamificacao.md](./pesquisa/gamificacao.md)).
 
@@ -215,6 +261,15 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
     `ignoreDuplicates`, que vira `ON CONFLICT DO NOTHING`. Não precisa de grant de update. A
     policy `activities_insert_own` vale para as linhas importadas, e `user_plan_workout_id`
     fica nulo.
+- Migration `20261102010000_activity_perceived_effort.sql` (sensação do treino, RUN-04):
+  - `activities.perceived_effort text`, nulo quando não informado ou pulado. Check em
+    `very_easy`, `easy`, `moderate`, `hard` e `very_hard`.
+  - Grant de update só na coluna `perceived_effort`. As demais colunas seguem imutáveis para o
+    client.
+  - Policy `activities_update_own_effort` (update, `to authenticated`): `user_id` igual a
+    `auth.uid()` nos dois lados (`using` e `with check`).
+  - Trigger `activities_link_plan_workout` é `after insert`: o update de sensação não remarca o
+    plano nem dispara nada.
 - Segredos em `device_credentials` estão em texto: avaliar Supabase Vault ou criptografia
   antes de ligar Garmin/Strava.
 
@@ -242,12 +297,16 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 19. `20261029130000_activities_external_source.sql` (origem das atividades: `source`, `external_id`, `source_name`, FC média e máxima, check e unique `(user_id, source, external_id)`). **Não aplicada no remoto**. Não há mudança de grants nem de RLS.
 20. `20261029140000_ble_heart_rate.sql` (cinta BLE em `connected_devices`, `profiles.max_heart_rate`, tabela `activity_samples`). **Não aplicada no remoto**.
 
-A ordem acima segue a ordem dos timestamps dos arquivos.
+21. `20261102000000_prd_onboarding_values.sql` (valores de goal e level do PRD, default de `strength`, significado de `onboarding_completed_at`). **Não aplicada no remoto**.
+22. `20261102010000_activity_perceived_effort.sql` (`activities.perceived_effort`, grant de update só nessa coluna, policy `activities_update_own_effort`). **Não aplicada no remoto**. Depende de `activities`.
+23. `20261102020000_plan_session_states.sql` e `20261102030000_plan_week_progression.sql` (estados de sessão, tentativas e RPCs de semana, ver acima). **Não aplicadas no remoto**; aplicar as duas juntas.
+
+A ordem acima segue a ordem dos timestamps dos arquivos. a ordem dos timestamps dos arquivos.
 
 ### Ordem de deploy
 
 A migration `20261029010000_plan_session_link.sql` e o deploy da Edge Function `generate-plan`
-com `GENERATOR_VERSION = 2` (`supabase/functions/_shared/plan/hash.ts`) precisam ir ao ar **antes**
+com `GENERATOR_VERSION = 3` (`supabase/functions/_shared/plan/hash.ts`) precisam ir ao ar **antes**
 do build do app. O app passa a enviar `user_plan_workout_id` no upsert de `activities`. Sem a
 coluna e a policy novas, esse upsert falha e a atividade fica presa na fila offline
 (`lib/activityQueue.ts`) até a migration existir no remoto.

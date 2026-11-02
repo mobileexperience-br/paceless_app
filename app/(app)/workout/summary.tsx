@@ -2,10 +2,11 @@ import { useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { AlertTriangle, CalendarCheck, Check, CloudOff } from 'lucide-react-native';
+import { AlertTriangle, CalendarCheck, Check, CloudOff, HeartOff } from 'lucide-react-native';
 import { Button, Screen, StatRow, Text, type Stat } from '@/components';
 import { HeartRateSummaryCard } from '@/components/workout/HeartRateSummaryCard';
 import { SplitsTable } from '@/components/workout/SplitsTable';
+import { PerceivedEffortPicker } from '@/components/workout/PerceivedEffortPicker';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
 import { useSaveActivity } from '@/hooks/useSaveActivity';
 import { formatElapsed } from '@/hooks/useStopwatch';
@@ -43,9 +44,13 @@ function WorkoutSummaryContent(): ReactElement {
   const linkedToPlan = summary.draft.user_plan_workout_id !== null && !failed;
   const StatusIcon = failed ? AlertTriangle : status === 'saved' ? Check : CloudOff;
   const statusColor = failed ? colors.danger : colors.primary;
+  const totalElapsedMs = new Date(summary.draft.ended_at).getTime() - new Date(summary.draft.started_at).getTime();
   const stats: Stat[] = [
-    { value: formatDistanceStat(summary.distanceMeters, summary.distanceUnit), label: `Distância (${distanceLabel(summary.distanceUnit)})` },
-    { value: formatElapsed(summary.durationSeconds * MS_PER_SECOND), label: 'Duração' },
+    {
+      value: formatDistanceStat(summary.distanceMeters === 0 ? null : summary.distanceMeters, summary.distanceUnit),
+      label: `Distância (${distanceLabel(summary.distanceUnit)})`,
+    },
+    { value: formatElapsed(summary.durationSeconds * MS_PER_SECOND), label: 'Tempo ativo' },
     { value: formatPaceForUnit(summary.averagePaceSecondsPerKm, summary.distanceUnit), label: `Ritmo médio (${paceLabel(summary.distanceUnit)})` },
   ];
 
@@ -97,7 +102,19 @@ function WorkoutSummaryContent(): ReactElement {
       ) : null}
 
       <StatRow stats={stats} dark style={styles.stats} />
-      {summary.heartRate ? <HeartRateSummaryCard summary={summary.heartRate} /> : null}
+      <Text variant="caption" color={palettes.dark.textSecondary} style={styles.totalTime}>
+        {`Tempo total ${formatElapsed(totalElapsedMs)}`}
+      </Text>
+      {summary.heartRate !== null && summary.heartRate.avg > 0 ? (
+        <HeartRateSummaryCard summary={summary.heartRate} />
+      ) : (
+        <View style={styles.noGps}>
+          <HeartOff size={workout.statusIconSize} color={palettes.dark.textSecondary} strokeWidth={sizes.iconStroke} />
+          <Text variant="caption" color={palettes.dark.textSecondary} style={styles.statusText}>
+            Frequência cardíaca indisponível
+          </Text>
+        </View>
+      )}
 
       {summary.distanceMeters === 0 ? (
         <View style={styles.noGps}>
@@ -113,6 +130,12 @@ function WorkoutSummaryContent(): ReactElement {
           </Text>
           <SplitsTable splits={summary.splits} unit={summary.distanceUnit} />
         </>
+      )}
+
+      {failed ? null : (
+        <View style={styles.effort}>
+          <PerceivedEffortPicker activityId={summary.draft.id} />
+        </View>
       )}
 
       <View style={styles.action}>
@@ -149,6 +172,12 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   stats: {
+    marginTop: layout.sectionGap,
+  },
+  totalTime: {
+    marginTop: spacing.sm,
+  },
+  effort: {
     marginTop: layout.sectionGap,
   },
   noGps: {

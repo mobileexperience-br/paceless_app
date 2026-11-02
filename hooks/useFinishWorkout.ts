@@ -2,6 +2,9 @@ import { useRef, useState, type RefObject } from 'react';
 import { useRouter } from 'expo-router';
 import type { RunTracker } from '@/hooks/useRunTracker';
 import { paceSecondsPerKm } from '@/lib/geo';
+import { track } from '@/lib/analytics';
+import { analyticsSessionId } from '@/lib/analyticsRules';
+import { reportPlanSession } from '@/lib/planSessionRpc';
 import { useSaveActivity, type NewActivity, type SaveResult } from '@/hooks/useSaveActivity';
 import type { WorkoutType } from '@/lib/activities';
 import { setWorkoutSummary } from '@/lib/workoutSummary';
@@ -13,6 +16,7 @@ const MIN_SAVE_SECONDS = 10;
 export type FinishOutcome = SaveResult | 'tooShort';
 
 interface FinishWorkoutOptions {
+  activityId: string;
   type: WorkoutType;
   startedAtRef: RefObject<Date>;
   userPlanWorkoutId: string | null;
@@ -31,6 +35,7 @@ interface FinishWorkout {
 }
 
 export function useFinishWorkout({
+  activityId,
   type,
   startedAtRef,
   userPlanWorkoutId,
@@ -54,6 +59,8 @@ export function useFinishWorkout({
     const snapshot = await tracker.stop();
     const hr = heartRate.finish();
     if (elapsedSeconds < MIN_SAVE_SECONDS) {
+      track('workout_interrupted', { session_id: analyticsSessionId(userPlanWorkoutId, activityId), reason_optional: 'too_short' });
+      if (userPlanWorkoutId !== null) void reportPlanSession(userPlanWorkoutId, 'interrupted', 'too_short');
       await clearSession();
       finishingRef.current = false;
       setFinishing(false);
@@ -63,6 +70,7 @@ export function useFinishWorkout({
     const averagePace =
       snapshot.distanceMeters > 0 ? paceSecondsPerKm(snapshot.distanceMeters, elapsedSeconds) : null;
     const draft: NewActivity = {
+      id: activityId,
       type,
       started_at: startedAtRef.current.toISOString(),
       ended_at: new Date().toISOString(),
@@ -74,9 +82,13 @@ export function useFinishWorkout({
       user_plan_workout_id: userPlanWorkoutId,
       avg_heart_rate: hr?.avg ?? null,
       max_heart_rate: hr?.max ?? null,
+      perceived_effort: null,
     };
     const status = await save(draft, hr?.samples ?? []);
-    if (status !== 'failed') await clearSession();
+    if (status !== 'failed') {
+      track('workout_completed', { session_id: analyticsSessionId(userPlanWorkoutId, activityId), duration: elapsedSeconds, distance: distanceMeters, source: 'paceless' });
+      await clearSession();
+    }
     setWorkoutSummary({
       type,
       startedAt: draft.started_at,

@@ -1,28 +1,12 @@
-import type { Goal, IntervalStage, Level } from './types.ts';
+import type { EligibleLevel, IntervalStage } from './types.ts';
 
-export const planWeeks: Record<Goal, Record<Level, number>> = {
-  start_running: { never_ran: 8, sometimes: 6, weekly: 6 },
-  run_5k: { never_ran: 10, sometimes: 8, weekly: 6 },
-  run_10k: { never_ran: 12, sometimes: 10, weekly: 8 },
-  fitness: { never_ran: 8, sometimes: 8, weekly: 8 },
-};
+export const PLAN_WEEKS = 8;
+export const FREE_WEEKS = 2;
+export const PLAN_RACE_METERS = 5000;
 
-export const startWeeklyMinutes: Record<Level, number> = {
-  never_ran: 60,
-  sometimes: 75,
-  weekly: 100,
-};
-
-export const maxRunSessions: Record<Level, number> = {
-  never_ran: 3,
-  sometimes: 4,
-  weekly: 5,
-};
-
-export const maxWeeklyMinutes: Record<Level, number> = {
-  never_ran: 150,
-  sometimes: 200,
-  weekly: 260,
+export const maxRunSessions: Record<EligibleLevel, number> = {
+  total_beginner: 3,
+  beginner: 3,
 };
 
 export const intervalStages: readonly IntervalStage[] = [
@@ -33,9 +17,12 @@ export const intervalStages: readonly IntervalStage[] = [
   { stage: 5, runSec: 300, walkSec: 120, reps: 4 },
   { stage: 6, runSec: 480, walkSec: 120, reps: 3 },
   { stage: 7, runSec: 600, walkSec: 60, reps: 3 },
+  { stage: 8, runSec: 900, walkSec: 60, reps: 2 },
 ];
 
-export const sometimesIntervalStageByWeek: Readonly<Record<number, number>> = {
-  1: 5,
-  2: 6,
+export const continuousSessionMinutes: Readonly<Record<number, number>> = {
+  5: 30,
+  6: 35,
+  7: 40,
+  8: 40,
 };

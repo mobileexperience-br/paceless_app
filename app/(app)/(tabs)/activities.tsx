@@ -1,18 +1,12 @@
 import { useCallback, useMemo, useState, type ReactElement } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import {
-  Card,
-  Screen,
-  ScreenTitle,
-  SegmentedTabs,
-  StatRow,
-  Text,
-  type Stat,
-} from '@/components';
+import { Screen, ScreenTitle, SegmentedTabs, type Stat } from '@/components';
 import { ActivitiesEmpty } from '@/components/activities/ActivitiesEmpty';
 import { ActivityRow } from '@/components/activities/ActivityRow';
+import { HistoryHeader } from '@/components/activities/HistoryHeader';
 import { useActivities } from '@/hooks/useActivities';
+import { useProgressSummary } from '@/hooks/useProgressSummary';
 import { usePreferences } from '@/hooks/usePreferences';
 import type { Activity } from '@/lib/activities';
 import {
@@ -31,6 +25,7 @@ export default function ActivitiesScreen(): ReactElement {
   const { distanceUnit } = usePreferences();
   const [filter, setFilter] = useState<string>(activityFilters[0]);
   const { activities, loading, refreshing, error, load, refresh } = useActivities();
+  const { summary } = useProgressSummary();
 
   useFocusEffect(
     useCallback((): void => {
@@ -56,17 +51,11 @@ export default function ActivitiesScreen(): ReactElement {
   }, [activities, distanceUnit]);
 
   const header = (
-    <View style={styles.listHeader}>
-      <Text variant="captionStrong">Esta semana</Text>
-      <Card>
-        <StatRow stats={stats} />
-      </Card>
-      {error && activities.length > 0 ? (
-        <Text variant="caption" color={colors.danger}>
-          Não foi possível carregar seus treinos.
-        </Text>
-      ) : null}
-    </View>
+    <HistoryHeader
+      weekStats={stats}
+      total={summary?.total ?? null}
+      showError={error !== null && activities.length > 0}
+    />
   );
 
   return (
@@ -117,10 +106,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: layout.screenPadding,
     paddingTop: spacing.lg,
     paddingBottom: layout.screenBottom,
-  },
-  listHeader: {
-    gap: layout.cardGap,
-    marginBottom: layout.cardGap,
   },
   separator: {
     height: layout.cardGap,

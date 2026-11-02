@@ -48,7 +48,7 @@ function todayViewOf(plan: ActivePlan | null, today: string): TodayView {
     };
   }
   const sessions = todaySessions(plan, today);
-  const pending = sessions.find((session) => stateOn(session, today) !== 'done');
+  const pending = sessions.find((session) => stateOn(session, today) !== 'completed');
   if (pending) {
     return {
       title: 'Treino de hoje',
