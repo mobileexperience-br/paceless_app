@@ -195,6 +195,25 @@ Decisões provisórias DP-21 a DP-28 em `docs/decisoes-provisorias-prd.md`.
   nem em `user_plans`.
 - **Paywall**: a semana bloqueada (plano grátis) mostra "Ver planos" depois que a semana fecha.
 
+## Conquistas e progresso
+
+Regras da fase 4 (DASH-01 a DASH-03, GAME-01, US-GAME-01, BR-06 do PRD; spec em `docs/spec-fase4.md`).
+Decisões provisórias DP-29 a DP-36 em `docs/decisoes-provisorias-prd.md`.
+
+- **Primeiro treino**: primeira atividade com `source = 'paceless'`. Importadas de HealthKit ou
+  Health Connect não contam.
+- **Semana concluída**: todas as sessões elegíveis (não canceladas) de uma tentativa de semana
+  concluídas. Descanso não tem linha e nunca entra na conta. Sessão interrompida não conta até ser
+  completada. Mais estrita que o mínimo de 2/3 para avançar.
+- **Concessão**: só pelo servidor, com `on conflict do nothing`. Reenviar a mesma atividade ou
+  concluir outra semana não cria linha nova. Apagar a atividade mantém a conquista.
+- **Sem pressão**: nenhuma conquista premia treino fora do plano, sequência diária ou volume extra.
+- **Início com plano**: o card de progresso mostra `X de Y treinos concluídos` e aderência da
+  tentativa atual, com aviso de que descanso não conta como falta. Sem plano ativo, a Início mostra
+  "Criar meu plano" e a contagem de atividades da semana.
+- **Histórico**: "Esta semana" é calculado no app (inclui a fila offline). "Desde o início" vem de
+  `get_progress_summary`. Se a consulta falhar, o bloco some sem mensagem extra.
+
 ## Desvios da especificação original
 
 > Histórico: os itens abaixo descrevem o gerador antes da Fase 1 do PRD (volume em minutos, tempo, fartlek, 10 km). Ficam como registro; o comportamento atual está nas seções 4.x acima.

@@ -123,6 +123,14 @@ tentativa com `session_not_current`, e plano não ativo com `plan_not_active`.
 - `public.repeat_plan_week(p_today)`: cria nova tentativa da semana (PLAN-04). As linhas da
   tentativa anterior ficam intactas.
 - Funções internas (sem grant para o client): `plan_week_state` e `plan_next_week_start`.
+
+#### Progresso e conquistas
+
+- `public.get_progress_summary(p_today)`: totais de sessões, distância e tempo da semana e
+  desde o início (fuso America/Sao_Paulo). Só para `authenticated`.
+- Trigger `activities_post_award_achievements` (`after insert` em `activities`): concede
+  `first_workout` e `first_week_completed` (DP-29 a DP-34). Ordem alfabética garante que roda depois
+  de `activities_link_plan_workout`. Não renomear.
 - `p_today` precisa estar a no máximo um dia de `America/Sao_Paulo` (`invalid_today`).
 
 Migrations de estados e progressão: `20261102020000_plan_session_states.sql` (estados,
@@ -176,8 +184,8 @@ no remoto** e sempre juntas.
 | Tabela | Propósito | RLS e escrita do client |
 |---|---|---|
 | `weekly_goals` | Meta semanal: `week_start` (segunda), `target_sessions`, `target_distance_meters`. O "cumprido" não é gravado: sai de `activities` | CRUD próprio |
-| `achievements` | Catálogo: `code`, `title`, `kind` milestone/personal, `metric` + `threshold` | Só select |
-| `user_achievements` | Conquistas ganhas, única por (`user_id`, `achievement_id`), `activity_id` de origem | Só select próprio. Quem concede é o servidor (trigger/Edge Function) |
+| `achievements` | Catálogo: `code`, `title`, `kind` milestone/personal, `metric` + `threshold`. Semeadas: `first_workout` (Primeiro treino) e `first_week_completed` (Semana concluída) | Só select |
+| `user_achievements` | Conquistas ganhas, única por (`user_id`, `achievement_id`), `activity_id` de origem. Concedidas pelo trigger `activities_post_award_achievements` (após inserir em `activities`) | Só select próprio. Quem concede é só o servidor |
 
 Sem ranking, sem sequência diária, sem tabela social ([gamificacao.md](./pesquisa/gamificacao.md)).
 
