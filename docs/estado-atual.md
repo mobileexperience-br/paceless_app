@@ -17,7 +17,7 @@ escuro estão implementados.
 | Supabase (auth, banco, edge functions) | Ativo no projeto `twfqvvfpnspbdaytrerm`. As 15 migrations de `supabase/migrations/` estão aplicadas no remoto. Edge Function `delete-account` (v2) publicada. `revenuecat-webhook` escrita, **não publicada** (faltam os segredos). Ver [banco-de-dados.md](./banco-de-dados.md) e [edge-functions.md](./edge-functions.md) |
 | Login | E-mail e senha, Google e Apple nativos (`signInWithIdToken`), tela de verificação de e-mail, `SessionProvider` e guard de rota. Ver [login-social.md](./login-social.md) |
 | RevenueCat | SDK `react-native-purchases` no app; paywall com ofertas reais, compra e restaurar. Chave de teste em development e preview, chave `goog_` em production (EAS). Projeto ligado ao Google Play (conta de serviço, tópico Pub/Sub, notificação de teste recebida). Ver [assinaturas.md](./assinaturas.md) |
-| AsyncStorage | Onboarding (`paceless:onboarding`), preferências, fila offline de atividades e buffer de pontos do GPS |
+| AsyncStorage | Preferências, fila offline de atividades e buffer de pontos do GPS. O onboarding não usa mais AsyncStorage (ver Fase 1 abaixo) |
 | `hooks/`, `lib/`, `providers/` | Existem. Telas falam com o Supabase só via hooks |
 | Corrida com GPS | Rastreio em segundo plano (serviço em primeiro plano), pausar, retomar, bloqueio de tela, resumo com parciais, tipos corrida e caminhada, fila offline |
 | Testes | Nenhum automatizado. `tsc` e `eslint --max-warnings 0` rodam no lefthook |
@@ -35,11 +35,19 @@ histórico, onboarding, paywall, salvamento do treino, sinal de GPS e bloqueio).
 
 | Tela | Situação | O que falta |
 |---|---|---|
-| `welcome` | Pronto, com `hero-welcome.jpg` | Login social (Google; Apple só no iOS) |
-| `onboarding` | Cinco passos, incluindo combinações predefinidas de dias de treino (`profiles.training_days`), salvos no AsyncStorage e retomados | Escolha livre de dias (decisão pendente) |
-| `paywall` | Ofertas reais do RevenueCat, compra, restaurar, divulgação da assinatura e links de Termos e Privacidade | Validar a compra em sandbox no aparelho; o webhook ainda não está publicado |
+| `welcome` | Pronto, com `hero-welcome.jpg`. "Começar" abre o cadastro (`/signup`) | Login social (Google; Apple só no iOS) |
 | `signup` / `login` | Formulário controlado com validação, Google e Apple, aviso de Termos | |
 | `verify-email` | Pronto | |
+
+### Primeiro acesso (Fase 1 do PRD, `docs/spec-fase1.md`)
+
+Depois do cadastro, login ou login social, toda sessão com `profiles.onboarding_completed_at` nulo vai para `/onboarding` (portão em `app/(app)/_layout.tsx`). Cada resposta é gravada direto em `profiles` ao clicar em Continuar, na ordem objetivo → dias por semana → dias de treino → preparo. Depois, `plan-ready` gera o plano:
+
+- Preparo elegível (iniciante total ou iniciante): "Seu plano está pronto" → paywall fechável → Início.
+- Preparo não elegível (intermediário ou avançado): "Seu plano ainda não está disponível" → Início, sem paywall e sem plano.
+- Falha de rede: "Tentar novamente"; o onboarding não é concluído.
+
+A musculação não é perguntada (default `no`, editável em Configurações do plano). Decisões em [decisoes-provisorias-prd.md](./decisoes-provisorias-prd.md) (DP-01 a DP-12). Migration `20261102000000_prd_onboarding_values.sql` ainda não aplicada no remoto.
 
 ### App
 

@@ -1,7 +1,7 @@
 import { normalizeDays } from './days.ts';
 import type { BuildPlanInput } from './types.ts';
 
-export const GENERATOR_VERSION = 2;
+export const GENERATOR_VERSION = 3;
 
 export type SettingsInput = Pick<BuildPlanInput, 'goal' | 'level' | 'trainingDays' | 'strength' | 'tier'>;
 

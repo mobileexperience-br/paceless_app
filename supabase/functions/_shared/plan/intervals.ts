@@ -1,19 +1,14 @@
-import { intervalStages, sometimesIntervalStageByWeek } from './tables.ts';
-import { isRecoveryWeek } from './volume.ts';
-import type { IntervalStage, Level } from './types.ts';
+import { intervalStages } from './tables.ts';
+import type { EligibleLevel, IntervalStage } from './types.ts';
 
-function stageNumber(level: Level, week: number, total: number): number | null {
-  if (level === 'weekly') return null;
-  if (level === 'sometimes') return sometimesIntervalStageByWeek[week] ?? null;
-  let stage = 0;
-  for (let current = 1; current <= week; current += 1) {
-    if (!isRecoveryWeek(current, total)) stage += 1;
-  }
-  return stage;
+export function stageNumberForWeek(level: EligibleLevel, week: number): number | null {
+  if (level === 'total_beginner') return week;
+  const stage = week + 4;
+  return stage <= 8 ? stage : null;
 }
 
-export function intervalStageForWeek(level: Level, week: number, total: number): IntervalStage | null {
-  const stageNo = stageNumber(level, week, total);
+export function intervalStageForWeek(level: EligibleLevel, week: number): IntervalStage | null {
+  const stageNo = stageNumberForWeek(level, week);
   if (stageNo === null) return null;
   return intervalStages.find((stage) => stage.stage === stageNo) ?? null;
 }

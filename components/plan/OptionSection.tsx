@@ -8,7 +8,7 @@ import { spacing } from '@/theme';
 interface OptionSectionProps<T extends string> {
   title: string;
   subtitle?: string;
-  options: readonly { id: T; label: string }[];
+  options: readonly { id: T; label: string; description?: string }[];
   selected: T | null;
   disabled?: boolean;
   onSelect: (id: T) => void;
@@ -45,6 +45,11 @@ export function OptionSection<T extends string>({
             <Text variant="bodyStrong" style={{ flexShrink: 1 }}>
               {option.label}
             </Text>
+            {option.description ? (
+              <Text variant="caption" color={colors.textSecondary} style={{ flexShrink: 1 }}>
+                {option.description}
+              </Text>
+            ) : null}
           </SelectableCard>
         ))}
       </View>

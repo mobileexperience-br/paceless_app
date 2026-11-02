@@ -37,7 +37,7 @@ export default function WelcomeScreen(): ReactElement {
         </View>
 
         <View style={styles.actions}>
-          <Button label="Começar" disabled={social.busy} onPress={() => { router.push('/onboarding'); }} />
+          <Button label="Começar" disabled={social.busy} onPress={() => { router.push('/signup'); }} />
           {social.appleSupported ? (
             <SocialButton
               provider="apple"

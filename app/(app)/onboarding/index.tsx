@@ -1,9 +1,10 @@
 import { type ReactElement } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Button, ProgressBar, Screen, ScreenHeader, Text } from '@/components';
+import { Redirect, useRouter } from 'expo-router';
+import { Button, InlineError, ProgressBar, Screen, ScreenHeader, Text } from '@/components';
 import { SelectableCard } from '@/components/paywall/SelectableCard';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { useProfile } from '@/hooks/useProfile';
 import { HEALTH_DISCLAIMER } from '@/lib/healthDisclaimer';
 import { onboardingSteps, optionsForStep } from '@/lib/onboardingSteps';
 import { createStyles, layout, spacing } from '@/theme';
@@ -13,28 +14,38 @@ export default function OnboardingScreen(): ReactElement {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
-  const { loading, step, stepCount, stepKey, answers, isFirst, isLast, answer, next, back } =
-    useOnboarding();
+  const { profile, loading: profileLoading } = useProfile();
+  const {
+    loading,
+    stepIndex,
+    stepCount,
+    answers,
+    selected,
+    isFirst,
+    isLast,
+    saving,
+    error,
+    answer,
+    next,
+    back,
+  } = useOnboarding();
 
+  if (!profileLoading && profile?.onboarding_completed_at) {
+    return <Redirect href="/(app)" />;
+  }
   if (loading) return <Screen flush>{null}</Screen>;
 
-  const current = onboardingSteps[step] ?? onboardingSteps[0];
-  const selected = answers[stepKey];
+  const current = onboardingSteps[stepIndex] ?? onboardingSteps[0];
 
-  const goNext = (): void => {
-    next();
-    if (isLast) router.push('/paywall');
-  };
-
-  const goBack = (): void => {
-    if (isFirst) router.back();
-    else back();
+  const onContinue = async (): Promise<void> => {
+    const saved = await next();
+    if (saved && isLast) router.replace('/onboarding/plan-ready');
   };
 
   return (
     <Screen flush>
-      <ScreenHeader showBack onBack={goBack} centerLabel={`${step + 1} / ${stepCount}`} />
-      <ProgressBar progress={(step + 1) / stepCount} style={styles.progress} />
+      <ScreenHeader showBack={!isFirst} onBack={back} centerLabel={`${stepIndex + 1} / ${stepCount}`} />
+      <ProgressBar progress={(stepIndex + 1) / stepCount} style={styles.progress} />
 
       <ScrollView
         style={styles.scroll}
@@ -53,21 +64,35 @@ export default function OnboardingScreen(): ReactElement {
             <SelectableCard
               key={option.id}
               active={selected === option.id}
-              onPress={() => { answer(option.id); }}
+              onPress={() => {
+                answer(option.id);
+              }}
             >
               <Text variant="bodyStrong">{option.label}</Text>
+              {option.description ? (
+                <Text variant="caption" color={colors.textSecondary}>
+                  {option.description}
+                </Text>
+              ) : null}
             </SelectableCard>
           ))}
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
+        <InlineError message={error} />
         {isLast ? (
           <Text variant="caption" color={colors.textSecondary} center>
             {HEALTH_DISCLAIMER}
           </Text>
         ) : null}
-        <Button label="Continuar" disabled={!selected} onPress={goNext} />
+        <Button
+          label={saving ? 'Salvando...' : 'Continuar'}
+          disabled={!selected || saving}
+          onPress={() => {
+            void onContinue();
+          }}
+        />
       </View>
     </Screen>
   );

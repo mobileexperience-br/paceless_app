@@ -24,40 +24,10 @@ export function buildIntervalSteps(stage: IntervalStage): PlanStep[] {
   ];
 }
 
-export function buildTempoSteps(): PlanStep[] {
-  return [
-    { kind: 'warmup', durationSec: 600, label: 'Aquecimento (caminhada)' },
-    {
-      kind: 'repeat',
-      times: 3,
-      steps: [
-        { kind: 'run', durationSec: 300, label: 'Ritmo moderado' },
-        easyRun(120),
-      ],
-    },
-    walkingCooldown,
-  ];
-}
-
-export function buildFartlekSteps(): PlanStep[] {
-  return [
-    { kind: 'warmup', durationSec: 600, label: 'Aquecimento (caminhada)' },
-    {
-      kind: 'repeat',
-      times: 6,
-      steps: [
-        { kind: 'run', durationSec: 60, label: 'Tiro' },
-        easyRun(120),
-      ],
-    },
-    walkingCooldown,
-  ];
-}
-
 export function buildGoalSteps(): PlanStep[] {
   return [
     { kind: 'warmup', durationSec: 600, label: 'Aquecimento (caminhada)' },
-    { kind: 'run', durationSec: 0, label: 'Ritmo moderado' },
+    { kind: 'run', durationSec: 0, label: 'Corrida leve' },
     walkingCooldown,
   ];
 }

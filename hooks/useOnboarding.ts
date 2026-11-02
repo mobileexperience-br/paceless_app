@@ -1,94 +1,91 @@
-import { useCallback, useEffect, useState } from 'react';
-import {
-  clearOnboardingState,
-  initialOnboardingState,
-  loadOnboardingState,
-  saveOnboardingState,
-  withAnswer,
-} from '@/lib/onboardingStorage';
-import {
-  onboardingStepKeys,
-  type OnboardingState,
-  type OnboardingStepKey,
-  type PartialOnboardingAnswers,
-} from '@/types/onboarding';
+import { useCallback, useState } from 'react';
+import { useProfile } from '@/hooks/useProfile';
+import { useSession } from '@/hooks/useSession';
+import { answersFromProfile, applyAnswer, pendingStep } from '@/lib/onboardingProgress';
+import { saveOnboardingStep } from '@/lib/onboardingSave';
+import { onboardingStepKeys, type OnboardingStepKey, type PartialOnboardingAnswers } from '@/types/onboarding';
 
 interface UseOnboarding {
   loading: boolean;
-  step: number;
+  stepIndex: number;
   stepCount: number;
   stepKey: OnboardingStepKey;
   answers: PartialOnboardingAnswers;
-  completed: boolean;
+  selected: string | null;
   isFirst: boolean;
   isLast: boolean;
+  saving: boolean;
+  error: string | null;
   answer: (value: string) => void;
-  next: () => void;
+  next: () => Promise<boolean>;
   back: () => void;
-  reset: () => void;
 }
 
-const lastStep = onboardingStepKeys.length - 1;
+const lastIndex = onboardingStepKeys.length - 1;
+const saveError = 'Não foi possível salvar sua resposta. Tente novamente.';
 
 export function useOnboarding(): UseOnboarding {
-  const [state, setState] = useState<OnboardingState>(initialOnboardingState);
-  const [loading, setLoading] = useState(true);
+  const { user } = useSession();
+  const userId = user?.id ?? null;
+  const { profile, loading: profileLoading, refresh } = useProfile();
+  const [initialized, setInitialized] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [answers, setAnswers] = useState<PartialOnboardingAnswers>({});
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let active = true;
-    void loadOnboardingState().then((loaded) => {
-      if (!active) return;
-      setState(loaded);
-      setLoading(false);
-    });
-    return (): void => {
-      active = false;
-    };
-  }, []);
+  if (!initialized && !profileLoading && userId !== null) {
+    const restored = answersFromProfile(profile);
+    const pending = pendingStep(restored) ?? 'level';
+    setInitialized(true);
+    setAnswers(restored);
+    setStepIndex(onboardingStepKeys.indexOf(pending));
+  }
 
-  const stepKey = onboardingStepKeys[state.step] ?? 'goal';
-
-  const update = useCallback((nextState: OnboardingState): void => {
-    setState(nextState);
-    void saveOnboardingState(nextState);
-  }, []);
+  const stepKey = onboardingStepKeys[stepIndex] ?? 'goal';
+  const selected = answers[stepKey] ?? null;
 
   const answer = useCallback(
     (value: string): void => {
-      update({ ...state, answers: withAnswer(state.answers, stepKey, value) });
+      setError(null);
+      setAnswers((current) => applyAnswer(current, stepKey, value));
     },
-    [state, stepKey, update],
+    [stepKey],
   );
 
-  const next = useCallback((): void => {
-    if (state.step < lastStep) {
-      update({ ...state, step: state.step + 1 });
-    } else {
-      update({ ...state, completed: true });
+  const next = useCallback(async (): Promise<boolean> => {
+    if (selected === null || userId === null) return false;
+    setSaving(true);
+    setError(null);
+    const saved = await saveOnboardingStep(userId, stepKey, answers);
+    if (!saved) {
+      setSaving(false);
+      setError(saveError);
+      return false;
     }
-  }, [state, update]);
+    await refresh();
+    setSaving(false);
+    if (stepIndex < lastIndex) setStepIndex(stepIndex + 1);
+    return true;
+  }, [answers, refresh, selected, stepIndex, stepKey, userId]);
 
   const back = useCallback((): void => {
-    if (state.step > 0) update({ ...state, step: state.step - 1 });
-  }, [state, update]);
-
-  const reset = useCallback((): void => {
-    setState(initialOnboardingState);
-    void clearOnboardingState();
-  }, []);
+    if (stepIndex > 0) setStepIndex(stepIndex - 1);
+  }, [stepIndex]);
 
   return {
-    loading,
-    step: state.step,
+    loading: profileLoading || !initialized,
+    stepIndex,
     stepCount: onboardingStepKeys.length,
     stepKey,
-    answers: state.answers,
-    completed: state.completed,
-    isFirst: state.step === 0,
-    isLast: state.step === lastStep,
+    answers,
+    selected,
+    isFirst: stepIndex === 0,
+    isLast: stepIndex === lastIndex,
+    saving,
+    error,
     answer,
     next,
     back,
-    reset,
   };
 }

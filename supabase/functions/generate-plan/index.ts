@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 import { buildPlan } from '../_shared/plan/generate.ts';
 import { dayMs, isValidDate, parseDate } from '../_shared/plan/schedule.ts';
 import { fieldsOf, parseActivePlan, parseProfile, type ActivePlan, type ProfileSettings } from '../_shared/plan/rows.ts';
-import type { GeneratedPlan, Tier } from '../_shared/plan/types.ts';
+import { eligibleLevels, type EligibleLevel, type GeneratedPlan, type Tier } from '../_shared/plan/types.ts';
 
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -62,6 +62,10 @@ function startDateFrom(body: unknown): string | null {
   const requested = fields.get('startDate');
   if (requested === undefined) return todayInSaoPaulo();
   return typeof requested === 'string' && isWithinReach(requested) ? requested : null;
+}
+
+function isEligible(level: string): level is EligibleLevel {
+  return eligibleLevels.some((eligible) => eligible === level);
 }
 
 function countSessions(plan: GeneratedPlan): number {
@@ -140,13 +144,17 @@ async function handle(request: Request): Promise<Response> {
   if (!profile) {
     return respond(422, { error: 'profile_incomplete' });
   }
+  if (!isEligible(profile.level)) {
+    return respond(422, { error: 'level_not_supported' });
+  }
+  const level: EligibleLevel = profile.level;
 
   const tier: Tier = (await isPremium(admin, userId)) ? 'full' : 'free';
   const active = await loadActivePlan(admin, userId);
 
   const upgrading = active?.tier === 'free' && tier === 'full';
   const planStart = upgrading && active ? active.startedAt : startDate;
-  const plan = buildPlan({ ...profile, tier, startDate: planStart });
+  const plan = buildPlan({ ...profile, level, tier, startDate: planStart });
   const weeks = plan.weeks.length;
   const fullWeeks = plan.full_weeks;
 

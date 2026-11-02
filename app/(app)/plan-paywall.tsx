@@ -18,6 +18,11 @@ export default function PlanPaywallScreen(): ReactElement {
   const { generate } = useGeneratePlan();
   const { reload } = useActivePlan();
 
+  const close = (): void => {
+    if (router.canGoBack()) router.back();
+    else router.replace('/(app)');
+  };
+
   const completeUpgrade = async (): Promise<void> => {
     const result = await generate(true);
     if (result.error) {
@@ -31,7 +36,7 @@ export default function PlanPaywallScreen(): ReactElement {
         });
       }
     }
-    router.back();
+    close();
   };
 
   return (
@@ -41,9 +46,7 @@ export default function PlanPaywallScreen(): ReactElement {
           accessibilityRole="button"
           accessibilityLabel="Fechar"
           hitSlop={sizes.hitSlop}
-          onPress={() => {
-            router.back();
-          }}
+          onPress={close}
           style={styles.close}
         >
           <X size={sizes.iconLg} color={colors.ink} strokeWidth={sizes.iconStroke} />
