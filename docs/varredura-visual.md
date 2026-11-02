@@ -184,3 +184,17 @@ Correções de código nesta rodada: nenhuma. A varredura termina com a cobertur
 Correções de código nesta rodada: nenhuma, por decisão da rodada final.
 
 Gates: `npx tsc --noEmit` ok, `npx eslint . --max-warnings 0` ok, `npm test` 60/60.
+
+## Status final da varredura
+
+| Item | Tela | Status |
+|---|---|---|
+| Botão "Configurar plano" estranho no card (problema original) | Plano sem plano (`NoPlanState`) | Corrigido no código (`be970e6`: `paddingHorizontal: spacing.xl` no `Button`). Pendente de verificação visual: não há screenshot antes/depois porque a tela exige login |
+| Rodapé legal em duas linhas | Cadastro (`LegalNotice`) | Corrigido em parte (`be970e6`). Ainda sobra um vão de cerca de 32px na web; conferir no celular |
+| Conteúdo abaixo da dobra em 360x640 | Cadastro | Não é bug: a tela rola |
+| Telas logadas (abas, plano, sessão, perfil, treino, diálogos) | Todas | Pendente: sem conta de teste confirmada (signup bloqueado por rate limit e domínio de teste rejeitado) |
+| Placeholders jurídicos (`[DATA]`, `[CNPJ]`...) | Termos | Conteúdo, fora do escopo visual |
+| Avisos de a11y/autofill e log do RevenueCat no console | Pré-auth | Limitação da web |
+| GPS, compras, login Apple | Treino, Paywall, Login | Limitação da web: conferir só no celular |
+
+Screenshots (só pré-auth, rodada 2): `shots/r2/` no worktree.
