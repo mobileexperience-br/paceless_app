@@ -42,3 +42,12 @@ significa revisar a spec da fase correspondente.
 | DP-34 | Backfill | Não há backfill de conquistas para dados antigos, porque banco e builds serão zerados (ver DP-05). | 4 |
 | DP-35 | Progresso no Início (US-DASH-01 CA2) | Com plano ativo, o card mostra a aderência da tentativa atual (`get_plan_week_status`), com aviso de que descanso não conta como falta. Sem plano, mantém a contagem de atividades da semana. | 4 |
 | DP-36 | Indicadores do histórico (DASH-03) | "Esta semana" segue calculado no app (inclui fila offline). "Desde o início" vem da RPC `get_progress_summary` (fuso America/Sao_Paulo, como na fase 3). Se a RPC falhar, o bloco some. | 4 |
+| DP-37 | Provedor de analytics (PRD 9) | Camada tipada `track` com implementação que só registra `[analytics]` no console em desenvolvimento. Nada sai do aparelho. Provedor real (e crash/monitoramento) pendente de aprovação de lib. | 5 |
+| DP-38 | Privacidade nos eventos (PRD 9, LGPD) | Só as propriedades mínimas do PRD, por lista permitida. Nunca e-mail, nome, id de usuário, coordenadas, frequência cardíaca, sensação, rota ou pace. Textos cortados em 64 caracteres, números arredondados. | 5 |
+| DP-39 | `template_version` de `plan_created` | `v` + `generator_version` devolvido pela Edge Function (DP-06). Até o deploy da função, vai `unknown`. Só dispara quando a resposta é `generated` (não em `unchanged`). | 5 |
+| DP-40 | `session_id` dos eventos de treino | Id da sessão do plano; em treino livre, o id da atividade gerado no cliente. Eventos de treino valem também para treino livre. | 5 |
+| DP-41 | Treino retomado e finalização | Retomar após crash não gera novo `workout_started`. A pausa feita pelo próprio finalizar não gera `workout_paused`. | 5 |
+| DP-42 | Fuso dos testes | `npm test` roda com `TZ=America/Sao_Paulo`, o fuso do produto (fases 3 e 4). | 5 |
+| DP-43 | Testes de regras em SQL | Transições de sessão, fechamento de semana, mínimo 2/3, conclusão por trigger, conquistas e RLS não têm teste automatizado: exigem Supabase local + pgTAP. Pendente; cobertos pelo roteiro manual em `docs/go-live.md`. | 5 |
+| DP-44 | Consentimento de analytics | Sem tela de consentimento enquanto nada é enviado (DP-37). Obrigatório definir base legal antes de plugar provedor real. | 5 |
+| DP-45 | Disparo único de meta semanal e conquista | O app deduplica `weekly_goal_completed` (por plano/semana/tentativa) e `achievement_awarded` (por código) em `paceless:analytics-sent`, por instalação. `signup_completed` social só dispara se a conta foi criada até 60 s antes do login. | 5 |
