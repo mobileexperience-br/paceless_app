@@ -2,6 +2,7 @@ import { useRef, useState, type RefObject } from 'react';
 import { useRouter } from 'expo-router';
 import type { RunTracker } from '@/hooks/useRunTracker';
 import { paceSecondsPerKm } from '@/lib/geo';
+import { reportPlanSession } from '@/lib/planSessionRpc';
 import { useSaveActivity, type NewActivity, type SaveResult } from '@/hooks/useSaveActivity';
 import type { WorkoutType } from '@/lib/activities';
 import { setWorkoutSummary } from '@/lib/workoutSummary';
@@ -56,6 +57,7 @@ export function useFinishWorkout({
     const snapshot = await tracker.stop();
     const hr = heartRate.finish();
     if (elapsedSeconds < MIN_SAVE_SECONDS) {
+      if (userPlanWorkoutId !== null) void reportPlanSession(userPlanWorkoutId, 'interrupted', 'too_short');
       await clearSession();
       finishingRef.current = false;
       setFinishing(false);

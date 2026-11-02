@@ -1,4 +1,4 @@
-import { addDays, daysBetween, formatDayCaption, mondayOf, weekdayName } from '@/lib/planCalendar';
+import { addDays, formatDayCaption, mondayOf, weekdayName } from '@/lib/planCalendar';
 import type {
   ActivePlan,
   PlanSession,
@@ -10,6 +10,13 @@ import type {
 } from '@/types/training';
 
 const SECONDS_PER_MINUTE = 60;
+const startableStates: readonly PlanSessionState[] = [
+  'today',
+  'pending',
+  'missed',
+  'in_progress',
+  'interrupted',
+];
 
 export interface WeekDay {
   date: string;
@@ -23,8 +30,10 @@ export function sessionState(
   date: string,
   today: string,
 ): PlanSessionState {
-  if (status === 'done') return 'done';
-  if (status === 'skipped') return 'missed';
+  if (status === 'completed') return 'completed';
+  if (status === 'in_progress' || status === 'paused') return 'in_progress';
+  if (status === 'interrupted') return 'interrupted';
+  if (status === 'cancelled') return 'cancelled';
   if (date < today) return 'missed';
   if (date === today) return 'today';
   return 'pending';
@@ -40,20 +49,15 @@ function sortedSessions(plan: ActivePlan): PlanSession[] {
     .sort((a, b) => a.date.localeCompare(b.date) || a.workout.position - b.workout.position);
 }
 
-function planAnchor(plan: ActivePlan, today: string): string {
-  const first = sortedSessions(plan).at(0);
-  if (!first) return mondayOf(today);
-  return addDays(first.date, -(first.workout.day_of_week - 1));
+export function weekStartDate(plan: ActivePlan, week: PlanWeek): string {
+  if (week.weekNumber === plan.currentWeek) return plan.currentWeekStartedOn;
+  const earliest = week.sessions.map((session) => session.date).sort()[0];
+  if (earliest !== undefined) return mondayOf(earliest);
+  return addDays(plan.currentWeekStartedOn, (week.weekNumber - plan.currentWeek) * 7);
 }
 
-export function weekStartDate(plan: ActivePlan, weekNumber: number, today: string): string {
-  return addDays(planAnchor(plan, today), (weekNumber - 1) * 7);
-}
-
-export function currentWeekNumber(plan: ActivePlan, today: string): number {
-  const elapsed = daysBetween(planAnchor(plan, today), today);
-  if (elapsed < 0) return 1;
-  return Math.min(plan.fullWeeks, Math.max(1, Math.floor(elapsed / 7) + 1));
+export function currentWeekNumber(plan: ActivePlan): number {
+  return plan.currentWeek;
 }
 
 export function isPlanLocked(plan: ActivePlan): boolean {
@@ -63,10 +67,19 @@ export function isPlanLocked(plan: ActivePlan): boolean {
 export function nextSession(plan: ActivePlan, today: string): PlanSession | null {
   return (
     sortedSessions(plan).find((session) => {
+      if (session.weekNumber > plan.currentWeek) return false;
       const state = stateOn(session, today);
-      return state === 'today' || state === 'pending';
+      return state === 'today' || state === 'pending' || state === 'in_progress';
     }) ?? null
   );
+}
+
+export function isSessionCurrent(plan: ActivePlan, session: PlanSession): boolean {
+  return session.weekNumber === plan.currentWeek && session.attempt === plan.currentAttempt;
+}
+
+export function canStartSession(plan: ActivePlan, session: PlanSession, today: string): boolean {
+  return startableStates.includes(stateOn(session, today)) && isSessionCurrent(plan, session);
 }
 
 export function todaySessions(plan: ActivePlan, today: string): PlanSession[] {
@@ -84,7 +97,7 @@ export function findWeek(plan: ActivePlan, weekNumber: number): PlanWeek | null 
 export function planProgress(plan: ActivePlan): { done: number; total: number } {
   const sessions = sortedSessions(plan);
   return {
-    done: sessions.filter((session) => session.status === 'done').length,
+    done: sessions.filter((session) => session.status === 'completed').length,
     total: sessions.length,
   };
 }
@@ -137,6 +150,15 @@ const intensityLabels: Record<WorkoutIntensity, string> = {
 
 export function intensityLabel(intensity: WorkoutIntensity | null): string | null {
   return intensity === null ? null : intensityLabels[intensity];
+}
+
+export function sessionMetaLabel(
+  workout: Pick<PlanWorkout, 'target_distance_meters' | 'target_duration_minutes' | 'intensity'>,
+): string | null {
+  const parts = [sessionTargetLabel(workout), intensityLabel(workout.intensity)].filter(
+    (part): part is string => part !== null,
+  );
+  return parts.length === 0 ? null : parts.join(' · ');
 }
 
 export function zoneLabel(zone: number | null): string | null {

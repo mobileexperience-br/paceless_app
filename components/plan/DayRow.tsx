@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Moon } from 'lucide-react-native';
 import { Text } from '@/components';
 import { SessionStatus, sessionStateLabels } from '@/components/plan/SessionStatus';
-import { sessionTargetLabel, stateOn, type WeekDay } from '@/lib/planProgress';
+import { sessionMetaLabel, stateOn, type WeekDay } from '@/lib/planProgress';
 import { createStyles, layout, radius, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
@@ -34,7 +34,7 @@ export function DayRow({ day, todayDate, onSessionPress }: DayRowProps): ReactEl
       ) : (
         day.sessions.map((session) => {
           const state = stateOn(session, todayDate);
-          const target = sessionTargetLabel(session.workout);
+          const meta = sessionMetaLabel(session.workout);
           return (
             <Pressable
               key={session.id}
@@ -50,9 +50,9 @@ export function DayRow({ day, todayDate, onSessionPress }: DayRowProps): ReactEl
                 <Text variant="bodyStrong" numberOfLines={2}>
                   {session.workout.title}
                 </Text>
-                {target ? (
+                {meta ? (
                   <Text variant="caption" color={colors.textSecondary} numberOfLines={1}>
-                    {target}
+                    {meta}
                   </Text>
                 ) : null}
               </View>

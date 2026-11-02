@@ -15,7 +15,9 @@ import { BlockGuide } from '@/components/workout/BlockGuide';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
 import { useActiveSessionSync } from '@/hooks/useActiveSessionSync';
 import { useHardwareBack } from '@/hooks/useHardwareBack';
+import { usePlanSessionReporter } from '@/hooks/usePlanSessionReporter';
 import { useRunTracker } from '@/hooks/useRunTracker';
+import { reportPlanSession } from '@/lib/planSessionRpc';
 import { SavingOverlay } from '@/components/workout/SavingOverlay';
 import { useWorkoutFinish } from '@/hooks/useWorkoutFinish';
 import { useWorkoutHeartRate } from '@/hooks/useWorkoutHeartRate';
@@ -82,6 +84,8 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
     heartRate,
   });
 
+  usePlanSessionReporter(userPlanWorkoutId, running);
+
   useEffect(() => {
     if (resumed) return;
     startedAtRef.current = new Date();
@@ -92,6 +96,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
     void clear();
     heartRate.discard();
     void tracker.stop();
+    if (userPlanWorkoutId !== null) void reportPlanSession(userPlanWorkoutId, 'interrupted', 'discarded');
     router.back();
   };
 

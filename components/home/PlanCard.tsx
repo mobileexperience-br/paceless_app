@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { ChevronRight, ClipboardList } from 'lucide-react-native';
 import { Card, Text } from '@/components';
 import { currentWeekNumber, planProgress } from '@/lib/planProgress';
-import { localToday } from '@/lib/planDates';
 import { createStyles, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 import type { ActivePlan } from '@/types/training';
@@ -21,7 +20,7 @@ export function PlanCard({ plan, loading }: PlanCardProps): ReactElement {
   const hidden = loading && plan === null ? styles.hidden : undefined;
   const target = plan ? '/plan' : '/plan/settings';
   const progress = plan ? planProgress(plan) : null;
-  const weekNumber = plan ? currentWeekNumber(plan, localToday()) : 0;
+  const weekNumber = plan ? currentWeekNumber(plan) : 0;
 
   return (
     <Pressable

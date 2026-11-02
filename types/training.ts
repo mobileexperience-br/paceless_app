@@ -20,7 +20,13 @@ export type PlanLevel = OnboardingAnswers['level'];
 export type WorkoutKind = 'run' | 'strength' | 'rest';
 export type WorkoutIntensity = 'easy' | 'moderate' | 'hard';
 export type UserPlanStatus = 'active' | 'paused' | 'completed' | 'cancelled';
-export type UserPlanWorkoutStatus = 'planned' | 'done' | 'skipped';
+export type UserPlanWorkoutStatus =
+  | 'scheduled'
+  | 'in_progress'
+  | 'paused'
+  | 'completed'
+  | 'interrupted'
+  | 'cancelled';
 
 export type PlanStep =
   | { kind: 'warmup' | 'cooldown' | 'run' | 'walk' | 'strength'; durationSec: number; label: string }
@@ -113,6 +119,8 @@ export interface UserPlanRow {
   plan_id: string;
   started_at: string;
   current_week: number;
+  current_attempt: number;
+  current_week_started_on: string;
   status: UserPlanStatus;
   created_at: string;
   updated_at: string;
@@ -125,13 +133,25 @@ export interface UserPlanWorkoutRow {
   plan_workout_id: string | null;
   scheduled_date: string;
   status: UserPlanWorkoutStatus;
+  week_number: number;
+  attempt: number;
+  started_at: string | null;
+  interrupted_at: string | null;
+  interruption_reason: string | null;
   activity_id: string | null;
   completed_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export type PlanSessionState = 'done' | 'pending' | 'missed' | 'today';
+export type PlanSessionState =
+  | 'completed'
+  | 'in_progress'
+  | 'interrupted'
+  | 'cancelled'
+  | 'missed'
+  | 'today'
+  | 'pending';
 
 export type PlanWorkout = Omit<PlanWorkoutRow, 'strength_workout_id' | 'notes'>;
 
@@ -143,12 +163,21 @@ export interface PlanSession {
   state: PlanSessionState;
   completedAt: string | null;
   weekNumber: number;
+  attempt: number;
+}
+
+export interface AttemptSummary {
+  attempt: number;
+  completed: number;
+  eligible: number;
 }
 
 export interface PlanWeek {
   weekNumber: number;
   title: string;
+  attempt: number;
   sessions: PlanSession[];
+  history: AttemptSummary[];
   done: number;
   total: number;
 }
@@ -160,4 +189,7 @@ export interface ActivePlan {
   weeks: PlanWeek[];
   fullWeeks: number;
   startedAt: string;
+  currentWeek: number;
+  currentAttempt: number;
+  currentWeekStartedOn: string;
 }
