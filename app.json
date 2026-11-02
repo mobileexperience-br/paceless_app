@@ -183,6 +183,7 @@
         }
       ],
       "react-native-health-connect",
+      "./plugins/withoutDuplicateLocationPermissions",
       [
         "react-native-ble-plx",
         {
