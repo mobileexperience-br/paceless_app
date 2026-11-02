@@ -168,6 +168,25 @@ Todos têm de passar antes de devolver:
 
 Commit sugerido: `feat(android): transparent navigation bar with themed SystemBars`.
 
+## Status (2026-11-02)
+
+Implementado no commit `ac4ebb8` (branch `feat/system-bars`, sem push). Passos 1 a 5 feitos:
+
+- `expo-navigation-bar ~58.0.4` instalado; plugin com `enforceContrast: false` no `app.json`.
+- `components/SystemBars.tsx` (`SystemBars` e `FocusedSystemBars`), exportado no barrel.
+- `ThemedStack` usa `SystemBars`; `welcome`, `workout/[id]` e `workout/summary` usam
+  `FocusedSystemBars scheme="dark"`. Nenhum outro import de `expo-status-bar`.
+- `SavingOverlay` e `SignInOverlay` com `navigationBarTranslucent`.
+- Passo 5: `plan/session/[id].tsx` usava `edges` sem `bottom` e o rodapé com o botão ficava
+  atrás da barra; agora soma `insets.bottom` no `paddingBottom` do rodapé.
+
+Verificado por código: `tsc --noEmit` ok, `eslint .` ok, `npm test` 60/60.
+
+Pendente: build nativo novo (muda o fingerprint; OTA não leva) e o roteiro abaixo no aparelho.
+Só o aparelho confirma: transparência real da barra de 3 botões, cor da pílula em gestos (One UI
+sem fonte), ausência de piscar cinza na abertura, troca de estilo ao voltar de tela escura,
+`Dialog`/`WorkoutMenu` herdando o estilo, e o iPhone (status bar e home indicator).
+
 ## Roteiro de teste no aparelho (depois do build nativo)
 
 Não executar agora. Aparelho principal: Galaxy A12 (Android 13). Se houver, um Android 14/16 real
