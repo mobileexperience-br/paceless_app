@@ -149,3 +149,15 @@ Disparar e inspecionar: sair (Perfil), excluir conta e trocar avatar (Conta), mu
 | R2-2 | minor | Cadastro | Rodapé legal em duas linhas | Corrigido no código (`be970e6`), não verificado visualmente |
 | R3-2 | minor | Cadastro 360x640 | Conteúdo abaixo da dobra | A conferir se a tela rola; rolagem em tela pequena é aceitável |
 | R3-3 | — | Termos | Placeholders jurídicos | Conteúdo, não layout. Fora do escopo |
+
+### Rodada 5 (análise do QA da rodada 4)
+
+| ID | Severidade | Tela | Problema | Status |
+|---|---|---|---|---|
+| R4-1 | blocker (ambiente) | Servidor :8097 | O Metro iniciou às 17:30 a partir do worktree, com `--clear`. O `be970e6` (Button com `paddingHorizontal: spacing.xl`) é das 17:47 e o watcher não pegou a mudança, então o bundle continua antigo. Uma causa provável é o `node_modules` ser symlink para `paceless_app` | Aberto. O código está certo no worktree. Precisa que o coordenador ou o usuário reinicie o Metro do worktree com `--clear` (agentes não podem iniciar nem parar servidores) |
+| R4-2 / R2-1 | blocker (cobertura) | Telas logadas | Sem conta de teste confirmada, as rotas logadas redirecionam para `/welcome` | Aberto. Depende de o usuário fornecer uma conta |
+| R4-3 / R2-2 | minor | Cadastro | Rodapé legal em duas linhas | Corrigido no código (`be970e6`). Reavaliar quando o bundle for atualizado |
+| R3-2 | minor | Cadastro 360x640 | Conteúdo abaixo da dobra | Resolvido: a tela rola e não tem overflow horizontal |
+| R2-orig | major | `NoPlanState` | Botão estranho no card | Corrigido no código (`be970e6`), mas sem verificação visual (depende de R4-1 e R4-2) |
+
+Correções de código nesta rodada: nenhuma, porque os bloqueios restantes são de ambiente.
