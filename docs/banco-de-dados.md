@@ -215,6 +215,15 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
     `ignoreDuplicates`, que vira `ON CONFLICT DO NOTHING`. Não precisa de grant de update. A
     policy `activities_insert_own` vale para as linhas importadas, e `user_plan_workout_id`
     fica nulo.
+- Migration `20261102010000_activity_perceived_effort.sql` (sensação do treino, RUN-04):
+  - `activities.perceived_effort text`, nulo quando não informado ou pulado. Check em
+    `very_easy`, `easy`, `moderate`, `hard` e `very_hard`.
+  - Grant de update só na coluna `perceived_effort`. As demais colunas seguem imutáveis para o
+    client.
+  - Policy `activities_update_own_effort` (update, `to authenticated`): `user_id` igual a
+    `auth.uid()` nos dois lados (`using` e `with check`).
+  - Trigger `activities_link_plan_workout` é `after insert`: o update de sensação não remarca o
+    plano nem dispara nada.
 - Segredos em `device_credentials` estão em texto: avaliar Supabase Vault ou criptografia
   antes de ligar Garmin/Strava.
 
@@ -241,6 +250,7 @@ Tokens de push ficam para a fase de push remoto (`push_tokens`, não criada agor
 18. `20261029010000_plan_session_link.sql` (Parte 2: `plans.full_weeks`, `activities.user_plan_workout_id`, policy `activities_insert_own` nova, trigger `activities_link_plan_workout` e `replace_generated_plan` recriada). **Ainda não aplicada no remoto**: depende de `20261029000000_generated_plans.sql`.
 19. `20261029130000_activities_external_source.sql` (origem das atividades: `source`, `external_id`, `source_name`, FC média e máxima, check e unique `(user_id, source, external_id)`). **Não aplicada no remoto**. Não há mudança de grants nem de RLS.
 20. `20261029140000_ble_heart_rate.sql` (cinta BLE em `connected_devices`, `profiles.max_heart_rate`, tabela `activity_samples`). **Não aplicada no remoto**.
+21. `20261102010000_activity_perceived_effort.sql` (`activities.perceived_effort`, grant de update só nessa coluna, policy `activities_update_own_effort`). **Não aplicada no remoto**. Depende de `activities`.
 
 A ordem acima segue a ordem dos timestamps dos arquivos.
 

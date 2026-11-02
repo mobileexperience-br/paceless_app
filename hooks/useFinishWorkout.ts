@@ -13,6 +13,7 @@ const MIN_SAVE_SECONDS = 10;
 export type FinishOutcome = SaveResult | 'tooShort';
 
 interface FinishWorkoutOptions {
+  activityId: string;
   type: WorkoutType;
   startedAtRef: RefObject<Date>;
   userPlanWorkoutId: string | null;
@@ -31,6 +32,7 @@ interface FinishWorkout {
 }
 
 export function useFinishWorkout({
+  activityId,
   type,
   startedAtRef,
   userPlanWorkoutId,
@@ -63,6 +65,7 @@ export function useFinishWorkout({
     const averagePace =
       snapshot.distanceMeters > 0 ? paceSecondsPerKm(snapshot.distanceMeters, elapsedSeconds) : null;
     const draft: NewActivity = {
+      id: activityId,
       type,
       started_at: startedAtRef.current.toISOString(),
       ended_at: new Date().toISOString(),
@@ -74,6 +77,7 @@ export function useFinishWorkout({
       user_plan_workout_id: userPlanWorkoutId,
       avg_heart_rate: hr?.avg ?? null,
       max_heart_rate: hr?.max ?? null,
+      perceived_effort: null,
     };
     const status = await save(draft, hr?.samples ?? []);
     if (status !== 'failed') await clearSession();

@@ -9,6 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 interface WorkoutHeadingProps {
   type: WorkoutType;
   formatted: string;
+  totalFormatted: string;
   paused: boolean;
   typeDisabled: boolean;
   onPressType: () => void;
@@ -17,6 +18,7 @@ interface WorkoutHeadingProps {
 export function WorkoutHeading({
   type,
   formatted,
+  totalFormatted,
   paused,
   typeDisabled,
   onPressType,
@@ -44,6 +46,9 @@ export function WorkoutHeading({
       </View>
 
       <View style={styles.timer}>
+        <Text variant="caption" center color={palettes.dark.textSecondary}>
+          Tempo ativo
+        </Text>
         <Text
           variant="timer"
           center
@@ -52,12 +57,13 @@ export function WorkoutHeading({
         >
           {formatted}
         </Text>
-        <Text
-          variant={paused ? 'captionStrong' : 'caption'}
-          center
-          color={paused ? colors.primary : palettes.dark.textSecondary}
-        >
-          {paused ? 'PAUSADO' : 'Duração'}
+        {paused ? (
+          <Text variant="captionStrong" center color={colors.primary}>
+            PAUSADO
+          </Text>
+        ) : null}
+        <Text variant="caption" center color={palettes.dark.textSecondary}>
+          {`Tempo total ${totalFormatted}`}
         </Text>
       </View>
     </>

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { randomUUID } from 'expo-crypto';
 import { isRecord, workoutTypes, type WorkoutType } from '@/lib/activities';
 import type { RoutePoint } from '@/lib/geo';
 import type { Split } from '@/lib/splits';
@@ -19,6 +20,7 @@ export interface StopwatchSnapshot {
 }
 
 export interface ActiveSession {
+  activityId: string;
   startedAt: number;
   type: WorkoutType;
   userPlanWorkoutId: string | null;
@@ -112,6 +114,7 @@ function parseSession(stored: unknown, route: unknown): ActiveSession | null {
   if (!isRecord(stored)) return null;
   const { startedAt, type, updatedAt } = stored;
   const planLink = stored['userPlanWorkoutId'];
+  const storedActivityId = stored['activityId'];
   const points = listOf(route, isPoint);
   const stopwatch = parseStopwatch(stored['stopwatch']);
   const track = points ? parseTrack(stored['track'], points) : null;
@@ -120,7 +123,8 @@ function parseSession(stored: unknown, route: unknown): ActiveSession | null {
     return null;
   }
   const userPlanWorkoutId = typeof planLink === 'string' ? planLink : null;
-  return { startedAt, type: workoutType, userPlanWorkoutId, updatedAt, stopwatch, track };
+  const activityId = typeof storedActivityId === 'string' && storedActivityId !== '' ? storedActivityId : randomUUID();
+  return { activityId, startedAt, type: workoutType, userPlanWorkoutId, updatedAt, stopwatch, track };
 }
 
 function thinRoute(route: RoutePoint[]): RoutePoint[] {

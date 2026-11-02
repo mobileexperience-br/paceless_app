@@ -8,6 +8,8 @@ export type WorkoutType = 'run' | 'walk';
 
 export const workoutTypes: readonly WorkoutType[] = ['run', 'walk'];
 
+export type PerceivedEffort = 'very_easy' | 'easy' | 'moderate' | 'hard' | 'very_hard';
+
 export const activityLabels: Record<ActivityType, string> = {
   run: 'Corrida',
   walk: 'Caminhada',
@@ -28,6 +30,7 @@ export interface ActivityDraft {
   user_plan_workout_id: string | null;
   avg_heart_rate: number | null;
   max_heart_rate: number | null;
+  perceived_effort: PerceivedEffort | null;
 }
 
 export interface Activity {
@@ -49,6 +52,16 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function isActivityType(value: unknown): value is ActivityType {
   return value === 'run' || value === 'walk' || value === 'strength';
+}
+
+export function isPerceivedEffort(value: unknown): value is PerceivedEffort {
+  return (
+    value === 'very_easy' ||
+    value === 'easy' ||
+    value === 'moderate' ||
+    value === 'hard' ||
+    value === 'very_hard'
+  );
 }
 
 export function isActivitySource(value: unknown): value is ActivitySource {

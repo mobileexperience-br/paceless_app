@@ -41,9 +41,9 @@ export function useWorkoutDialogs(): WorkoutDialogs {
       },
       confirmStop: (onConfirm: () => void): void => {
         void confirm({
-          title: 'Parar treino?',
+          title: 'Finalizar treino?',
           message: 'O treino será encerrado e salvo.',
-          confirmLabel: 'Parar',
+          confirmLabel: 'Finalizar',
           cancelLabel: 'Continuar',
           icon: renderIcon(Flag),
           tone: 'dark',

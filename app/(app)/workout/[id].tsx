@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { randomUUID } from 'expo-crypto';
 import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +11,7 @@ import { WorkoutMenu } from '@/components/workout/WorkoutMenu';
 import { WorkoutHeading } from '@/components/workout/WorkoutHeading';
 import { WorkoutTopBar } from '@/components/workout/WorkoutTopBar';
 import { WorkoutStatsBlock } from '@/components/workout/WorkoutStatsBlock';
+import { BlockGuide } from '@/components/workout/BlockGuide';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
 import { useActiveSessionSync } from '@/hooks/useActiveSessionSync';
 import { useHardwareBack } from '@/hooks/useHardwareBack';
@@ -17,12 +19,16 @@ import { useRunTracker } from '@/hooks/useRunTracker';
 import { SavingOverlay } from '@/components/workout/SavingOverlay';
 import { useWorkoutFinish } from '@/hooks/useWorkoutFinish';
 import { useWorkoutHeartRate } from '@/hooks/useWorkoutHeartRate';
-import { useStopwatch } from '@/hooks/useStopwatch';
+import { formatElapsed, useStopwatch } from '@/hooks/useStopwatch';
 import { usePreferences } from '@/hooks/usePreferences';
-import { loadResumableSession, type ResumableSession } from '@/lib/activeSession';
+import { usePlanBlocks } from '@/hooks/usePlanBlocks';
+import { useResumableWorkout } from '@/hooks/useResumableWorkout';
+import { useWallClock } from '@/hooks/useWallClock';
+import type { ResumableSession } from '@/lib/activeSession';
 import type { WorkoutType } from '@/lib/activities';
 import { splitMetersFor } from '@/lib/splits';
-import { layout, palettes, spacing, workout } from '@/theme';
+import { workoutScreenStyles as styles } from '@/components/workout/workoutScreenStyles';
+import { workout } from '@/theme';
 import { ThemeScope } from '@/providers/ThemeProvider';
 import type { DistanceUnit } from '@/types/preferences';
 
@@ -43,6 +49,10 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
   const [type, setType] = useState<WorkoutType>(resumed?.session.type ?? 'run');
   const startedAtRef = useRef<Date>(resumed ? new Date(resumed.session.startedAt) : new Date());
   const [userPlanWorkoutId] = useState<string | null>(() => resumed?.session.userPlanWorkoutId ?? planSessionId);
+  const [activityId] = useState<string>(() => resumed?.session.activityId ?? randomUUID());
+  const [wallStartMs] = useState<number>(() => resumed?.session.startedAt ?? Date.now());
+  const blocks = usePlanBlocks(userPlanWorkoutId);
+  const totalMs = useWallClock(wallStartMs);
   const elapsedSeconds = Math.floor(elapsedMs / MS_PER_SECOND);
   const tracker = useRunTracker({
     active: running,
@@ -52,6 +62,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
   });
   const { clear } = useActiveSessionSync({
     startedAtRef,
+    activityId,
     type,
     userPlanWorkoutId,
     stopwatch: state,
@@ -59,6 +70,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
   });
   const heartRate = useWorkoutHeartRate({ running, startedAtRef, maxHeartRate, sessionKey });
   const { finishing, saving, finishWorkout } = useWorkoutFinish({
+    activityId,
     type,
     startedAtRef,
     userPlanWorkoutId,
@@ -109,12 +121,15 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
         <WorkoutHeading
           type={type}
           formatted={formatted}
+          totalFormatted={formatElapsed(totalMs)}
           paused={!running}
           typeDisabled={locked}
           onPressType={() => {
             setMenuView('types');
           }}
         />
+
+        <BlockGuide blocks={blocks} activeSeconds={elapsedSeconds} paused={!running} />
 
         <WorkoutStatsBlock tracker={tracker} distanceUnit={distanceUnit} heartRate={heartRate} />
 
@@ -138,7 +153,9 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
           <SlideToFinish
             disabled={locked || finishing}
             onFinish={() => {
-              finishWorkout();
+              confirmStop(() => {
+                finishWorkout();
+              });
             }}
           />
         </View>
@@ -166,31 +183,8 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
 
 export default function WorkoutScreen(): ReactElement | null {
   const { resume, session } = useLocalSearchParams<{ resume?: string; session?: string }>();
-  const [resumed, setResumed] = useState<ResumableSession | null>(null);
-  const [ready, setReady] = useState<boolean>(resume !== '1');
-
-  useEffect(() => {
-    if (resume !== '1') return;
-    void loadResumableSession().then((loaded) => {
-      setResumed(loaded);
-      setReady(true);
-    });
-  }, [resume]);
+  const { ready, resumed } = useResumableWorkout(resume);
 
   if (!ready) return null;
   return <ThemeScope scheme="dark"><WorkoutContent resumed={resumed} planSessionId={session ?? null} /></ThemeScope>;
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: palettes.dark.background,
-  },
-  safe: {
-    flex: 1,
-    paddingHorizontal: layout.screenPadding,
-  },
-  controls: {
-    marginBottom: spacing.huge,
-  },
-});
