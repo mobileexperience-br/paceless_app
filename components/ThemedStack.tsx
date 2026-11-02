@@ -1,17 +1,17 @@
 import type { ReactElement, ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { SystemBars } from '@/components/SystemBars';
 import { useTheme } from '@/hooks/useTheme';
 import { useWindowBackground } from '@/hooks/useWindowBackground';
 
 export function ThemedStack({ children }: { children: ReactNode }): ReactElement {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   useWindowBackground();
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <SystemBars />
       <Stack
         screenOptions={{
           headerShown: false,

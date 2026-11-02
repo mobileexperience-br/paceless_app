@@ -17,6 +17,7 @@ export function SignInOverlay({ visible }: SignInOverlayProps): ReactElement {
       transparent
       animationType="fade"
       statusBarTranslucent
+      navigationBarTranslucent
       onRequestClose={() => undefined}
     >
       <View style={styles.root} accessibilityViewIsModal accessibilityLiveRegion="polite">

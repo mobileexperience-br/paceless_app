@@ -1,9 +1,8 @@
 import { useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { AlertTriangle, CalendarCheck, Check, CloudOff, HeartOff } from 'lucide-react-native';
-import { Button, Screen, StatRow, Text, type Stat } from '@/components';
+import { Button, FocusedSystemBars, Screen, StatRow, Text, type Stat } from '@/components';
 import { HeartRateSummaryCard } from '@/components/workout/HeartRateSummaryCard';
 import { SplitsTable } from '@/components/workout/SplitsTable';
 import { PerceivedEffortPicker } from '@/components/workout/PerceivedEffortPicker';
@@ -64,7 +63,7 @@ function WorkoutSummaryContent(): ReactElement {
 
   return (
     <Screen dark scroll edges={['top', 'bottom', 'left', 'right']}>
-      <StatusBar style="light" />
+      <FocusedSystemBars scheme="dark" />
       <View style={styles.heading}>
         <Text variant="title1" color={colors.ink}>
           {activityLabels[summary.type]}
