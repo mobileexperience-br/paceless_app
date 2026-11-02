@@ -129,3 +129,12 @@ Disparar e inspecionar: sair (Perfil), excluir conta e trocar avatar (Conta), mu
 - Conteúdo a revisar (não é layout): `legal/terms` mostra placeholders `[DATA]`, `[RAZÃO SOCIAL]`, `[CNPJ]` e `[Advogado: definir]`.
 - Correções de código nesta rodada: nenhuma.
 - Gates: `npx tsc --noEmit` ok, `npx eslint . --max-warnings 0` ok, `npm test` 60/60.
+
+### Rodada 3 (análise do QA da rodada 2)
+
+| ID | Severidade | Tela | Problema | Status |
+|---|---|---|---|---|
+| R2-1 | blocker (cobertura) | Telas logadas | Signup de teste caiu no rate limit do Supabase; sem conta QA, todas as rotas logadas redirecionam para `/welcome` | Aberto. Repetir o signup depois que o limite expirar ou usar um usuário de teste já confirmado. Criar usuário via SQL em produção só com autorização |
+| R2-orig | major | Plano sem plano (`NoPlanState` em `components/plan/PlanStates.tsx`) | Botão "Configurar plano" estranho dentro do card | Causa provável achada no código: `Button` (`components/Button.tsx`) não tem `paddingHorizontal` no estilo `base`, então o rótulo encosta nas bordas quando o botão não é esticado. Correção enviada ao implementador: `paddingHorizontal: spacing.xl` no `base` |
+| R2-2 | minor | Cadastro | Rodapé legal quebra em duas linhas com espaço grande | Aberto, conferir `app/(pre-auth)/signup.tsx` |
+| R2-3 | — | Console pre-auth | Avisos de a11y/autofill na web e log do RevenueCat | Descartado: limitação da web, não é layout |
