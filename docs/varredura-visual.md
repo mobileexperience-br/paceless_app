@@ -138,3 +138,14 @@ Disparar e inspecionar: sair (Perfil), excluir conta e trocar avatar (Conta), mu
 | R2-orig | major | Plano sem plano (`NoPlanState` em `components/plan/PlanStates.tsx`) | Botão "Configurar plano" estranho dentro do card | Causa provável achada no código: `Button` (`components/Button.tsx`) não tem `paddingHorizontal` no estilo `base`, então o rótulo encosta nas bordas quando o botão não é esticado. Correção enviada ao implementador: `paddingHorizontal: spacing.xl` no `base` |
 | R2-2 | minor | Cadastro | Rodapé legal quebra em duas linhas com espaço grande | Aberto, conferir `app/(pre-auth)/signup.tsx` |
 | R2-3 | — | Console pre-auth | Avisos de a11y/autofill na web e log do RevenueCat | Descartado: limitação da web, não é layout |
+
+### Rodada 4 (análise do QA da rodada 3)
+
+| ID | Severidade | Tela | Problema | Status |
+|---|---|---|---|---|
+| R3-1 | blocker (ambiente) | Servidor :8097 | Bundle servido não contém as correções do commit `be970e6` (Button com padding 0, rodapé legal antigo). `node_modules` do worktree é symlink para `paceless_app/node_modules`, e o Metro resolve código do repo principal | Aberto. Precisa reiniciar o Metro a partir do worktree com `--clear` (ou `node_modules` próprio). Fora do escopo do agente: depende do usuário/coordenador |
+| R2-1 | blocker (cobertura) | Telas logadas | Signup de teste ainda em rate limit do Supabase | Aberto. Precisa de conta de teste confirmada fornecida pelo usuário |
+| R2-orig | major | `NoPlanState` | Botão estranho no card | Corrigido no código (`be970e6`), não verificado visualmente |
+| R2-2 | minor | Cadastro | Rodapé legal em duas linhas | Corrigido no código (`be970e6`), não verificado visualmente |
+| R3-2 | minor | Cadastro 360x640 | Conteúdo abaixo da dobra | A conferir se a tela rola; rolagem em tela pequena é aceitável |
+| R3-3 | — | Termos | Placeholders jurídicos | Conteúdo, não layout. Fora do escopo |
