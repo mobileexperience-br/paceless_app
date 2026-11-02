@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 import { buildPlan } from '../_shared/plan/generate.ts';
+import { GENERATOR_VERSION } from '../_shared/plan/hash.ts';
 import { dayMs, isValidDate, parseDate } from '../_shared/plan/schedule.ts';
 import { fieldsOf, parseActivePlan, parseProfile, type ActivePlan, type ProfileSettings } from '../_shared/plan/rows.ts';
 import { eligibleLevels, type EligibleLevel, type GeneratedPlan, type Tier } from '../_shared/plan/types.ts';
@@ -17,6 +18,7 @@ interface ResponseBody {
   weeks?: number;
   fullWeeks?: number;
   sessions?: number;
+  generatorVersion?: number;
   error?: string;
 }
 
@@ -30,7 +32,7 @@ function respond(status: number, body: ResponseBody): Response {
 }
 
 function unchangedResponse(userPlanId: string, tier: Tier, weeks: number, fullWeeks: number): Response {
-  return respond(200, { status: 'unchanged', userPlanId, tier, weeks, fullWeeks });
+  return respond(200, { status: 'unchanged', userPlanId, tier, weeks, fullWeeks, generatorVersion: GENERATOR_VERSION });
 }
 
 function unwrap<T>(result: { data: T | null; error: unknown }): T | null {
@@ -182,7 +184,7 @@ async function handle(request: Request): Promise<Response> {
     tier,
     weeks,
     fullWeeks,
-    sessions: countSessions(plan),
+    sessions: countSessions(plan), generatorVersion: GENERATOR_VERSION,
   });
 }
 

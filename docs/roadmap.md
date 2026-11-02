@@ -13,6 +13,23 @@ Status: `[ ]` não começou · `[~]` em andamento · `[x]` pronta
 
 ---
 
+## MVP do PRD v1 (branch `feat/prd-mvp`)
+
+Fases do PRD (`docs/prd-v1.md`), independentes da numeração antiga abaixo. Código pronto,
+falta deploy e homologação. Detalhes em [estado-atual.md](./estado-atual.md).
+
+- [x] Fase 1 — Primeiro acesso: conta → onboarding → plano → paywall (`spec-fase1.md`)
+- [x] Fase 2 — Treino guiado e sensação de esforço (`spec-fase2.md`)
+- [x] Fase 3 — Estados de sessão, repetir e avançar semana (`spec-fase3.md`)
+- [x] Fase 4 — Progresso, conquistas e totais (`spec-fase4.md`)
+- [x] Fase 5 — Analytics local, testes, estados de erro, go-live (`spec-fase5.md`)
+- [ ] Aplicar as 5 migrations de 2026-11-02 e publicar `generate-plan`
+- [ ] Aprovar libs: `expo-haptics`/`expo-speech`, analytics + crash, pgTAP, Maestro/Detox
+- [ ] Pedro homologar DP-01 a DP-45 ([decisoes-provisorias-prd.md](./decisoes-provisorias-prd.md))
+- [ ] Roteiro manual em dispositivo ([go-live.md](./go-live.md))
+
+---
+
 ## Fase 0 — Faxina `[~]`
 
 Resolver as dívidas do [estado-atual.md](./estado-atual.md) antes de construir.

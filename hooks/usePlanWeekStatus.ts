@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { clearActivePlanCache } from '@/hooks/useActivePlan';
+import { trackOnce } from '@/lib/analytics';
+import { isWeeklyGoalCompleted, weeklyGoalKey } from '@/lib/analyticsRules';
 import { localToday } from '@/lib/planDates';
 import {
   advancePlanWeek,
@@ -30,7 +32,11 @@ export function usePlanWeekStatus(): UsePlanWeekStatus {
 
   const reload = useCallback(async (): Promise<void> => {
     try {
-      setStatus(await fetchPlanWeekStatus(localToday()));
+      const next = await fetchPlanWeekStatus(localToday());
+      if (next !== null && isWeeklyGoalCompleted(next)) {
+        void trackOnce(weeklyGoalKey(next), 'weekly_goal_completed', { plan_id: next.userPlanId, week_index: next.currentWeek });
+      }
+      setStatus(next);
       setError(null);
     } catch {
       setError(LOAD_ERROR);

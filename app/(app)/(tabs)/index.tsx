@@ -13,6 +13,7 @@ import { useActivePlan } from '@/hooks/useActivePlan';
 import { useActivities } from '@/hooks/useActivities';
 import { usePlanWeekStatus } from '@/hooks/usePlanWeekStatus';
 import { useProfile } from '@/hooks/useProfile';
+import { PlanError } from '@/components/plan/PlanStates';
 import { localToday } from '@/lib/planDates';
 import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
@@ -25,9 +26,9 @@ export default function HomeScreen(): ReactElement {
   const firstName = name?.split(/\s+/)[0];
   const { activities, load } = useActivities();
   const lastActivity = activities[0];
-  const { plan, loading: planLoading } = useActivePlan();
+  const { plan, loading: planLoading, error: planError, reload: reloadPlan } = useActivePlan();
   const { status } = usePlanWeekStatus();
-  const noPlan = !planLoading && plan === null;
+  const noPlan = !planLoading && plan === null && planError === null;
 
   useFocusEffect(
     useCallback((): void => {
@@ -67,7 +68,13 @@ export default function HomeScreen(): ReactElement {
           </Text>
         </View>
 
-        {noPlan ? <NoPlanCard /> : <PlanCard plan={plan} loading={planLoading} />}
+        {planError !== null && plan === null ? (
+          <PlanError message={planError} onRetry={() => { void reloadPlan(); }} />
+        ) : noPlan ? (
+          <NoPlanCard />
+        ) : (
+          <PlanCard plan={plan} loading={planLoading} />
+        )}
 
         <WeekProgressCard activities={activities} status={plan ? status : null} />
 

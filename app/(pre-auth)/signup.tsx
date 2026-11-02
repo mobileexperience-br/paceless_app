@@ -15,6 +15,7 @@ import { InlineError } from '@/components/InlineError';
 import type { InputRef } from '@/components/Input';
 import { LegalNotice } from '@/components/LegalNotice';
 import { useSession } from '@/hooks/useSession';
+import { appVersion, track } from '@/lib/analytics';
 import { useSocialSignIn } from '@/hooks/useSocialSignIn';
 import { validateSignUp } from '@/hooks/validateAuth';
 import { createStyles, layout, sizes, spacing } from '@/theme';
@@ -49,6 +50,7 @@ export default function SignUpScreen(): ReactElement {
       setError(result.error);
       return;
     }
+    track('signup_completed', { method: 'email', app_version: appVersion() });
     if (result.needsConfirmation) {
       router.replace({
         pathname: '/verify-email',

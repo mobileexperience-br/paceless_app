@@ -8,6 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
+    "test": "TZ=America/Sao_Paulo node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/test-hooks.mjs --test \"lib/**/*.test.ts\" \"supabase/functions/**/*.test.ts\"",
     "lint": "eslint . --max-warnings 0",
     "update:preview": "eas update --channel preview",
     "update:production": "eas update --channel production",

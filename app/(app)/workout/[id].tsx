@@ -14,6 +14,9 @@ import { WorkoutStatsBlock } from '@/components/workout/WorkoutStatsBlock';
 import { BlockGuide } from '@/components/workout/BlockGuide';
 import { useWorkoutDialogs } from '@/components/workout/workoutDialogs';
 import { useActiveSessionSync } from '@/hooks/useActiveSessionSync';
+import { useWorkoutAnalytics } from '@/hooks/useWorkoutAnalytics';
+import { track } from '@/lib/analytics';
+import { analyticsSessionId } from '@/lib/analyticsRules';
 import { useHardwareBack } from '@/hooks/useHardwareBack';
 import { usePlanSessionReporter } from '@/hooks/usePlanSessionReporter';
 import { useRunTracker } from '@/hooks/useRunTracker';
@@ -85,6 +88,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
   });
 
   usePlanSessionReporter(userPlanWorkoutId, running);
+  useWorkoutAnalytics({ sessionId: analyticsSessionId(userPlanWorkoutId, activityId), type, running, resumed: resumed !== null, finishing, elapsedSeconds });
 
   useEffect(() => {
     if (resumed) return;
@@ -93,6 +97,7 @@ function WorkoutContent({ resumed, planSessionId }: { resumed: ResumableSession 
   }, [start, resumed]);
 
   const leave = (): void => {
+    track('workout_interrupted', { session_id: analyticsSessionId(userPlanWorkoutId, activityId), reason_optional: 'discarded' });
     void clear();
     heartRate.discard();
     void tracker.stop();

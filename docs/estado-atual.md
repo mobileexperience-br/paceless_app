@@ -3,6 +3,28 @@
 Diagnóstico atualizado em 2026-10-21, commit `2e1f5ca` (OTA `315fb07c` em production). A versão original é de
 2026-10-19 (commit `6ddcd07`), quando o app era só a camada visual.
 
+## Alinhamento ao PRD v1 (branch `feat/prd-mvp`, 2026-11-02)
+
+As 5 fases do PRD (`docs/prd-v1.md`) foram implementadas nesta branch. Specs em
+`docs/spec-fase1.md` a `docs/spec-fase5.md`; decisões provisórias DP-01 a DP-45 em
+[decisoes-provisorias-prd.md](./decisoes-provisorias-prd.md), aguardando o Pedro.
+
+| Fase | Entregue |
+|---|---|
+| 1 — Primeiro acesso | Conta → onboarding (objetivo, dias, combinação, preparo) gravado direto em `profiles` → `plan-ready` gera o plano → paywall fechável (só para nível elegível) → Início. Gerador de 8 semanas para iniciante total e iniciante |
+| 2 — Treino guiado | Blocos do plano no treino, tempo ativo x total, confirmação ao finalizar, id da atividade gerado no cliente (idempotência), sensação de esforço (5 níveis) inclusive offline |
+| 3 — Estados e semanas | Estados `scheduled`…`cancelled` gravados por RPC, conclusão pelo trigger da atividade, repetir semana (tentativas), avançar com mínimo de 2/3 |
+| 4 — Progresso | Aderência da semana no Início, conquistas `first_workout` e `first_week_completed` por trigger, totais "desde o início" no histórico |
+| 5 — Beta | Camada de analytics tipada (só log em dev), `npm test` com 60 testes de lógica pura, auditoria de estados de erro, checklist [go-live.md](./go-live.md) e [testes.md](./testes.md) |
+
+**Pendente para ir ao ar:**
+
+- Aplicar no remoto as 5 migrations `20261102000000` a `20261102040000` e publicar a Edge Function `generate-plan` (nada foi aplicado nem publicado).
+- Libs que precisam de aprovação: `expo-haptics`/`expo-speech` (vibração e voz nas transições, DP-18); provedor de analytics e de crash/monitoramento (DP-37); pgTAP + Supabase local para testes SQL e Maestro/Detox para E2E (DP-43).
+- Homologação do Pedro: DP-01 a DP-45, principalmente público do plano (DP-01), progressão de 8 semanas (DP-03, validar com especialista), paywall depois do plano (DP-10), avanço 2/3 (DP-25) e conquistas (DP-29 a DP-31). DEC-03, DEC-04 e DEC-05 do PRD ainda sem decisão.
+- Consentimento LGPD antes de plugar provedor real de analytics (DP-44).
+- Roteiro manual em dispositivo real (`docs/go-live.md`).
+
 ## Resumo
 
 O app já tem autenticação, onboarding persistido, perfil no banco, assinatura

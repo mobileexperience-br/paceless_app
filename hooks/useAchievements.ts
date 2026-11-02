@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { fetchAchievements } from '@/lib/achievements';
+import { trackOnce } from '@/lib/analytics';
+import { ACHIEVEMENT_CRITERIA_VERSION, achievementKey } from '@/lib/analyticsRules';
 import { subscribeActivityChanges } from '@/lib/activityQueue';
 import type { Achievement } from '@/types/achievements';
 
@@ -20,7 +22,13 @@ export function useAchievements(): UseAchievements {
 
   const reload = useCallback(async (): Promise<void> => {
     try {
-      setAchievements(await fetchAchievements());
+      const next = await fetchAchievements();
+      for (const item of next) {
+        if (item.earnedAt !== null) {
+          void trackOnce(achievementKey(item.code), 'achievement_awarded', { achievement_code: item.code, criteria_version: ACHIEVEMENT_CRITERIA_VERSION });
+        }
+      }
+      setAchievements(next);
       setError(null);
     } catch {
       setError(LOAD_ERROR);

@@ -3,6 +3,7 @@ import { useActivePlan } from '@/hooks/useActivePlan';
 import { useGeneratePlan } from '@/hooks/useGeneratePlan';
 import { useProfile } from '@/hooks/useProfile';
 import { useSession } from '@/hooks/useSession';
+import { track } from '@/lib/analytics';
 import { offerReminderPermission, syncReminders } from '@/lib/notificationSettings';
 import { registerPushToken } from '@/lib/pushTokens';
 import { supabase } from '@/lib/supabase';
@@ -66,6 +67,9 @@ export function useCompleteOnboarding(): UseCompleteOnboarding {
       setStatus('failed');
       setError(completionError);
       return;
+    }
+    if (profile?.goal && profile.level && profile.days_per_week) {
+      track('onboarding_completed', { goal: profile.goal, level: profile.level, days_count: profile.training_days.length });
     }
     await refresh();
     if (target === 'ready') {

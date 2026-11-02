@@ -1,4 +1,7 @@
 import { useCallback, useState } from 'react';
+import { track } from '@/lib/analytics';
+import { templateVersionLabel } from '@/lib/analyticsRules';
+import { isRecord } from '@/lib/activities';
 import { localToday } from '@/lib/planDates';
 import { supabase } from '@/lib/supabase';
 
@@ -35,6 +38,12 @@ function resultFor(code: string | null): GeneratePlanResult {
   return failedResult;
 }
 
+function generatedSummary(body: unknown): { weeks: number; generatorVersion: unknown } | null {
+  if (!isRecord(body) || body['status'] !== 'generated') return null;
+  const weeks = body['weeks'];
+  return typeof weeks === 'number' ? { weeks, generatorVersion: body['generatorVersion'] } : null;
+}
+
 export function useGeneratePlan(): UseGeneratePlan {
   const [generating, setGenerating] = useState(false);
 
@@ -45,7 +54,14 @@ export function useGeneratePlan(): UseGeneratePlan {
       const response = await supabase.functions.invoke('generate-plan', {
         body: { startDate: localToday(), force },
       });
-      if (!response.error) return okResult;
+      if (!response.error) {
+        const body: unknown = response.data;
+        const summary = generatedSummary(body);
+        if (summary) {
+          track('plan_created', { template_version: templateVersionLabel(summary.generatorVersion), duration_weeks: summary.weeks });
+        }
+        return okResult;
+      }
       return resultFor(await errorCodeOf(response.error));
     } catch {
       return failedResult;

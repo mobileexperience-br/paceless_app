@@ -2,6 +2,8 @@ import { useRef, useState, type RefObject } from 'react';
 import { useRouter } from 'expo-router';
 import type { RunTracker } from '@/hooks/useRunTracker';
 import { paceSecondsPerKm } from '@/lib/geo';
+import { track } from '@/lib/analytics';
+import { analyticsSessionId } from '@/lib/analyticsRules';
 import { reportPlanSession } from '@/lib/planSessionRpc';
 import { useSaveActivity, type NewActivity, type SaveResult } from '@/hooks/useSaveActivity';
 import type { WorkoutType } from '@/lib/activities';
@@ -57,6 +59,7 @@ export function useFinishWorkout({
     const snapshot = await tracker.stop();
     const hr = heartRate.finish();
     if (elapsedSeconds < MIN_SAVE_SECONDS) {
+      track('workout_interrupted', { session_id: analyticsSessionId(userPlanWorkoutId, activityId), reason_optional: 'too_short' });
       if (userPlanWorkoutId !== null) void reportPlanSession(userPlanWorkoutId, 'interrupted', 'too_short');
       await clearSession();
       finishingRef.current = false;
@@ -82,7 +85,10 @@ export function useFinishWorkout({
       perceived_effort: null,
     };
     const status = await save(draft, hr?.samples ?? []);
-    if (status !== 'failed') await clearSession();
+    if (status !== 'failed') {
+      track('workout_completed', { session_id: analyticsSessionId(userPlanWorkoutId, activityId), duration: elapsedSeconds, distance: distanceMeters, source: 'paceless' });
+      await clearSession();
+    }
     setWorkoutSummary({
       type,
       startedAt: draft.started_at,
