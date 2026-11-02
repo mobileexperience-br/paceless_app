@@ -565,3 +565,26 @@ e os itens "Fora da lista do PRD" (`NextSessionCard`, `ListRow`, `Button`, `Soci
 `NameField`, `WeekList` com `sizes.iconTab`, `ReminderTimeStepper`).
 
 Pendente de confirmação visual no device (tema claro e escuro): A1, A2 e M1.
+
+---
+
+## Fechamento da auditoria
+
+Status final por item:
+
+| Item | Status |
+|---|---|
+| T1, T2 | Corrigido |
+| A1, A2, M1 | Corrigido no código; pendente de confirmação visual no device |
+| M2–M7, B1–B15 | Corrigido |
+| `workout/[id].tsx:162` `style={{ paddingBottom: insets.bottom + ... }}` | Mantido: inset dinâmico, permitido pelo design system |
+| `welcome.tsx:80` `palettes.dark.background` | Mantido: foto sempre escura no fundo |
+| `workoutDialogs.tsx:21` `palettes.dark.onPrimary` | Mantido: ícone renderizado no `Dialog` fora do `ThemeScope`; valor igual nas duas paletas |
+| `plan-ready.tsx:37` texto fixo do plano | Pendente: depende de dados do hook (lógica, fora do escopo) |
+| Home sem plano com dois CTAs | Pendente: decisão de produto |
+| Formatação repetida em `WeekProgressCard`/`WeekStatusCard` | Pendente: refatoração, não é estilo |
+| `NextSessionCard`, `ListRow`, `Button`, `SocialButton`, `NameField`, `WeekList`, `ReminderTimeStepper` | Pendente: fora da lista de arquivos do PRD |
+
+Verificação (rodada no worktree): todos os greps de "Como verificar" voltaram vazios ou
+só com as exceções mantidas acima; nenhum arquivo do escopo passa de 200 linhas;
+`npx tsc --noEmit` sem erros; `npx eslint .` sem erros; `npm test` 60/60 passando.
