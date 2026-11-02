@@ -161,3 +161,14 @@ Disparar e inspecionar: sair (Perfil), excluir conta e trocar avatar (Conta), mu
 | R2-orig | major | `NoPlanState` | Botão estranho no card | Corrigido no código (`be970e6`), mas sem verificação visual (depende de R4-1 e R4-2) |
 
 Correções de código nesta rodada: nenhuma, porque os bloqueios restantes são de ambiente.
+
+### Rodada 6 (análise do QA da rodada 5, última)
+
+| ID | Severidade | Tela | Problema | Status |
+|---|---|---|---|---|
+| R4-1 | blocker (ambiente) | Servidor :8097 | Bundle desatualizado | Resolvido: o bundle servido já traz `paddingHorizontal: spacing.xl` no `Button` |
+| R5-1 / R2-1 | blocker (cobertura) | Telas logadas | Sem conta de teste confirmada, as rotas logadas redirecionam para `/welcome` | Aberto. Depende de o usuário fornecer uma conta de teste. O `NoPlanState` (problema original) está corrigido no código, mas não foi verificado visualmente |
+| R5-2 | minor | Cadastro (`components/LegalNotice.tsx`) | O rodapé legal quebra em duas linhas com um vão de cerca de 32px | Aberto. `caption` e `captionStrong` têm o mesmo `lineHeight` (20), então a causa não é o token. Suspeita: `Text` aninhado com `onPress` ou `accessibilityRole="link"` no react-native-web. Conferir no device antes de mudar |
+| R5-3 | — | Cadastro, login, esqueci a senha | Inputs sem placeholder e diferença de alguns px entre o subtítulo e os campos | Descartado: é observação de conteúdo, não bug de layout |
+
+Correções de código nesta rodada: nenhuma. A varredura termina com a cobertura das telas logadas pendente.
