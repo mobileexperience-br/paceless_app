@@ -2,9 +2,10 @@ import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Moon } from 'lucide-react-native';
 import { Text } from '@/components';
+import { MIN_TOUCH_TARGET } from '@/components/touch';
 import { SessionStatus, sessionStateLabels } from '@/components/plan/SessionStatus';
 import { sessionMetaLabel, stateOn, type WeekDay } from '@/lib/planProgress';
-import { createStyles, layout, radius, sizes, spacing } from '@/theme';
+import { createStyles, radius, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
 interface DayRowProps {
@@ -40,7 +41,6 @@ export function DayRow({ day, todayDate, onSessionPress }: DayRowProps): ReactEl
               key={session.id}
               accessibilityRole="button"
               accessibilityLabel={`${day.label}, ${session.workout.title}, ${sessionStateLabels[state]}`}
-              hitSlop={sizes.hitSlop}
               onPress={() => {
                 onSessionPress(session.id);
               }}
@@ -83,13 +83,13 @@ const makeStyles = createStyles((colors) =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.sm,
-      minHeight: layout.headerHeight,
+      minHeight: MIN_TOUCH_TARGET,
     },
     session: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.md,
-      minHeight: layout.headerHeight,
+      minHeight: MIN_TOUCH_TARGET,
     },
     sessionText: {
       flexGrow: 1,
@@ -97,7 +97,8 @@ const makeStyles = createStyles((colors) =>
       gap: sizes.micro,
     },
     pressed: {
-      opacity: 0.7,
+      backgroundColor: colors.track,
+      borderRadius: radius.sm,
     },
   }),
 );

@@ -7,6 +7,7 @@ import { PaywallContent } from '@/components/paywall/PaywallContent';
 import { useActivePlan } from '@/hooks/useActivePlan';
 import { useDialog } from '@/hooks/useDialog';
 import { useGeneratePlan } from '@/hooks/useGeneratePlan';
+import { MIN_TOUCH_TARGET } from '@/components/touch';
 import { createStyles, layout, sizes, spacing } from '@/theme';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
 
@@ -71,8 +72,8 @@ const makeStyles = createStyles(() =>
     close: {
       alignItems: 'center',
       justifyContent: 'center',
-      minWidth: layout.headerHeight,
-      minHeight: layout.headerHeight,
+      minWidth: MIN_TOUCH_TARGET,
+      minHeight: MIN_TOUCH_TARGET,
     },
   }),
 );

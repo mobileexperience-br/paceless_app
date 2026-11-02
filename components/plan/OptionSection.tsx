@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SelectableCard } from '@/components/paywall/SelectableCard';
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
@@ -24,14 +24,14 @@ export function OptionSection<T extends string>({
 }: OptionSectionProps<T>): ReactElement {
   const { colors } = useTheme();
   return (
-    <View style={{ gap: spacing.sm }}>
+    <View style={styles.section}>
       <Text variant="captionStrong">{title}</Text>
       {subtitle ? (
         <Text variant="caption" color={colors.textSecondary}>
           {subtitle}
         </Text>
       ) : null}
-      <View accessibilityRole="radiogroup" accessibilityLabel={title} style={{ gap: spacing.sm }}>
+      <View accessibilityRole="radiogroup" accessibilityLabel={title} style={styles.section}>
         {options.map((option) => (
           <SelectableCard
             key={option.id}
@@ -42,11 +42,11 @@ export function OptionSection<T extends string>({
               onSelect(option.id);
             }}
           >
-            <Text variant="bodyStrong" style={{ flexShrink: 1 }}>
+            <Text variant="bodyStrong" style={styles.shrink}>
               {option.label}
             </Text>
             {option.description ? (
-              <Text variant="caption" color={colors.textSecondary} style={{ flexShrink: 1 }}>
+              <Text variant="caption" color={colors.textSecondary} style={styles.shrink}>
                 {option.description}
               </Text>
             ) : null}
@@ -56,3 +56,12 @@ export function OptionSection<T extends string>({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  section: {
+    gap: spacing.sm,
+  },
+  shrink: {
+    flexShrink: 1,
+  },
+});

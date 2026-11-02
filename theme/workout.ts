@@ -19,5 +19,4 @@ export const workout = {
   statusIconSize: 18,
   blockTimeSize: 56,
   blockBannerMs: 4000,
-  effortOptionHeight: 48,
 } as const;

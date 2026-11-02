@@ -7,4 +7,5 @@ export { radius } from './radius';
 export { createStyles } from './createStyles';
 export { shadows } from './shadows';
 export { sizes } from './sizes';
+export { opacity } from './opacity';
 export { workout } from './workout';

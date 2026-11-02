@@ -85,7 +85,11 @@ export default function PlanSettingsScreen(): ReactElement {
       <ScreenHeader showBack title="Configurações do plano" />
       <View style={styles.body}>
         {loading ? (
-          <ActivityIndicator color={colors.primary} accessibilityLabel="Carregando configurações" />
+          <ActivityIndicator
+            color={colors.primaryDeep}
+            accessibilityLabel="Carregando configurações"
+            style={styles.loader}
+          />
         ) : (
           <>
             <OptionSection
@@ -170,5 +174,8 @@ const styles = StyleSheet.create({
   },
   footer: {
     gap: spacing.md,
+  },
+  loader: {
+    paddingVertical: spacing.huge,
   },
 });

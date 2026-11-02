@@ -71,7 +71,11 @@ export default function ActivitiesScreen(): ReactElement {
         ListHeaderComponent={header}
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator color={colors.primaryDeep} style={styles.loader} />
+            <ActivityIndicator
+              color={colors.primaryDeep}
+              style={styles.loader}
+              accessibilityLabel="Carregando atividades"
+            />
           ) : (
             <ActivitiesEmpty
               filter={filter}

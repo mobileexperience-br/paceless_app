@@ -31,7 +31,7 @@ export function EmptyState({
           {description}
         </Text>
       ) : null}
-      {action}
+      {action ? <View style={styles.action}>{action}</View> : null}
     </View>
   );
 }
@@ -43,5 +43,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingVertical: spacing.huge,
     paddingHorizontal: spacing.xxl,
+  },
+  action: {
+    alignSelf: 'stretch',
+    marginTop: spacing.sm,
   },
 });

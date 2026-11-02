@@ -18,7 +18,7 @@ import {
   setWorkoutSummary,
   type SummaryStatus,
 } from '@/lib/workoutSummary';
-import { layout, palettes, sizes, spacing, workout } from '@/theme';
+import { layout, sizes, spacing, workout } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { ThemeScope } from '@/providers/ThemeProvider';
 
@@ -66,24 +66,24 @@ function WorkoutSummaryContent(): ReactElement {
     <Screen dark scroll edges={['top', 'bottom', 'left', 'right']}>
       <StatusBar style="light" />
       <View style={styles.heading}>
-        <Text variant="title1" color={palettes.dark.ink}>
+        <Text variant="title1" color={colors.ink}>
           {activityLabels[summary.type]}
         </Text>
-        <Text variant="caption" color={palettes.dark.textSecondary}>
+        <Text variant="caption" color={colors.textSecondary}>
           {formatWorkoutDateTime(summary.startedAt)}
         </Text>
       </View>
 
       <View style={styles.status}>
-        <StatusIcon size={workout.statusIconSize} color={statusColor} strokeWidth={2} />
-        <Text variant="caption" color={failed ? colors.danger : palettes.dark.ink} style={styles.statusText}>
+        <StatusIcon size={workout.statusIconSize} color={statusColor} strokeWidth={sizes.iconStroke} />
+        <Text variant="caption" color={failed ? colors.danger : colors.ink} style={styles.statusText}>
           {statusMessages[status]}
         </Text>
       </View>
       {linkedToPlan ? (
         <View style={styles.status}>
           <CalendarCheck size={workout.statusIconSize} color={colors.primary} strokeWidth={sizes.iconStroke} />
-          <Text variant="caption" color={palettes.dark.ink} style={styles.statusText}>
+          <Text variant="caption" color={colors.ink} style={styles.statusText}>
             {status === 'queued'
               ? 'Será marcado no plano quando a conexão voltar'
               : 'Treino do plano concluído'}
@@ -102,15 +102,15 @@ function WorkoutSummaryContent(): ReactElement {
       ) : null}
 
       <StatRow stats={stats} dark style={styles.stats} />
-      <Text variant="caption" color={palettes.dark.textSecondary} style={styles.totalTime}>
+      <Text variant="caption" color={colors.textSecondary} style={styles.totalTime}>
         {`Tempo total ${formatElapsed(totalElapsedMs)}`}
       </Text>
       {summary.heartRate !== null && summary.heartRate.avg > 0 ? (
         <HeartRateSummaryCard summary={summary.heartRate} />
       ) : (
         <View style={styles.noGps}>
-          <HeartOff size={workout.statusIconSize} color={palettes.dark.textSecondary} strokeWidth={sizes.iconStroke} />
-          <Text variant="caption" color={palettes.dark.textSecondary} style={styles.statusText}>
+          <HeartOff size={workout.statusIconSize} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />
+          <Text variant="caption" color={colors.textSecondary} style={styles.statusText}>
             Frequência cardíaca indisponível
           </Text>
         </View>
@@ -118,14 +118,14 @@ function WorkoutSummaryContent(): ReactElement {
 
       {summary.distanceMeters === 0 ? (
         <View style={styles.noGps}>
-          <Text variant="caption" color={palettes.dark.textSecondary} style={styles.statusText}>
+          <Text variant="caption" color={colors.textSecondary} style={styles.statusText}>
             Sem dados de GPS neste treino
           </Text>
           <Button label="Ajuda com GPS" variant="text" onPress={showGpsHelp} />
         </View>
       ) : (
         <>
-          <Text variant="title3" color={palettes.dark.ink} style={styles.sectionTitle}>
+          <Text variant="title3" color={colors.ink} style={styles.sectionTitle}>
             Parciais
           </Text>
           <SplitsTable splits={summary.splits} unit={summary.distanceUnit} />

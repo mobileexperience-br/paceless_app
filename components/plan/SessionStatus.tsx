@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Circle, CircleMinus, CirclePlay, CircleSlash, CircleX } from 'lucide-react-native';
 import { CheckCircle, Text } from '@/components';
-import { layout, sizes, spacing, type Palette } from '@/theme';
+import { sizes, spacing, type Palette } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
 import type { PlanSessionState } from '@/types/training';
 
@@ -76,6 +76,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    minHeight: layout.headerHeight,
   },
 });

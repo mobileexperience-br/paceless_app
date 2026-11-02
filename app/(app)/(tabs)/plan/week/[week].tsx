@@ -119,7 +119,7 @@ function LockedOrMissing({ plan, weekNumber }: LockedOrMissingProps): ReactEleme
       <ScreenHeader showBack title={weekNumber === null ? 'Semana' : `Semana ${String(weekNumber)}`} />
       {isLocked ? (
         <EmptyState
-          icon={<Lock size={sizes.iconXl * 2} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />}
+          icon={<Lock size={sizes.iconHero} color={colors.textSecondary} strokeWidth={sizes.iconStroke} />}
           title="Semana bloqueada"
           description="Disponível no Premium."
           action={

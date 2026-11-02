@@ -1,12 +1,13 @@
 import { useState, type ReactElement } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Check, CloudOff } from 'lucide-react-native';
 import { Button, Text } from '@/components';
+import { SelectableCard } from '@/components/paywall/SelectableCard';
 import { useTheme } from '@/hooks/useTheme';
 import type { PerceivedEffort } from '@/lib/activities';
 import { perceivedEffortLabels, perceivedEffortOptions } from '@/lib/perceivedEffort';
 import { savePerceivedEffort } from '@/lib/saveEffort';
-import { palettes, radius, sizes, spacing, workout } from '@/theme';
+import { sizes, spacing, workout } from '@/theme';
 
 type EffortPhase = 'choosing' | 'saving' | 'saved' | 'queued' | 'skipped' | 'failed';
 
@@ -28,7 +29,7 @@ export function PerceivedEffortPicker({ activityId }: PerceivedEffortPickerProps
 
   if (phase === 'skipped') {
     return (
-      <Text variant="caption" color={palettes.dark.textSecondary}>
+      <Text variant="caption" color={colors.textSecondary}>
         Sensação não registrada.
       </Text>
     );
@@ -38,7 +39,7 @@ export function PerceivedEffortPicker({ activityId }: PerceivedEffortPickerProps
     return (
       <View style={styles.result}>
         <Check size={workout.statusIconSize} color={colors.primary} strokeWidth={sizes.iconStroke} />
-        <Text variant="caption" color={palettes.dark.ink} style={styles.resultText}>
+        <Text variant="caption" color={colors.ink} style={styles.resultText}>
           {`Sensação registrada: ${perceivedEffortLabels[choice]}`}
         </Text>
       </View>
@@ -49,7 +50,7 @@ export function PerceivedEffortPicker({ activityId }: PerceivedEffortPickerProps
     return (
       <View style={styles.result}>
         <CloudOff size={workout.statusIconSize} color={colors.primary} strokeWidth={sizes.iconStroke} />
-        <Text variant="caption" color={palettes.dark.ink} style={styles.resultText}>
+        <Text variant="caption" color={colors.ink} style={styles.resultText}>
           Sensação guardada. Será enviada quando houver conexão.
         </Text>
       </View>
@@ -73,32 +74,24 @@ export function PerceivedEffortPicker({ activityId }: PerceivedEffortPickerProps
 
   return (
     <View style={styles.block}>
-      <Text variant="title3" color={palettes.dark.ink}>Como você se sentiu?</Text>
-      <Text variant="caption" color={palettes.dark.textSecondary}>
+      <Text variant="title3" color={colors.ink}>Como você se sentiu?</Text>
+      <Text variant="caption" color={colors.textSecondary}>
         Opcional. Ajuda a acompanhar sua tolerância ao esforço.
       </Text>
-      <View style={styles.options} accessibilityRole="radiogroup">
-        {perceivedEffortOptions.map((effort) => {
-          const selected = choice === effort;
-          return (
-            <Pressable
-              key={effort}
-              accessibilityRole="radio"
-              accessibilityState={{ selected, disabled: busy }}
-              disabled={busy}
-              onPress={() => {
-                setChoice(effort);
-              }}
-              style={[
-                styles.option,
-                { borderColor: selected ? colors.primary : palettes.dark.border },
-                selected && { backgroundColor: colors.primarySoft },
-              ]}
-            >
-              <Text variant="body" color={palettes.dark.ink}>{perceivedEffortLabels[effort]}</Text>
-            </Pressable>
-          );
-        })}
+      <View style={styles.options} accessibilityRole="radiogroup" accessibilityLabel="Como você se sentiu?">
+        {perceivedEffortOptions.map((effort) => (
+          <SelectableCard
+            key={effort}
+            active={choice === effort}
+            disabled={busy}
+            accessibilityLabel={perceivedEffortLabels[effort]}
+            onPress={() => {
+              setChoice(effort);
+            }}
+          >
+            <Text variant="body">{perceivedEffortLabels[effort]}</Text>
+          </SelectableCard>
+        ))}
       </View>
       <Button
         label={busy ? 'Salvando...' : 'Salvar sensação'}
@@ -126,13 +119,6 @@ const styles = StyleSheet.create({
   options: {
     gap: spacing.sm,
     marginVertical: spacing.xs,
-  },
-  option: {
-    justifyContent: 'center',
-    height: workout.effortOptionHeight,
-    paddingHorizontal: spacing.lg,
-    borderWidth: sizes.hairline * 2,
-    borderRadius: radius.md,
   },
   result: {
     flexDirection: 'row',

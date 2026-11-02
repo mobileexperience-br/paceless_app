@@ -23,13 +23,13 @@ function workoutsLabel(count: number): string {
 
 function weekLabel(status: PlanWeekStatus): string {
   const base = `Semana ${String(status.currentWeek)}`;
-  return status.currentAttempt > 1 ? `${base} · tentativa ${String(status.currentAttempt)}` : base;
+  return status.currentAttempt > 1 ? `${base} • tentativa ${String(status.currentAttempt)}` : base;
 }
 
 function planLines(status: PlanWeekStatus): string {
   const count = `${String(status.completed)} de ${String(status.eligible)} treinos concluídos`;
   if (status.adherence === null) return count;
-  return `${count} · aderência ${String(Math.round(status.adherence * 100))}%`;
+  return `${count} • aderência ${String(Math.round(status.adherence * 100))}%`;
 }
 
 export function WeekProgressCard({ activities, status }: WeekProgressCardProps): ReactElement {

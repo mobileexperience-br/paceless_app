@@ -16,13 +16,13 @@ interface WeekStatusCardProps {
 
 function titleOf(status: PlanWeekStatus): string {
   const week = `Semana ${String(status.currentWeek)}`;
-  return status.currentAttempt > 1 ? `${week} · tentativa ${String(status.currentAttempt)}` : week;
+  return status.currentAttempt > 1 ? `${week} • tentativa ${String(status.currentAttempt)}` : week;
 }
 
 function summaryOf(status: PlanWeekStatus): string {
   const base = `${String(status.completed)} de ${String(status.eligible)} treinos concluídos`;
   if (status.adherence === null) return base;
-  return `${base} · aderência ${String(Math.round(status.adherence * 100))}%`;
+  return `${base} • aderência ${String(Math.round(status.adherence * 100))}%`;
 }
 
 export function WeekStatusCard({
@@ -40,7 +40,7 @@ export function WeekStatusCard({
   return (
     <Card>
       <View style={styles.content}>
-        <Text variant="captionStrong" color={colors.textSecondary}>
+        <Text variant="captionStrong">
           {titleOf(status)}
         </Text>
         <Text variant="body">{summaryOf(status)}</Text>

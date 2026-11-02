@@ -35,7 +35,7 @@ export function NoPlanState(): ReactElement {
   const router = useRouter();
   return (
     <EmptyState
-      icon={<CalendarPlus size={sizes.iconXl * 2} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />}
+      icon={<CalendarPlus size={sizes.iconHero} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />}
       title="Você ainda não tem um plano"
       description="Configure seus dias e objetivo para gerarmos seus treinos."
       action={

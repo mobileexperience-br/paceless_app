@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, Text } from '@/components';
 import { createStyles, spacing } from '@/theme';
-import { useTheme, useThemedStyles } from '@/hooks/useTheme';
+import { useThemedStyles } from '@/hooks/useTheme';
 import type { AttemptSummary } from '@/types/training';
 
 interface AttemptHistoryProps {
@@ -10,12 +10,11 @@ interface AttemptHistoryProps {
 }
 
 export function AttemptHistory({ history }: AttemptHistoryProps): ReactElement {
-  const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   return (
     <Card>
       <View style={styles.content}>
-        <Text variant="captionStrong" color={colors.textSecondary}>
+        <Text variant="captionStrong">
           Tentativas anteriores
         </Text>
         {history.map((item) => (
