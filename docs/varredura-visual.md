@@ -117,3 +117,15 @@ Disparar e inspecionar: sair (Perfil), excluir conta e trocar avatar (Conta), mu
   - Plugin `chrome-devtools-mcp`: perfil `~/.cache/chrome-devtools-mcp/chrome-profile` travado por outro Chrome.
 - Nenhum problema visual levantado e nenhuma correção feita nesta rodada.
 - Próxima rodada: subir um Chrome headless isolado com `--remote-debugging-port=9222` e perfil temporário, e refazer a varredura completa.
+
+### Rodada 2
+
+- Navegador: Chrome headless isolado em `127.0.0.1:9222` (perfil temporário) funcionou com `chrome-devtools` MCP. Screenshots salvos em `shots/r2`.
+- Coberto em 412x915 (claro e escuro) e 360x640 (escuro): welcome, cadastro, login, esqueci a senha, termos. Sem overflow horizontal e sem erros de console na welcome.
+- Não coberto: telas logadas (abas, plano, sessão, configurações, perfil, treino, diálogos). Bloqueio: a conta de teste não pôde ser criada.
+  - `qa+visual@paceless.test` é rejeitada pelo Supabase (`email_address_invalid`), e `example.com` também.
+  - Por isso a seção "Conta de teste" precisa de outro e-mail aceito pelo projeto.
+- Problema original (botão estranho dentro de card) não foi confirmado nem corrigido: sem tela logada não há como reproduzir. A varredura estática de `app/` e `components/` não achou cor hardcoded nem alvo menor que 44px.
+- Conteúdo a revisar (não é layout): `legal/terms` mostra placeholders `[DATA]`, `[RAZÃO SOCIAL]`, `[CNPJ]` e `[Advogado: definir]`.
+- Correções de código nesta rodada: nenhuma.
+- Gates: `npx tsc --noEmit` ok, `npx eslint . --max-warnings 0` ok, `npm test` 60/60.
