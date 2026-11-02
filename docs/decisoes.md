@@ -14,6 +14,19 @@ Formato:
 
 ---
 
+## 2026-11-02 — Estilo das barras do sistema só pelo `SystemBars`
+**Decisão:** a cor dos ícones da status bar e da barra de navegação do Android é definida
+só pelo componente `components/SystemBars.tsx` (`SystemBars` no `ThemedStack` e
+`FocusedSystemBars` nas telas que forçam tema escuro). Nenhuma tela importa
+`expo-status-bar` ou `expo-navigation-bar` direto. Plugin `expo-navigation-bar` com
+`enforceContrast: false`; `style` sempre `light` ou `dark` explícito, nunca `auto`.
+**Por quê:** a pilha dessas barras vale pelo último componente montado, não pela tela
+visível; centralizar evita ícone claro sobre fundo claro ao voltar de telas escuras e
+remove o scrim cinza da barra de 3 botões. Detalhes em
+[spec-system-bars.md](./spec-system-bars.md).
+**Alternativas descartadas:** `react-native-edge-to-edge` (depreciada), detectar modo
+gestos (exige código nativo, sem ganho visual).
+
 ## 2026-10-21 — Android: conta de organização no Play, assinatura de app do Google
 **Decisão:** o app Paceless (ID `4972516548397125859`, `com.paceless.app`) foi criado
 na conta de organização MXPBR, com Play App Signing ativo. Cliente OAuth
