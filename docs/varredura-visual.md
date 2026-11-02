@@ -172,3 +172,15 @@ Correções de código nesta rodada: nenhuma, porque os bloqueios restantes são
 | R5-3 | — | Cadastro, login, esqueci a senha | Inputs sem placeholder e diferença de alguns px entre o subtítulo e os campos | Descartado: é observação de conteúdo, não bug de layout |
 
 Correções de código nesta rodada: nenhuma. A varredura termina com a cobertura das telas logadas pendente.
+
+### Rodada 7 (final, sem correções de código)
+
+| ID | Severidade | Tela | Problema | Status |
+|---|---|---|---|---|
+| R5-1 / R4-1 | blocker (ambiente) | Servidor :8097 | Bundle servido já contém `paddingHorizontal: spacing.xl` no `Button` | Resolvido |
+| R5-1 / R2-1 | blocker (cobertura) | Telas logadas | Sem conta de teste confirmada, as rotas logadas redirecionam para `/welcome`. `NoPlanState` (problema original) corrigido no código, sem verificação visual | Aberto. Depende de o usuário fornecer uma conta de teste confirmada, ou de abrir o app no device e ver `/plan` sem plano |
+| R5-2 | minor | Cadastro (`components/LegalNotice.tsx`) | Vão de cerca de 32px entre as linhas do rodapé legal | Aberto. Não verificado no device nesta rodada, então nenhuma mudança foi feita. Se o vão aparecer no device, a saída é tirar `onPress`/`accessibilityRole` dos `Text` aninhados e usar um `Pressable` em volta, ou juntar tudo num único `Text` com `lineHeight` explícito de `typography.caption` |
+
+Correções de código nesta rodada: nenhuma, por decisão da rodada final.
+
+Gates: `npx tsc --noEmit` ok, `npx eslint . --max-warnings 0` ok, `npm test` 60/60.
