@@ -4,15 +4,18 @@ import { useGeneratePlan } from '@/hooks/useGeneratePlan';
 import { useProfile } from '@/hooks/useProfile';
 import { useSession } from '@/hooks/useSession';
 import { track } from '@/lib/analytics';
+import { answersFromProfile, pendingStep } from '@/lib/onboardingProgress';
 import { offerReminderPermission, syncReminders } from '@/lib/notificationSettings';
 import { registerPushToken } from '@/lib/pushTokens';
 import { supabase } from '@/lib/supabase';
+import { onboardingStepKeys, type OnboardingStepKey } from '@/types/onboarding';
 
-export type CompletionStatus = 'idle' | 'generating' | 'ready' | 'unavailable' | 'failed';
+export type CompletionStatus = 'idle' | 'generating' | 'ready' | 'unavailable' | 'incomplete' | 'failed';
 
 interface UseCompleteOnboarding {
   status: CompletionStatus;
   error: string | null;
+  missingStep: OnboardingStepKey;
   run: () => Promise<void>;
 }
 
@@ -26,6 +29,7 @@ export function useCompleteOnboarding(): UseCompleteOnboarding {
   const { generate } = useGeneratePlan();
   const [status, setStatus] = useState<CompletionStatus>('idle');
   const [error, setError] = useState<string | null>(null);
+  const missingStep = pendingStep(answersFromProfile(profile)) ?? onboardingStepKeys[0] ?? 'goal';
 
   const markCompleted = useCallback(async (): Promise<boolean> => {
     if (!supabase || userId === null) return false;
@@ -56,6 +60,10 @@ export function useCompleteOnboarding(): UseCompleteOnboarding {
     setStatus('generating');
     setError(null);
     const result = await generate();
+    if (result.code === 'profile_incomplete') {
+      setStatus('incomplete');
+      return;
+    }
     const target: CompletionStatus | null =
       result.code === 'ok' ? 'ready' : result.code === 'level_not_supported' ? 'unavailable' : null;
     if (target === null) {
@@ -79,5 +87,5 @@ export function useCompleteOnboarding(): UseCompleteOnboarding {
     setStatus(target);
   }, [generate, markCompleted, profile, refresh, reload, remindIfReady]);
 
-  return { status, error, run };
+  return { status, error, missingStep, run };
 }

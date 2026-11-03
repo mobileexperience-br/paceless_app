@@ -1,18 +1,20 @@
 import { useEffect, useRef, type ReactElement } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AlertTriangle, CalendarCheck, Hourglass } from 'lucide-react-native';
+import { AlertTriangle, CalendarCheck, ClipboardList, Hourglass } from 'lucide-react-native';
 import { Button, InlineError, Screen, Text } from '@/components';
 import { useCompleteOnboarding } from '@/hooks/useCompleteOnboarding';
 import { useTheme, useThemedStyles } from '@/hooks/useTheme';
+import { onboardingSteps } from '@/lib/onboardingSteps';
 import { createStyles, layout, sizes, spacing } from '@/theme';
 
 export default function PlanReadyScreen(): ReactElement {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
-  const { status, error, run } = useCompleteOnboarding();
+  const { status, error, missingStep, run } = useCompleteOnboarding();
   const started = useRef(false);
+  const missingTitle = onboardingSteps.find((step) => step.key === missingStep)?.title ?? '';
 
   useEffect(() => {
     if (started.current) return;
@@ -61,6 +63,25 @@ export default function PlanReadyScreen(): ReactElement {
               style={styles.cta}
               onPress={() => {
                 router.replace('/(app)');
+              }}
+            />
+          </>
+        ) : null}
+
+        {status === 'incomplete' ? (
+          <>
+            <ClipboardList size={sizes.iconHero} color={colors.primaryDeep} strokeWidth={sizes.iconStroke} />
+            <Text variant="title1" center>
+              Falta uma etapa do seu plano
+            </Text>
+            <Text variant="body" center color={colors.textSecondary}>
+              Responda &quot;{missingTitle}&quot; para montarmos seu plano.
+            </Text>
+            <Button
+              label="Responder etapa"
+              style={styles.cta}
+              onPress={() => {
+                router.replace('/onboarding');
               }}
             />
           </>

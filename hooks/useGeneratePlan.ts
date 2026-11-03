@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { track } from '@/lib/analytics';
 import { templateVersionLabel } from '@/lib/analyticsRules';
 import { isRecord } from '@/lib/activities';
+import { errorCodeOf } from '@/lib/functionErrorCode';
 import { localToday } from '@/lib/planDates';
 import { supabase } from '@/lib/supabase';
 
@@ -23,14 +24,6 @@ const levelNotSupportedError = 'Seu plano ainda não está disponível para o se
 
 const okResult: GeneratePlanResult = { error: null, code: 'ok' };
 const failedResult: GeneratePlanResult = { error: regenerationError, code: 'failed' };
-
-async function errorCodeOf(error: unknown): Promise<string | null> {
-  if (typeof error !== 'object' || error === null || !('context' in error)) return null;
-  if (!(error.context instanceof Response)) return null;
-  const body: unknown = await error.context.clone().json().catch(() => null);
-  if (typeof body !== 'object' || body === null || !('error' in body)) return null;
-  return typeof body.error === 'string' ? body.error : null;
-}
 
 function resultFor(code: string | null): GeneratePlanResult {
   if (code === 'level_not_supported') return { error: levelNotSupportedError, code: 'level_not_supported' };
